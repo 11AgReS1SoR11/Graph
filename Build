@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Creating the build directory (if it doesn't exist)
+mkdir -p build
+
+# Changing to the build directory
+cd build

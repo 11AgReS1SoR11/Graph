@@ -1,0 +1,6 @@
+# CODEOWNERS file
+# Assigns code owners for different directories
+
+/Frontend/ @kromachmax @11AgReS1SoR11
+/Backend/ @11AgReS1SoR11
+* @11AgReS1SoR11

@@ -1,0 +1,66 @@
+# Contributing Guidelines
+
+Thank you for considering contributing to our project! Please take a moment to review the following guidelines to ensure a smooth and collaborative contribution process.
+
+## Commit Guidelines
+
+Commits should follow the following format:
+
+```
+[TASK_ID] Commit name
+Commit description
+Ref: TASK_ID
+```
+For example:
+```
+[TRH-20] Configure build of project
+
+    - Rename gitignore file
+    - Add bash scripts for build and run
+    - Add description in README.md
+    - Add top-level pro file
+Ref: TRH-20
+```
+
+## Branch Naming Convention
+
+Branches should follow the template:
+```
+dev_[yourname]/[TASK_ID]_[branch_name]
+```
+For example:
+```
+dev_d.basalaev/TRH-20_configure_build
+```
+
+## Pull Request Naming Convention
+
+The title of the Pull Request (PR) should include the TASK_ID in square brackets. For example:
+```
+[TRH-20] Configure build of project
+```
+## Asking Questions
+
+You can ask questions in PRs, but they should be marked with [question] {the question itself}. For example:
+```
+[question] Why do we need variable x here?
+```
+
+After answering a question in a thread, the initiator of the question should close the thread.
+
+## Review and Feedback
+
+Feedback and suggestions are welcome on PRs. Each comment or suggestion should be addressed or explained why it's not applicable. Once you have made the necessary changes in response to feedback, you should resolve the thread.
+
+## Approval Process
+
+PRs can only be merged after all threads are closed, and at least 2 approvals have been given by code owners.
+
+## Code Owners
+
+The code owners for GuiApplication are: @kromachmax, @11AgReS1SoR11
+The code owner for ServiceApplication is: @11AgReS1SoR11
+
+## Final Notes
+
+Remember that the master branch is protected, and changes can only be merged through PRs and after approval.
