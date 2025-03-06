@@ -10,20 +10,18 @@ on:
 
 env:
   QT_VERSION: 5.15.2
-  QMAKE_PATH: /home/runner/work/GPAHP/GPAHP/Qt/5.15.2/gcc_64/bin
 
 jobs:
   install_packages:
     runs-on: ubuntu-latest
     steps:
-
       - name: clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: ${{ env.QT_VERSION }}
           host: linux
@@ -31,24 +29,20 @@ jobs:
           arch: gcc_64
           dir: .
           install-deps: true
-          modules: qtwebengine
           setup-python: false
-
-      # TODO: implement upload and download artifacts
 
   build:
     needs: install_packages
     runs-on: ubuntu-latest
 
     steps:
-
       - name: clone repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: ${{ env.QT_VERSION }}
           host: linux
@@ -56,12 +50,15 @@ jobs:
           arch: gcc_64
           dir: .
           install-deps: true
-          modules: qtwebengine
           setup-python: false
+
+      - name: Set up PATH for qmake
+        run: |
+          echo "Adding Qt bin directory to PATH"
+          echo "PATH=$(pwd)/Qt/5.15.2/gcc_64/bin:$PATH" >> $GITHUB_ENV
 
       - name: Build
         run: |
-          export PATH=${{ env.QMAKE_PATH }}:$PATH
           chmod +x Build
           ./Build
 
@@ -77,7 +74,7 @@ jobs:
           submodules: recursive
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: ${{ env.QT_VERSION }}
           host: linux
@@ -85,12 +82,15 @@ jobs:
           arch: gcc_64
           dir: .
           install-deps: true
-          modules: qtwebengine
           setup-python: false
       
+      - name: Set up PATH for qmake
+        run: |
+          echo "Adding Qt bin directory to PATH"
+          echo "PATH=$(pwd)/Qt/5.15.2/gcc_64/bin:$PATH" >> $GITHUB_ENV
+
       - name: Build
         run: |
-          export PATH=${{ env.QMAKE_PATH }}:$PATH
           chmod +x Build
           ./Build
 
