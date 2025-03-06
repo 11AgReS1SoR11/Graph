@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+env:
+  QT_VERSION: 5.15.2
+  QMAKE_PATH: /home/runner/work/GPAHP/GPAHP/Qt/5.15.2/gcc_64/bin
+
+jobs:
+  install_packages:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: clone repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: linux
+          target: desktop
+          arch: gcc_64
+          dir: .
+          install-deps: true
+          modules: qtwebengine
+          setup-python: false
+
+      # TODO: implement upload and download artifacts
+
+  build:
+    needs: install_packages
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: clone repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: linux
+          target: desktop
+          arch: gcc_64
+          dir: .
+          install-deps: true
+          modules: qtwebengine
+          setup-python: false
+
+      - name: Build
+        run: |
+          export PATH=${{ env.QMAKE_PATH }}:$PATH
+          chmod +x Build
+          ./Build
+
+  tests:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: clone repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: linux
+          target: desktop
+          arch: gcc_64
+          dir: .
+          install-deps: true
+          modules: qtwebengine
+          setup-python: false
+      
+      - name: Build
+        run: |
+          export PATH=${{ env.QMAKE_PATH }}:$PATH
+          chmod +x Build
+          ./Build
+
+      - name: Run tests
+        run: |
+          chmod +x runTest
+          ./runTest
+ 
