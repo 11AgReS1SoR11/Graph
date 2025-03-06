@@ -1,3 +1,8 @@
-/*
-TODO: implement
-*/
+#pragma once
+
+class Logger
+{
+    /*
+    TODO: implement
+    */
+};

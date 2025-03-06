@@ -27,6 +27,14 @@ To run tests:
 ```bash
 bash runTest
 ```
+To run only Frontend's tests:
+```bash
+bash runTest --Frontend
+```
+To run only Backend's tests:
+```bash
+bash runTest --Backend
+```
 
 To run the Application, use the following command:
 ```bash

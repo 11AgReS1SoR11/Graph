@@ -1,1 +1,16 @@
 #!/bin/bash
+
+LD_LIBRARY_PATH=$PWD/build/Frontend/src/:${LD_LIBRARY_PATH}
+LD_LIBRARY_PATH=$PWD/build/Backend/src/:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH
+
+# check choosen component to build
+if [ "$1" = "--Front" ]; then
+    ./build/Frontend/test/FrontendTest
+elif [ "$1" = "--Backend" ]; then
+    ./build/Backend/test/BackendTest
+else
+    # default - run all tests
+    ./build/Frontend/test/FrontendTest
+    ./build/Backend/test/BackendTest
+fi

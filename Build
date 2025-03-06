@@ -5,3 +5,11 @@ mkdir -p build
 
 # Changing to the build directory
 cd build
+
+LD_LIBRARY_PATH=$PWD/build/Frontend/src/:${LD_LIBRARY_PATH}
+LD_LIBRARY_PATH=$PWD/build/Backend/src/:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH
+
+qmake ../Graph.pro
+
+make
