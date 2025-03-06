@@ -13,13 +13,13 @@ Ref: TASK_ID
 ```
 For example:
 ```
-[TRH-20] Configure build of project
+[GRAPH-20] Configure build of project
 
     - Rename gitignore file
     - Add bash scripts for build and run
     - Add description in README.md
     - Add top-level pro file
-Ref: TRH-20
+Ref: GRAPH-20
 ```
 
 ## Branch Naming Convention
@@ -30,14 +30,14 @@ dev_[yourname]/[TASK_ID]_[branch_name]
 ```
 For example:
 ```
-dev_d.basalaev/TRH-20_configure_build
+dev_d.basalaev/GRAPH-20_configure_build
 ```
 
 ## Pull Request Naming Convention
 
 The title of the Pull Request (PR) should include the TASK_ID in square brackets. For example:
 ```
-[TRH-20] Configure build of project
+[GRAPH-20] Configure build of project
 ```
 ## Asking Questions
 
@@ -58,8 +58,8 @@ PRs can only be merged after all threads are closed, and at least 2 approvals ha
 
 ## Code Owners
 
-The code owners for GuiApplication are: @kromachmax, @11AgReS1SoR11
-The code owner for ServiceApplication is: @11AgReS1SoR11
+The code owners for Frontend are: @kromachmax, @11AgReS1SoR11
+The code owner for Backend is: @11AgReS1SoR11
 
 ## Final Notes
 
