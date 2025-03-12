@@ -2,7 +2,7 @@
 TEMPLATE = lib
 TARGET = Frontend
 
-QT += core
+QT += core widgets
 
 CONFIG += c++17
 CONFIG += plugin
@@ -13,6 +13,16 @@ MOC_DIR     = objects
 UI_DIR      = objects
 RCC_DIR     = objects
 
-SOURCES += Frontend.cpp
+SOURCES += Frontend.cpp \
+           BaseWidget.cpp \
+           GraphicsWidget.cpp \
+           MainWindow.cpp \
+           TextWidget.cpp
 
-HEADERS += Frontend.hpp
+HEADERS += Frontend.hpp \
+           BaseWidget.hpp \
+           GraphicsWidget.hpp \
+           MainWindow.hpp \
+           TextWidget.hpp
+
+INCLUDEPATH += ..

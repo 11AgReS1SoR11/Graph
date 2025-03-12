@@ -1,9 +1,7 @@
 #include "Frontend.hpp"
 
-int main()
+int main(int argc, char* argv[])
 {
-    /*
-    TODO: implement
-    */
-    return 0;
+    frontend::Frontend frontend;
+    return frontend.exec(argc, argv);
 }
