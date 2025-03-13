@@ -3,7 +3,10 @@
 LD_LIBRARY_PATH=$PWD/build/Frontend/src/:${LD_LIBRARY_PATH}
 LD_LIBRARY_PATH=$PWD/build/Backend/src/:${LD_LIBRARY_PATH}
 LD_LIBRARY_PATH=$PWD/build/Common/AST/src/:${LD_LIBRARY_PATH}
+LD_LIBRARY_PATH=$PWD/build/Common/Logger/src/:${LD_LIBRARY_PATH}
+LD_LIBRARY_PATH=$PWD/build/Common/Figures/src/:${LD_LIBRARY_PATH}
 export LD_LIBRARY_PATH
+export QT_QPA_PLATFORM=offscreen
 
 # check choosen component to build
 if [ "$1" = "--Front" ]; then
@@ -12,9 +15,11 @@ elif [ "$1" = "--Backend" ]; then
     ./build/Backend/test/BackendTest
 elif [ "$1" = "--Common" ]; then
     ./build/Common/AST/test/ASTTest
+    ./build/Common/Logger/test/LoggerTest
 else
     # default - run all tests
     ./build/Frontend/test/FrontendTest
     ./build/Backend/test/BackendTest
     ./build/Common/AST/test/ASTTest
+    ./build/Common/Logger/test/LoggerTest
 fi
