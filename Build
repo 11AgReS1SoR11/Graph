@@ -9,6 +9,8 @@ cd build
 LD_LIBRARY_PATH=$PWD/build/Frontend/src/:${LD_LIBRARY_PATH}
 LD_LIBRARY_PATH=$PWD/build/Backend/src/:${LD_LIBRARY_PATH}
 LD_LIBRARY_PATH=$PWD/build/Common/AST/src/:${LD_LIBRARY_PATH}
+LD_LIBRARY_PATH=$PWD/build/Common/Logger/src/:${LD_LIBRARY_PATH}
+LD_LIBRARY_PATH=$PWD/build/Common/Figures/src/:${LD_LIBRARY_PATH}
 export LD_LIBRARY_PATH
 
 qmake ../Graph.pro
