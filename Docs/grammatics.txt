@@ -40,9 +40,9 @@ TERMINALS:
     NUMBER ::= '[0-9]+';
     
 
-KEYS: '->'; '-->'; '<->'; '<-->'; '--'; '-'; 'circle'; 'rectangle'; 'diamond'; 'color'; 'text'; 
+KEYS: '->'; '-->'; '<->'; '<-->'; '--'; '-'; 'circle'; 'rectangle'; 'diamond'; 'color'; 'text'; 'border'; 'x';
 
-      'border'; 'x'; 'y'; 'size_text'; 'size_A'; 'size_B'; '{'; '}'; ';'; '='; 'note'; '@startgraph'; '@endgraph'.
+      'y'; 'size_text'; 'size_A'; 'size_B'; '{'; '}'; ';'; '='; 'note'; '@startgraph'; '@endgraph'; 'angle'; 'radius'.
 
 
 NONTERMINALS:
@@ -92,7 +92,7 @@ RULES:
 
     SHAPE ::= 'circle' | 'rectangle' | 'diamond';
 
-    PROPERTY_KEY ::= 'color' | 'text' | 'border' | 'x' | 'y' | 'size_text' | 'size_A' | 'size_B';
+    PROPERTY_KEY ::= 'color' | 'text' | 'border' | 'x' | 'y' | 'size_text' | 'size_A' | 'size_B' | 'angle' | 'radius';
 
 
 
