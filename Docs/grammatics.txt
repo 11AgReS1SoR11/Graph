@@ -39,12 +39,6 @@ TERMINALS:
     
     NUMBER ::= '[0-9]+';
     
-    SHAPE ::= 'circle|rectangle|diamond';
-    
-    PROPERTY_KEY ::= 'color|text|border|x|y|size_text|size_A|size_B';
-    
-    ARROW ::= '->|-->|<->|<-->|--|-'.
-
 
 KEYS: '->'; '-->'; '<->'; '<-->'; '--'; '-'; 'circle'; 'rectangle'; 'diamond'; 'color'; 'text'; 
 
@@ -62,7 +56,10 @@ NONTERMINALS:
     DOT_CLOUD;
     PROPERTIES;
     PROPERTY;
-    ARROW_SHAPE.
+    ARROW_SHAPE;
+    ARROW;
+    SHAPE;
+    PROPERTY_KEY.
 
 
 AXIOM: PROGRAM.
@@ -90,6 +87,12 @@ RULES:
     PROPERTY ::= PROPERTY_KEY '=' (TEXT | NUMBER);
     
     ARROW_SHAPE ::= ARROW.
+
+    ARROW ::= '->'| '-->' | '<->' | '<-->' | '--' | '-';
+
+    SHAPE ::= 'circle' | 'rectangle' | 'diamond';
+
+    PROPERTY_KEY ::= 'color' | 'text' | 'border' | 'x' | 'y' | 'size_text' | 'size_A' | 'size_B';
 
 
 
