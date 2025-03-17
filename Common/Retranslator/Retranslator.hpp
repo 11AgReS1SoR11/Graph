@@ -15,4 +15,8 @@ private:
     Retranslator& operator=(const Retranslator&) = delete;
     
     static std::unique_ptr<Retranslator> instance;
+
+    std::string makeObject(Shape* shape) const;
+    //std::string makeNote(Shape* shape) const;
+    std::string makeLink(Shape* shape) const;
 }
