@@ -5,9 +5,8 @@ namespace frontend
 
 class Frontend
 {
-    /*
-    TODO: implement
-    */
+public:
+    int exec(int argc, char* argv[]) const;
 };
 
 } // namespace frontend
