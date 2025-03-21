@@ -1,0 +1,195 @@
+DECLARE COMMON_PROPERTIES AS LIST OF PROPERTY_KEY
+COMMON_PROPERTIES = ["color", "text", "border", "x", "y", "size_text"]
+
+DECLARE SHAPE_SPECIFIC_PROPERTIES AS MAP OF SHAPE TO LIST OF PROPERTY_KEY
+SHAPE_SPECIFIC_PROPERTIES["circle"] = ["radius"]
+SHAPE_SPECIFIC_PROPERTIES["rectangle"] = ["size_A", "size_B"]
+SHAPE_SPECIFIC_PROPERTIES["diamond"] = ["size_A", "size_B", "angle"]
+
+DECLARE PROPERTY_CONSTRAINTS AS MAP OF PROPERTY_KEY TO CONSTRAINT_INFO
+PROPERTY_CONSTRAINTS["radius"] = {"type": "number", "min": 0}
+PROPERTY_CONSTRAINTS["size_A"] = {"type": "number", "min": 0}
+PROPERTY_CONSTRAINTS["size_B"] = {"type": "number", "min": 0}
+PROPERTY_CONSTRAINTS["angle"] = {"type": "number", "min": 0, "max": 360}
+PROPERTY_CONSTRAINTS["color"] = {"type": "string"}
+PROPERTY_CONSTRAINTS["text"] = {"type": "string"}
+PROPERTY_CONSTRAINTS["border"] = {"type": "string"}
+PROPERTY_CONSTRAINTS["x"] = {"type": "number"}
+PROPERTY_CONSTRAINTS["y"] = {"type": "number"}
+PROPERTY_CONSTRAINTS["size_text"] = {"type": "number", "min": 0}
+
+
+FUNCTION check_property_value(property, constraints):
+    IF constraints["type"] == "number" DO:
+        IF property.value IS NOT NUMBER DO:
+            EXCEPTION("Значение свойства " + property.PROPERTY_KEY + 
+            " должно быть числом. Строка " + ROW_NUMBER)
+        END IF
+        IF constraints HAS "min" AND property.value < constraints["min"] DO:
+            EXCEPTION("Значение свойства " + property.PROPERTY_KEY + 
+            " должно быть не меньше " + constraints["min"] + ". Строка " + ROW_NUMBER)
+        END IF
+        IF constraints HAS "max" AND property.value > constraints["max"] DO:
+            EXCEPTION("Значение свойства " + property.PROPERTY_KEY + 
+            " должно быть не больше " + constraints["max"] + ". Строка " + ROW_NUMBER)
+        END IF
+
+
+FUNCTION check_duplicate_relations_in_graph(graph):
+    DECLARE relation_pairs AS SET  
+
+    FOR statement IN graph.statement DO:
+        IF statement == relation DO:
+            DECLARE pair AS STRING = relation.ID1 + "->" + relation.ID2
+            DECLARE reverse_pair AS STRING = relation.ID2 + "->" + relation.ID1
+
+            IF pair IN relation_pairs OR reverse_pair IN relation_pairs DO:
+                EXCEPTION("Объекты " + relation.ID1 + " и " + relation.ID2 + 
+                " уже соединены в графе. Строка " + ROW_NUMBER)
+            END IF
+        END IF
+
+        ADD pair TO relation_pairs
+    END FOR
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+FUNCTION semantic_analysis(program_tree):
+    DECLARE declared_objects AS SET
+    WHILE statement DO:
+        IF statement == object_decl DO:
+            check_object_decl(statement)
+        ELSE IF statement == relation DO:
+            check_relation(statement)
+        ELSE IF statement == note DO:
+            check_note(statement)
+        ELSE IF statement == graph DO:
+            check_duplicate_relations_in_graph(statement)
+            check_graph(statement)
+        ELSE statement == dot_cloud DO:
+            check_dot_cloud(statement)
+        END IF
+    END WHILE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+FUNCTION semantic_analysis(program_tree):
+    DECLARE declared_objects AS SET
+    SWITCH(statement):
+        CASE (object_decl):
+            check_object_decl(statement)
+        CASE (relation):
+            check_relation(statement)
+        CASE (note):
+            check_note(statement)
+        CASE (graph):
+            check_duplicate_relations_in_graph(statement)
+            check_graph(statement)
+        CASE (dot_cloud):
+            check_dot_cloud(statement)
+    END SWITCH
+
+
+FUNCTION check_object_decl(object_decl): 
+
+    IF object_decl.ID IN declared_objects DO:
+        EXCEPTION("Объект " + object_decl.ID + " уже объявлен в строке " 
+        + ROW_NUMBER)
+    END IF
+
+    ADD object_decl.ID TO declared_objects
+
+    DECLARE allowed_properties AS LIST OF PROPERTY_KEY = COMMON_PROPERTIES + 
+    SHAPE_SPECIFIC_PROPERTIES[object_decl.SHAPE]
+
+    FOR property IN object_decl.property DO:
+        IF property.PROPERTY_KEY NOT IN allowed_properties DO:
+            EXCEPTION("Недопустимое свойство " + property.PROPERTY_KEY + 
+            " для фигуры " + object_decl.SHAPE + " в строке " + ROW_NUMBER)
+        END IF
+
+        IF PROPERTY_CONSTRAINTS HAS property.PROPERTY_KEY DO:
+            check_property_value(property, PROPERTY_CONSTRAINTS[property.PROPERTY_KEY])
+        END IF
+    END FOR
+
+    IF is_dot_cloud DO:
+        IF "x" NOT IN object_decl.property OR "y" NOT IN object_decl.property DO:
+            EXCEPTION("Для точки в облаке точек обязательны свойства x и y. Строка " 
+            + ROW_NUMBER)
+        END IF
+    END IF
+
+
+
+FUNCTION check_relation(relation, declared_objects):
+    IF relation.ID1 NOT IN declared_objects DO:
+        EXCEPTION("Объект " + relation.ID1 + " не объявлен. Строка " + ROW_NUMBER)
+    END IF
+
+    IF relation.ID2 NOT IN declared_objects DO:
+        EXCEPTION("Объект " + relation.ID2 + " не объявлен. Строка " + ROW_NUMBER)
+    END IF
+
+    IF relation.ID1 IS graph OR relation.ID1 IS dot_cloud DO:
+        EXCEPTION("Связь не может быть создана с графом или облаком точек. Строка " + ROW_NUMBER)
+    END IF
+    IF relation.ID2 IS graph OR relation.ID2 IS dot_cloud DO:
+        EXCEPTION("Связь не может быть создана с графом или облаком точек. Строка " + ROW_NUMBER)
+    END IF
+
+    FOR property IN relation.property DO:
+        IF property.PROPERTY_KEY NOT IN COMMON_PROPERTIES DO:
+            EXCEPTION("Недопустимое свойство " + property.PROPERTY_KEY + 
+            " для отношения в строке " + ROW_NUMBER)
+        END IF
+    END FOR
+
+
+FUNCTION check_note(note):
+    FOR property IN note.property DO:
+        IF property.PROPERTY_KEY NOT IN COMMON_PROPERTIES DO:
+            EXCEPTION("Недопустимое свойство " + property.PROPERTY_KEY +
+             " для заметки в строке " + ROW_NUMBER)
+        END IF
+    END FOR
+
+
+
+FUNCTION check_graph(graph):
+    FOR property IN graph.property DO:
+        IF property.PROPERTY_KEY NOT IN COMMON_PROPERTIES DO:
+            EXCEPTION("Недопустимое свойство " + property.PROPERTY_KEY + 
+            " для графа в строке " + ROW_NUMBER)
+        END IF
+    END FOR
+
+    FOR statement IN graph.statement DO:
+        IF statement == object_decl DO:
+            check_object_decl(statement)
+        ELSE IF statement == relation DO:
+            check_relation(statement)
+        END IF
+    END FOR
+
+
+
+FUNCTION check_dot_cloud(dot_cloud):
+    FOR property IN dot_cloud.property DO:
+        IF property.PROPERTY_KEY NOT IN COMMON_PROPERTIES DO:
+            EXCEPTION("Недопустимое свойство " + property.PROPERTY_KEY + 
+            " для облака точек в строке " + ROW_NUMBER)
+        END IF
+    END FOR
+
+    FOR object_decl IN dot_cloud.object_decl DO:
+        IF object_decl.SHAPE != "circle" DO:
+            EXCEPTION("Объект " + object_decl.ID + " в облаке точек должен быть кругом. 
+            Строка " + ROW_NUMBER)
+        END IF
+        check_object_decl(object_decl, is_dot_cloud=True)
+    END FOR
+
+
+FUNCTION EXCEPTION(message):
+    PRINT("Ошибка: " + message)
+    EXIT()
+
