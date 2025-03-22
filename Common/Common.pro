@@ -2,8 +2,9 @@
 TEMPLATE = subdirs
 
 # Add the subdirectories for the common structs
-SUBDIRS += AST \
+SUBDIRS += Logger \
+           AST \
            Figures \
-           Logger
+           SemanticAnalyzer
 
 CONFIG += ordered
