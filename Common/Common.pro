@@ -5,6 +5,7 @@ TEMPLATE = subdirs
 SUBDIRS += AST \
            Figures \
            Logger \
-           FileManager
+           FileManager \
+           SemanticAnalyzer
 
 CONFIG += ordered
