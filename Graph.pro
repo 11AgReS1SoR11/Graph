@@ -8,9 +8,9 @@ COMMON_DIR = Common
 APP_DIR = App
 
 # Add the subdirectories for the Frontend and Backend to SUBDIRS
-SUBDIRS += $$FRONTEND_DIR \
+SUBDIRS += $$COMMON_DIR \
+           $$FRONTEND_DIR \
            $$BACKEND_DIR \
-           $$COMMON_DIR \
            $$APP_DIR \
 
 CONFIG += ordered
