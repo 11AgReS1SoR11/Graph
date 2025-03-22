@@ -1,7 +1,8 @@
 #include <memory>
-#include <AST.hpp>
+#include "AST.hpp"
 #include <unordered_map>
-#include <Shape.hpp>
+#include "Shape.hpp"
+#include "Node.hpp"
 
 class Retranslator{
 public:
@@ -16,7 +17,7 @@ private:
     
     static std::unique_ptr<Retranslator> instance;
 
-    std::string makeObject(Shape* shape) const;
-    //std::string makeNote(Shape* shape) const;
-    std::string makeLink(Shape* shape) const;
+    Node* makeObject(Shape* shape) const;
+    Node* makeNote(Shape* shape) const;
+    Node* makeLink(Shape* shape) const;
 }
