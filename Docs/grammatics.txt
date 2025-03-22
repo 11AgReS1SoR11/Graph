@@ -19,7 +19,7 @@ dot_cloud: 'dot_cloud' ID ('(' (property ';')* ')')? '{' (object_decl)* '}'
 
 property: PROPERTY_KEY '=' (TEXT | NUMBER);
 
-PROPERTY_KEY: 'color' | 'text' | 'border' | 'x' | 'y' | 'size_text' | 'size_A' | 'size_B'; 'angle'; 'radius';
+PROPERTY_KEY: 'color' | 'text' | 'border' | 'x' | 'y' | 'size_text' | 'size_A' | 'size_B'; 'angle'; 'radius'; 'grid';
 
 ARROW: '->' | '-->' | '<->' | '<-->' | '--' | '-';
 
@@ -42,7 +42,7 @@ TERMINALS:
 
 KEYS: '->'; '-->'; '<->'; '<-->'; '--'; '-'; 'circle'; 'rectangle'; 'diamond'; 'color'; 'text'; 'border'; 'x'; 'graph'; 'dot_cloud';
 
-      'y'; 'size_text'; 'size_A'; 'size_B'; '{'; '}'; ';'; '='; 'note'; '@startgraph'; '@endgraph'; 'angle'; 'radius'.
+      'y'; 'size_text'; 'size_A'; 'size_B'; '{'; '}'; ';'; '='; 'note'; '@startgraph'; '@endgraph'; 'angle'; 'radius'; 'grid'.
 
 
 NONTERMINALS:
@@ -92,6 +92,6 @@ RULES:
 
     SHAPE ::= 'circle' | 'rectangle' | 'diamond';
 
-    PROPERTY_KEY ::= 'color' | 'text' | 'border' | 'x' | 'y' | 'size_text' | 'size_A' | 'size_B' | 'angle' | 'radius';
+    PROPERTY_KEY ::= 'color' | 'text' | 'border' | 'x' | 'y' | 'size_text' | 'size_A' | 'size_B' | 'angle' | 'radius' | 'grid';
 
 
