@@ -5,6 +5,7 @@ DECLARE SHAPE_SPECIFIC_PROPERTIES AS MAP OF SHAPE TO LIST OF PROPERTY_KEY
 SHAPE_SPECIFIC_PROPERTIES["circle"] = ["radius"]
 SHAPE_SPECIFIC_PROPERTIES["rectangle"] = ["size_A", "size_B"]
 SHAPE_SPECIFIC_PROPERTIES["diamond"] = ["size_A", "size_B", "angle"]
+SHAPE_SPECIFIC_PROPERTIES["dot_cloud"] = ["grid"]
 
 DECLARE PROPERTY_CONSTRAINTS AS MAP OF PROPERTY_KEY TO CONSTRAINT_INFO
 PROPERTY_CONSTRAINTS["radius"] = {"type": "number", "min": 0}
@@ -13,10 +14,36 @@ PROPERTY_CONSTRAINTS["size_B"] = {"type": "number", "min": 0}
 PROPERTY_CONSTRAINTS["angle"] = {"type": "number", "min": 0, "max": 360}
 PROPERTY_CONSTRAINTS["color"] = {"type": "string"}
 PROPERTY_CONSTRAINTS["text"] = {"type": "string"}
-PROPERTY_CONSTRAINTS["border"] = {"type": "string"}
+PROPERTY_CONSTRAINTS["border"] = {"type": "number"}
 PROPERTY_CONSTRAINTS["x"] = {"type": "number"}
 PROPERTY_CONSTRAINTS["y"] = {"type": "number"}
 PROPERTY_CONSTRAINTS["size_text"] = {"type": "number", "min": 0}
+PROPERTY_CONSTRAINTS["grid"] = {"type": "bolean"}
+
+DECLARE ALLOWED_COLORS AS LIST OF STRING
+ALLOWED_COLORS = ["NONE", "RED", "GREEN", "BLUE", "BLACK", "WHITE", "YELLOW", "PURPLE"]
+
+DECLARE scope_stack AS STACK OF SET
+
+FUNCTION enter_scope():
+    PUSH NEW SET TO scope_stack
+
+FUNCTION exit_scope():
+    POP FROM scope_stack
+
+FUNCTION is_object_declared(id):
+    FOR scope IN scope_stack DO:
+        IF id IN scope DO:
+            RETURN True
+        END IF
+    END FOR
+    RETURN False
+
+FUNCTION declare_object(id):
+    IF id IN TOP OF scope_stack DO:
+        EXCEPTION("Объект " + id + " уже объявлен в текущей области видимости. Строка " + ROW_NUMBER)
+    END IF
+    ADD id TO TOP OF scope_stack
 
 
 FUNCTION check_property_value(property, constraints):
@@ -32,6 +59,21 @@ FUNCTION check_property_value(property, constraints):
         IF constraints HAS "max" AND property.value > constraints["max"] DO:
             EXCEPTION("Значение свойства " + property.PROPERTY_KEY + 
             " должно быть не больше " + constraints["max"] + ". Строка " + ROW_NUMBER)
+        END IF
+     ELSE IF constraints["type"] == "string" DO:
+        IF property.value IS NOT STRING DO:
+            EXCEPTION("Значение свойства " + property.PROPERTY_KEY + 
+            " должно быть строкой. Строка " + ROW_NUMBER)
+        END IF
+        # Специальная проверка для свойства color
+        IF property.PROPERTY_KEY == "color" AND property.value NOT IN ALLOWED_COLORS DO:
+            EXCEPTION("Значение свойства color должно быть одним из: " + 
+            JOIN(ALLOWED_COLORS, ", ") + ". Строка " + ROW_NUMBER)
+        END IF
+    ELSE IF constraints["type"] == "boolean" DO:
+        IF property.value IS NOT BOOLEAN DO:
+            EXCEPTION("Значение свойства " + property.PROPERTY_KEY + 
+            " должно быть логическим (true/false). Строка " + ROW_NUMBER)
         END IF
 
 
@@ -72,7 +114,7 @@ FUNCTION semantic_analysis(program_tree):
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FUNCTION semantic_analysis(program_tree):
-    DECLARE declared_objects AS SET
+    enter_scope()  
     SWITCH(statement):
         CASE (object_decl):
             check_object_decl(statement)
@@ -81,21 +123,26 @@ FUNCTION semantic_analysis(program_tree):
         CASE (note):
             check_note(statement)
         CASE (graph):
+            enter_scope()
             check_duplicate_relations_in_graph(statement)
             check_graph(statement)
+            exit_scope()
         CASE (dot_cloud):
+            enter_scope()
             check_dot_cloud(statement)
+            exit_scope()
     END SWITCH
+    exit_scope()
 
 
 FUNCTION check_object_decl(object_decl): 
 
-    IF object_decl.ID IN declared_objects DO:
+    IF is_object_declared(object_decl.ID) DO:
         EXCEPTION("Объект " + object_decl.ID + " уже объявлен в строке " 
         + ROW_NUMBER)
     END IF
 
-    ADD object_decl.ID TO declared_objects
+    declare_object(object_decl.ID)
 
     DECLARE allowed_properties AS LIST OF PROPERTY_KEY = COMMON_PROPERTIES + 
     SHAPE_SPECIFIC_PROPERTIES[object_decl.SHAPE]
@@ -121,11 +168,11 @@ FUNCTION check_object_decl(object_decl):
 
 
 FUNCTION check_relation(relation, declared_objects):
-    IF relation.ID1 NOT IN declared_objects DO:
+    IF NOT is_object_declared(relation.ID1) DO:
         EXCEPTION("Объект " + relation.ID1 + " не объявлен. Строка " + ROW_NUMBER)
     END IF
 
-    IF relation.ID2 NOT IN declared_objects DO:
+    IF NOT is_object_declared(relation.ID2) DO:
         EXCEPTION("Объект " + relation.ID2 + " не объявлен. Строка " + ROW_NUMBER)
     END IF
 
@@ -141,24 +188,61 @@ FUNCTION check_relation(relation, declared_objects):
             EXCEPTION("Недопустимое свойство " + property.PROPERTY_KEY + 
             " для отношения в строке " + ROW_NUMBER)
         END IF
+        IF PROPERTY_CONSTRAINTS HAS property.PROPERTY_KEY DO:
+            check_property_value(property, PROPERTY_CONSTRAINTS[property.PROPERTY_KEY])
+        END IF
     END FOR
 
 
 FUNCTION check_note(note):
+
+    IF is_object_declared(note.ID) DO:
+        EXCEPTION("Заметка " + object_decl.ID + " уже объявлена в строке " 
+        + ROW_NUMBER)
+    END IF
+
+    declare_object(object_decl.ID)
+
     FOR property IN note.property DO:
         IF property.PROPERTY_KEY NOT IN COMMON_PROPERTIES DO:
             EXCEPTION("Недопустимое свойство " + property.PROPERTY_KEY +
              " для заметки в строке " + ROW_NUMBER)
+        END IF
+        IF PROPERTY_CONSTRAINTS HAS property.PROPERTY_KEY DO:
+            check_property_value(property, PROPERTY_CONSTRAINTS[property.PROPERTY_KEY])
         END IF
     END FOR
 
 
 
 FUNCTION check_graph(graph):
+
+    IF is_object_declared(graph.ID) DO:
+        EXCEPTION("Граф " + object_decl.ID + " уже объявлен в строке " 
+        + ROW_NUMBER)
+    END IF
+
+    declare_object(object_decl.ID)
+
+    DECLARE declared_graph_objects AS SET
+    FOR statement IN graph DO:
+        IF graph.statement == object_decl DO:
+            IF object_decl.ID IN declared_graph_objects DO:
+            EXCEPTION("Объект " + object_decl.ID + " уже объявлен внутри графа, строка " 
+            + ROW_NUMBER)
+            END IF
+            ADD object_decl.ID TO declared_objects
+        END IF
+    END FOR
+
+    
     FOR property IN graph.property DO:
         IF property.PROPERTY_KEY NOT IN COMMON_PROPERTIES DO:
             EXCEPTION("Недопустимое свойство " + property.PROPERTY_KEY + 
             " для графа в строке " + ROW_NUMBER)
+        END IF
+        IF PROPERTY_CONSTRAINTS HAS property.PROPERTY_KEY DO:
+            check_property_value(property, PROPERTY_CONSTRAINTS[property.PROPERTY_KEY])
         END IF
     END FOR
 
@@ -173,10 +257,21 @@ FUNCTION check_graph(graph):
 
 
 FUNCTION check_dot_cloud(dot_cloud):
+    IF is_object_declared(dot_cloud.ID) DO:
+        EXCEPTION("Облако точек " + object_decl.ID + " уже объявлено в строке " 
+        + ROW_NUMBER)
+    END IF
+
+    declare_object(object_decl.ID)
+
+
     FOR property IN dot_cloud.property DO:
         IF property.PROPERTY_KEY NOT IN COMMON_PROPERTIES DO:
             EXCEPTION("Недопустимое свойство " + property.PROPERTY_KEY + 
             " для облака точек в строке " + ROW_NUMBER)
+        END IF
+        IF PROPERTY_CONSTRAINTS HAS property.PROPERTY_KEY DO:
+            check_property_value(property, PROPERTY_CONSTRAINTS[property.PROPERTY_KEY])
         END IF
     END FOR
 
