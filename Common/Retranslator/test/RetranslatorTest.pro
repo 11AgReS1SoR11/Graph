@@ -8,7 +8,9 @@ MOC_DIR     = objects
 UI_DIR      = objects
 RCC_DIR     = objects
 
-LIBS += -L$$PWD/../../../build/Common/Retranslator/src -lRetranslator
+LIBS += -L$$PWD/../../../build/Common/Retranslator/src -lRetranslator \
+        -L$$PWD/../../../build/Common/AST/src -lAST \
+        -L$$PWD/../../../build/Common/Figures -lFigures
 
 QT += testlib core
 
