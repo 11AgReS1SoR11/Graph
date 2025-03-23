@@ -1,36 +1,35 @@
-#include <Retranslator.hpp>
+#include "Retranslator.hpp"
 #include <typeinfo>
 
-Retranslator& Retranslator::getInstance(){
-    if (!instance)
-        instance = std::unique_ptr<Retranslator>(new Retranslator());
-    return *instance;
-}
+using namespace AST;
 
+std::unique_ptr<Retranslator> Retranslator::instance = nullptr;
 
-ASTTree* Retranslator::parseTree(std::unordered_map<std::string, Shape*> map){
+ASTTree Retranslator::parseTree(std::unordered_map<std::string, Shape*> map){
     
     Node* root = new Node("root");
     root->addChild(new Node("STARTGRAPH"));
 
     for (const auto& elem : map)
     {
-        start->addChild(new Node("STATEMENT"));
-        if (dynamic_cast<Note*>(elem.second))
+        root->addChild(new Node("STATEMENT"));
+        // if (dynamic_cast<Note*>(elem.second))
+        // {
+        //     root->addChild(makeNote(elem));
+        // }
+        if (dynamic_cast<Line*>(elem.second))
         {
-            start->addChild(makeNote(elem.second));
-        }
-        else if (dynamic_cast<Line*>(elem.second))
-        {
-            start->addChild(makeLink(elem.second));
+            root->addChild(makeLink(elem));
         }
         else 
         {
-            start->addChild(makeObject(elem.second));
+            root->addChild(makeObject(elem));
         }
     }
 
-    start->addChild(new Node("ENDGRAPH"));
+    root->addChild(new Node("ENDGRAPH"));
+
+    return ASTTree(root);
 }
 
 Node* doubleNode(std::string key, std::string value, bool isText){
@@ -49,12 +48,13 @@ Node* doubleNode(std::string key, std::string value, bool isText){
 
 void addProperty(Node* node, std::string key, std::string value, bool isText = false)
 {
-    node->addChild(doubleNode(value, value, isText));
+    node->addChild(doubleNode(key, value, isText));
     node->addChild(new Node(";"));
 }
 
-Node* makeObject(Shape* shape) const
+Node* Retranslator::makeObject(std::pair<std::string, Shape*> pair) const
 {
+    Shape* shape = pair.second;
     Node* node = new Node("object_decl");
     node->addChild(new Node("SHAPE"));
 
@@ -62,22 +62,22 @@ Node* makeObject(Shape* shape) const
         node->childNodes[0]->addChild(new Node("circle"));
     else if (dynamic_cast<Diamond*>(shape))
         node->childNodes[0]->addChild(new Node("diamond"));
-    else if (dynamic_cast<Rectangle*>(shape))
+    else if (dynamic_cast<Reactangle*>(shape))
         node->childNodes[0]->addChild(new Node("rectangle"));
 
     node->addChild(new Node("ID"));
-    node->childNodes[1]->addChild(new Node(""));
+    node->childNodes[1]->addChild(new Node(pair.first));
 
     node->addChild(new Node("{"));
 
     //общая часть
     
     addProperty(node, "text", shape->text, true);
-    addProperty(node, "сolor", std::to_string(static_cast<short>(shape->style->color)));
-    addProperty(node, "border", std::to_string(shape->style->border));
-    addProperty(node, "size_text", std::to_string(shape->style->textSize));
-    addProperty(node, "x", std::to_string(shape->style->x));
-    addProperty(node, "y", std::to_string(shape->style->y));
+    addProperty(node, "сolor", std::to_string(static_cast<short>(shape->style.color)));
+    addProperty(node, "border", std::to_string(shape->style.border));
+    addProperty(node, "size_text", std::to_string(shape->style.textSize));
+    addProperty(node, "x", std::to_string(shape->x));
+    addProperty(node, "y", std::to_string(shape->y));
 
     if (dynamic_cast<Circle*>(shape))
     {   
@@ -88,12 +88,12 @@ Node* makeObject(Shape* shape) const
     else if (dynamic_cast<Diamond*>(shape))
     {
         Diamond* diamond = static_cast<Diamond*>(shape);
-        addProperty(node, "size_A", std::to_string(Diamond->sizeA));
-        addProperty(node, "size_B", std::to_string(Diamond->sizeB));
-        addProperty(node, "angle", std::to_string(Diamond->angle));
+        addProperty(node, "size_A", std::to_string(diamond->sizeA));
+        addProperty(node, "size_B", std::to_string(diamond->sizeB));
+        addProperty(node, "angle", std::to_string(diamond->angle));
     }
 
-    else if (dynamic_cast<Rectangle*>(shape))
+    else if (dynamic_cast<Reactangle*>(shape))
     {
         Reactangle* reactangle = static_cast<Reactangle*>(shape);
         addProperty(node, "size_A", std::to_string(reactangle->sizeA));
@@ -106,17 +106,18 @@ Node* makeObject(Shape* shape) const
 
 }
 
-Node* makeNote(Shape* shape) const
-{
-    //to be inmpelented...
-}
+// Node* Retranslator::makeNote(std::pair<std::string, Shape*> pair) const
+// {
+//     //to be inmpelented...
+// }
 
-Node* makeLink(Shape* shape) const
+Node* Retranslator::makeLink(std::pair<std::string, Shape*> pair) const
 {
+    Line* shape = static_cast<Line*>(pair.second);
     Node* node = new Node("relation");
     
     node->addChild(new Node("ID"));
-    node->childNodes[0]->addChild(new Node(shape->idFrom));
+    node->childNodes[0]->addChild(new Node(pair.first));
 
     node->addChild(new Node("ARROW"));
     node->childNodes[1]->addChild(new Node(std::to_string(static_cast<short>(shape->orientation))));
@@ -126,7 +127,7 @@ Node* makeLink(Shape* shape) const
 
     node->addChild(new Node("{"));
 
-    addProperty(node, type, std::to_string(static_cast<short>(shape->orientation)));
+    addProperty(node, "type", std::to_string(static_cast<short>(shape->orientation)));
 
     node->addChild(new Node("{"));
 }
