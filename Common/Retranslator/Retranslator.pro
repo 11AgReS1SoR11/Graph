@@ -1,18 +1,6 @@
-# AST lib
-TEMPLATE = lib
-TARGET = Retranslator
+# AST
+TEMPLATE = subdirs
 
-QT += core
-
-CONFIG += c++17
-CONFIG += plugin
-
-# Build dirs
-OBJECTS_DIR = objects
-MOC_DIR     = objects
-UI_DIR      = objects
-RCC_DIR     = objects
-
-SOURCES += Retranslator.cpp
-
-HEADERS += Retranslator.hpp
+# Add the subdirectories for the sources and tests to SUBDIRS
+SUBDIRS += src/RetranslatorSRC.pro \
+           test/RetranslatorTest.pro
