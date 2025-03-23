@@ -184,7 +184,7 @@ private:
     /*!
      * \brief Функция проверяет корректность Statement "Объявление объекта".
      */
-    void checkObjectDecl(const ObjectDecl& obj, int rowNumber);
+    void checkObjectDecl(const ObjectDecl& obj, int rowNumber, bool isDotCloud = false);
 
     /*!
      * \brief Функция проверяет корректность Statement "Отношение между объектами".

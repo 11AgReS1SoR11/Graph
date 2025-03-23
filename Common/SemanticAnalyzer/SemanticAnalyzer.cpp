@@ -59,7 +59,7 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkPropertyValue(const Property &prop
 }
 
 
-void SEMANTICANALYZER::SemanticAnalyzer::checkObjectDecl(const ObjectDecl &obj, int rowNumber)
+void SEMANTICANALYZER::SemanticAnalyzer::checkObjectDecl(const ObjectDecl &obj, int rowNumber, bool isDotCloud)
 {
     if (declaredObjects.count(obj.id))
     {
@@ -82,6 +82,22 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkObjectDecl(const ObjectDecl &obj, 
         if (PROPERTY_CONSTRAINTS.count(prop.key))
         {
             checkPropertyValue(prop, PROPERTY_CONSTRAINTS.at(prop.key), rowNumber);
+        }
+    }
+
+    if (isDotCloud)
+    {
+        bool hasX = false, hasY = false;
+
+        for (const Property& prop : obj.properties)
+        {
+            if (prop.key == PROP_X) hasX = true;
+            if (prop.key == PROP_Y) hasY = true;
+        }
+
+        if (!hasX || !hasY)
+        {
+            throw SemanticError("Для точки в облаке точек обязательны свойства x и y.", rowNumber);
         }
     }
 }
@@ -123,13 +139,58 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkNote(const Note &note, int rowNumb
 
 void SEMANTICANALYZER::SemanticAnalyzer::checkGraph(const Graph &graph, int rowNumber)
 {
+    for (const Property& prop : graph.properties)
+    {
+        if (std::find(COMMON_PROPERTIES.begin(), COMMON_PROPERTIES.end(), prop.key) == COMMON_PROPERTIES.end())
+        {
+            throw SemanticError("Недопустимое свойство " + prop.key + " для графа.", rowNumber);
+        }
+    }
 
+    std::set<std::string> relationPairs;
+    for (const Relation& rel : graph.relations)
+    {
+        std::string pair = rel.id1 + "->" + rel.id2;
+        std::string reversePair = rel.id2 + "->" + rel.id1;
+
+        if (relationPairs.count(pair) || relationPairs.count(reversePair))
+        {
+            throw SemanticError("Объекты " + rel.id1 + " и " + rel.id2 + " уже соединены в графе.", rowNumber);
+        }
+        relationPairs.insert(pair);
+    }
+
+    for (const ObjectDecl& obj : graph.objects)
+    {
+        checkObjectDecl(obj, rowNumber, false);
+    }
+
+    for (const Relation& rel : graph.relations)
+    {
+        checkRelation(rel, rowNumber);
+    }
 }
 
 
 void SEMANTICANALYZER::SemanticAnalyzer::checkDotCloud(const DotCloud &dotCloud, int rowNumber)
 {
+    for (const Property& prop : dotCloud.properties)
+    {
+        if (std::find(COMMON_PROPERTIES.begin(), COMMON_PROPERTIES.end(), prop.key) == COMMON_PROPERTIES.end())
+        {
+            throw SemanticError("Недопустимое свойство " + prop.key + " для облака точек.", rowNumber);
+        }
+    }
 
+    for (const ObjectDecl& obj : dotCloud.objects)
+    {
+        if (obj.shape != SHAPE_CIRCLE)
+        {
+            throw SemanticError("Объект " + obj.id + " в облаке точек должен быть кругом.", rowNumber);
+        }
+
+        checkObjectDecl(obj, rowNumber, true);
+    }
 }
 
 
