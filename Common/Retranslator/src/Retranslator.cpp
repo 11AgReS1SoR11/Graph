@@ -5,7 +5,7 @@ using namespace AST;
 
 std::unique_ptr<Retranslator> Retranslator::instance = nullptr;
 
-ASTTree Retranslator::parseTree(std::unordered_map<std::string, Shape*> map){
+ASTTree Retranslator::parseTree(std::map<std::string, Shape*> map){
     
     Node* root = new Node("root");
     root->addChild(new Node("STARTGRAPH"));
@@ -63,7 +63,7 @@ Node* Retranslator::makeObject(std::pair<std::string, Shape*> pair) const
     else if (dynamic_cast<Diamond*>(shape))
         node->childNodes[0]->addChild(new Node("diamond"));
     else if (dynamic_cast<Reactangle*>(shape))
-        node->childNodes[0]->addChild(new Node("rectangle"));
+        node->childNodes[0]->addChild(new Node("reactangle"));
 
     node->addChild(new Node("ID"));
     node->childNodes[1]->addChild(new Node(pair.first));
@@ -111,23 +111,46 @@ Node* Retranslator::makeObject(std::pair<std::string, Shape*> pair) const
 //     //to be inmpelented...
 // }
 
+std::string arrowMaker(Line* line)
+{
+    if (static_cast<short>(line->type) == 0 && static_cast<short>(line->orientation) == 0)
+        return "--";
+    else if (static_cast<short>(line->type) == 0 && static_cast<short>(line->orientation) == 1)
+        return "-->";    
+    else if (static_cast<short>(line->type) == 0 && static_cast<short>(line->orientation) == 2)
+        return "<-->"; 
+    else if (static_cast<short>(line->type) == 1 && static_cast<short>(line->orientation) == 0)
+        return "-";
+    else if (static_cast<short>(line->type) == 1 && static_cast<short>(line->orientation) == 1)
+        return "->";    
+    else 
+        return "<->";   
+}
+
 Node* Retranslator::makeLink(std::pair<std::string, Shape*> pair) const
 {
     Line* shape = static_cast<Line*>(pair.second);
     Node* node = new Node("relation");
     
     node->addChild(new Node("ID"));
-    node->childNodes[0]->addChild(new Node(pair.first));
+    node->childNodes[0]->addChild(new Node(shape->idFrom));
 
     node->addChild(new Node("ARROW"));
-    node->childNodes[1]->addChild(new Node(std::to_string(static_cast<short>(shape->orientation))));
+    node->childNodes[1]->addChild(new Node(arrowMaker(shape)));
 
     node->addChild(new Node("ID"));
-    node->childNodes[0]->addChild(new Node(shape->idTo));
+    node->childNodes[2]->addChild(new Node(shape->idTo));
 
     node->addChild(new Node("{"));
 
-    addProperty(node, "type", std::to_string(static_cast<short>(shape->orientation)));
+    addProperty(node, "text", shape->text, true);
+    addProperty(node, "сolor", std::to_string(static_cast<short>(shape->style.color)));
+    addProperty(node, "border", std::to_string(shape->style.border));
+    addProperty(node, "size_text", std::to_string(shape->style.textSize));
+    addProperty(node, "x", std::to_string(shape->x));
+    addProperty(node, "y", std::to_string(shape->y));
 
-    node->addChild(new Node("{"));
+    node->addChild(new Node("}"));
+
+    return node;
 }

@@ -1,6 +1,6 @@
 #include <memory>
 #include "AST.hpp"
-#include <unordered_map>
+#include <map>
 #include "Shape.hpp"
 #include "Node.hpp"
 #include "Line.hpp"
@@ -18,7 +18,7 @@ public:
         return *instance;
     };
 
-    ASTTree parseTree(std::unordered_map<std::string, Shape*> map);
+    ASTTree parseTree(std::map<std::string, Shape*> map);
 
 private:
     Retranslator(){};
