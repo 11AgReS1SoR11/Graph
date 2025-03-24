@@ -279,7 +279,6 @@ FUNCTION check_dot_cloud(dot_cloud):
             EXCEPTION("Для точки в облаке точек обязательны свойства x и y. Строка " + ROW_NUMBER)
         END IF
         
-        # Проверка всех свойств точки
         FOR property IN point_properties DO:
             IF property.PROPERTY_KEY NOT IN COMMON_PROPERTIES DO:
                 EXCEPTION("Недопустимое свойство " + property.PROPERTY_KEY + 
