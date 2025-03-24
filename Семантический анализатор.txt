@@ -158,12 +158,7 @@ FUNCTION check_object_decl(object_decl):
         END IF
     END FOR
 
-    IF is_dot_cloud DO:
-        IF "x" NOT IN object_decl.property OR "y" NOT IN object_decl.property DO:
-            EXCEPTION("Для точки в облаке точек обязательны свойства x и y. Строка " 
-            + ROW_NUMBER)
-        END IF
-    END IF
+    
 
 
 
@@ -264,9 +259,11 @@ FUNCTION check_dot_cloud(dot_cloud):
 
     declare_object(object_decl.ID)
 
+    DECLARE allowed_external_properties AS LIST OF PROPERTY_KEY = COMMON_PROPERTIES + 
+    SHAPE_SPECIFIC_PROPERTIES["dot_cloud"]
 
-    FOR property IN dot_cloud.property DO:
-        IF property.PROPERTY_KEY NOT IN COMMON_PROPERTIES DO:
+    FOR property IN dot_cloud.external_properties DO:
+        IF property.PROPERTY_KEY NOT IN allowed_external_properties DO:
             EXCEPTION("Недопустимое свойство " + property.PROPERTY_KEY + 
             " для облака точек в строке " + ROW_NUMBER)
         END IF
@@ -275,12 +272,23 @@ FUNCTION check_dot_cloud(dot_cloud):
         END IF
     END FOR
 
-    FOR object_decl IN dot_cloud.object_decl DO:
-        IF object_decl.SHAPE != "circle" DO:
-            EXCEPTION("Объект " + object_decl.ID + " в облаке точек должен быть кругом. 
-            Строка " + ROW_NUMBER)
+    
+    FOR point_properties IN dot_cloud.inner_properties DO:
+        
+        IF "x" NOT IN point_properties OR "y" NOT IN point_properties DO:
+            EXCEPTION("Для точки в облаке точек обязательны свойства x и y. Строка " + ROW_NUMBER)
         END IF
-        check_object_decl(object_decl, is_dot_cloud=True)
+        
+        # Проверка всех свойств точки
+        FOR property IN point_properties DO:
+            IF property.PROPERTY_KEY NOT IN COMMON_PROPERTIES DO:
+                EXCEPTION("Недопустимое свойство " + property.PROPERTY_KEY + 
+                " для точки в облаке точек в строке " + ROW_NUMBER)
+            END IF
+            IF PROPERTY_CONSTRAINTS HAS property.PROPERTY_KEY DO:
+                check_property_value(property, PROPERTY_CONSTRAINTS[property.PROPERTY_KEY])
+            END IF
+        END FOR
     END FOR
 
 
