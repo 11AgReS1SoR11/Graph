@@ -1,0 +1,197 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+
+\usepackage{float} 
+\usepackage{color}
+\usepackage[a4paper, total={6in, 8in},left=2cm,right=2cm,
+top=2cm,bottom=2cm,bindingoffset=0cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[english, russian]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\usepackage{xfrac}
+
+\title{Правила семантики}
+\author{sophy-spb }
+\date{March 2025}
+
+\begin{document}
+
+
+
+\section{Правила семантики для DSL}
+
+\subsection{Общие свойства}
+\begin{itemize}
+    \item Следующие свойства допустимы для всех типов объектов:
+    \begin{itemize}
+        \item \texttt{color} (строка): Цвет объекта. Допустимые значения: \texttt{NONE, RED, GREEN, BLUE, BLACK, WHITE, YELLOW, PURPLE}.
+        \item \texttt{text} (строка): Текст, связанный с объектом.
+        \item \texttt{border} (строка): Ширина границы объекта.
+        \item \texttt{x} (целое число): Координата центра X объекта.
+        \item \texttt{y} (целое число): Координата центра Y объекта.
+        \item \texttt{size\_text} (число, $> 0$): Размер текста.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Уникальные свойства для каждого типа объекта}
+\begin{itemize}
+    \item \textbf{Круг (\texttt{circle})}:
+    \begin{itemize}
+        \item \texttt{radius} (число, $> 0$): Радиус круга.
+    \end{itemize}
+    \item \textbf{Прямоугольник (\texttt{rectangle})}:
+    \begin{itemize}
+        \item \texttt{size\_A} (число, $> 0$): Длина первой стороны.
+        \item \texttt{size\_B} (число, $> 0$): Длина второй стороны.
+    \end{itemize}
+    \item \textbf{Ромб (\texttt{diamond})}:
+    \begin{itemize}
+        \item \texttt{size\_A} (число, $> 0$): Длина первой диагонали.
+        \item \texttt{size\_B} (число, $>0$): Длина второй диагонали.
+        \item \texttt{angle} (число, $0 < \text{значение} < 360$): Угол между сторонами ромба.
+    \end{itemize}
+    \item \textbf{Облако точек (\texttt{dot\_cloud})}:
+    \begin{itemize}
+        \item \texttt{grid} (логическое): Наличие сетки.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Обязательные свойства}
+\begin{itemize}
+    \item Для точек в облаке точек (\texttt{dot\_cloud}):
+    \begin{itemize}
+        \item Каждая точка должна иметь обязательные свойства \texttt{x} и \texttt{y}.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Проверка значений свойств}
+\begin{itemize}
+    \item Значения свойств должны соответствовать следующим ограничениям:
+    \begin{itemize}
+        \item Числовые свойства (\texttt{radius}, \texttt{size\_A}, \texttt{size\_B}, \texttt{angle}, \texttt{x}, \texttt{y}, \texttt{size\_text}, \texttt{border}):
+        \begin{itemize}
+            \item Должны быть числами.
+            \item Должны удовлетворять указанным ограничениям (например, \texttt{radius} $> 0$, \texttt{angle} от 0 до 360).
+        \end{itemize}
+        \item Строковые свойства (\texttt{color}, \texttt{text}):
+        \begin{itemize}
+            \item Должны быть строками.
+            \item Для \texttt{color} допустимы только предопределённые значения.
+        \end{itemize}
+        \item Логические свойства (\texttt{grid}):
+        \begin{itemize}
+            \item Должны быть \texttt{true} или \texttt{false}.
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\subsection{Проверка уникальности идентификаторов объектов}
+\begin{itemize}
+    \item Идентификатор объекта (\texttt{ID}) должен быть уникальным в пределах своей области видимости.
+    \item Области видимости создаются для:
+    \begin{itemize}
+        \item Основной программы
+        \item Каждого графа (\texttt{graph})
+        \item Каждого облака точек (\texttt{dot\_cloud})
+    \end{itemize}
+\end{itemize}
+
+\subsection{Проверка допустимости свойств}
+\begin{itemize}
+    \item Каждое свойство объекта должно быть допустимым для его типа.
+    %\item Если свойство недопустимо для данного типа объекта, выдается ошибка.
+\end{itemize}
+
+\subsection{Проверка отношений (\texttt{relation})}
+\begin{itemize}
+    \item Оба объекта, указанные в отношении, должны быть объявлены.
+    \item Свойства отношений должны быть допустимыми (см. общие свойства).
+    \item Связь не может быть создана с графом (\texttt{graph}) или облаком точек (\texttt{dot\_cloud}).
+\end{itemize}
+
+\subsection{Проверка дублирования связей в графе}
+\begin{itemize}
+    \item Внутри графа (\texttt{graph}) не должно быть двух связей между одними и теми же объектами.
+\end{itemize}
+
+\subsection{Проверка облака точек (\texttt{dot\_cloud})}
+\begin{itemize}
+    \item Каждая точка в облаке точек должна иметь свойства \texttt{x} и \texttt{y}.
+    \item Свойства облака точек должны быть допустимыми.
+\end{itemize}
+
+\subsection{Проверка заметок (\texttt{note})}
+\begin{itemize}
+    \item Свойства заметок должны быть допустимыми (см. общие свойства).
+\end{itemize}
+
+\subsection{Проверка графа (\texttt{graph})}
+\begin{itemize}
+    \item Свойства графа должны быть допустимыми (см. общие свойства).
+    \item Все объекты и отношения внутри графа должны быть корректными.
+\end{itemize}
+
+\subsection{Обработка ошибок}
+\begin{itemize}
+    \item При обнаружении семантической ошибки анализатор должен:
+    \begin{itemize}
+        \item Вывести сообщение об ошибке с указанием типа ошибки и номера строки.
+        \item Завершить выполнение программы.
+    \end{itemize}
+\end{itemize}
+
+%\section{Примеры ошибок}
+
+%\subsection{Недопустимое свойство}
+%\begin{verbatim}
+%circle myCircle { radius = 10; angle = 45 }  # Ошибка: angle недопустим для circle
+%\end{verbatim}
+%\begin{itemize}
+%    \item \textbf{Сообщение об ошибке}: \texttt{Недопустимое свойство angle для фигуры circle в строке 2}.
+%\end{itemize}
+
+%\subsection{Отсутствие обязательных свойств}
+%\begin{verbatim}
+%dot_cloud myCloud {
+%    circle point1 { x = 10 }  # Ошибка: отсутствует y
+%}
+%\end{verbatim}
+%\begin{itemize}
+%    \item \textbf{Сообщение об ошибке}: \texttt{Для точки в облаке точек обязательны свойства x и y. Строка 3}.
+%\end{itemize}
+
+%\subsection{Дублирование связей в графе}
+%\begin{verbatim}
+%graph MyGraph {
+%    circle A { x = 10; y = 20 }
+%    circle B { x = 30; y = 40 }
+%    A -> B
+%    B -> A  # Ошибка: объекты уже соединены в графе
+%}
+%\end{verbatim}
+%\begin{itemize}
+ %   \item \textbf{Сообщение об ошибке}: \texttt{Объекты A и B уже соединены в графе. Строка 6}.
+%\end{itemize}
+
+%\subsection{Необъявленный объект}
+%\begin{verbatim}
+%A -> B  # Ошибка: объект B не объявлен
+%circle B { x = 30; y = 40 }
+%\end{verbatim}
+%\begin{itemize}
+%    \item \textbf{Сообщение об ошибке}: \texttt{Объект B не объявлен. Строка 2}.
+%\end{itemize}
+
+%\subsection{Связь с графом или облаком точек}
+%\begin{verbatim}
+%graph MyGraph { ... }
+%circle A { ... }
+%MyGraph -> A  # Ошибка: связь не может быть создана с графом
+%\end{verbatim}
+%\begin{itemize}
+%    \item \textbf{Сообщение об ошибке}: \texttt{Связь не может быть создана с графом или облаком точек. Строка 3}.
+%\end{itemize}
+
+\end{document}
