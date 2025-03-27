@@ -1,4 +1,4 @@
-# AST lib
+# Retranslator lib
 TEMPLATE = lib
 TARGET = Retranslator
 

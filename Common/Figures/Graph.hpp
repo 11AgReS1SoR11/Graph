@@ -8,5 +8,5 @@ struct Graph : Shape
 {
     std::string toJson() const override;
 
-    std::vector<Shape*> nodes;
+    std::vector<std::pair<std::string const,Shape*>> nodes;
 };

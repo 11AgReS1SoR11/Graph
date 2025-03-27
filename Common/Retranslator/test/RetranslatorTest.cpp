@@ -52,14 +52,12 @@ void TestClass::test_objectDecl()
 
     ASTTree tree(Retranslator::getInstance().parseTree(map));
     auto it = tree.begin();
-    
     QVERIFY(it->getValue() == "root");
     ++it;
     QVERIFY(it->getValue() == "STARTGRAPH");
     ++it;
 
     ///circle-------------------------------
-
 
     QVERIFY(it->getValue() == "STATEMENT");
     ++it;
@@ -188,7 +186,7 @@ void TestClass::test_objectDecl()
     ///circle end ----------------------------------
 
     /// diamond ------------------------------------
-
+    
     QVERIFY(it->getValue() == "STATEMENT");
     ++it;
     QVERIFY(it->getValue() == "object_decl");
