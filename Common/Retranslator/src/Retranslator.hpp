@@ -8,6 +8,9 @@
 #include "Diamond.hpp"
 #include "Reactangle.hpp"
 #include "Style.hpp"
+#include "Graph.hpp"
+#include "DotCloud.hpp"
+#pragma once
 
 using namespace AST;
 class Retranslator{
@@ -18,7 +21,7 @@ public:
         return *instance;
     };
 
-    ASTTree parseTree(std::map<std::string, Shape*> map);
+    ASTTree parseTree(std::map<std::string, Shape*> const& map);
 
 private:
     Retranslator(){};
@@ -27,7 +30,9 @@ private:
     
     static std::unique_ptr<Retranslator> instance;
 
-    Node* makeObject(std::pair<std::string, Shape*> pair) const;
-    Node* makeNote(std::pair<std::string, Shape*> pair) const;
-    Node* makeLink(std::pair<std::string, Shape*> pair) const;
+    Node* makeObject(std::pair<std::string const, Shape*> const& pair) const;
+    Node* makeNote(std::pair<std::string const, Shape*> const& pair) const;
+    Node* makeLink(std::pair<std::string const, Shape*> const& pair) const;
+    Node* makeGraph(std::pair<std::string const, Shape*> const& pair) const;
+    Node* makeDotCloud(std::pair<std::string const, Shape*> const& pair) const;
 };
