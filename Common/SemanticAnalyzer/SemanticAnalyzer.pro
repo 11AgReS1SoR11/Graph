@@ -3,7 +3,7 @@ QT -= gui
 TEMPLATE = lib
 DEFINES += SEMANTICANALYZER_LIBRARY
 
-CONFIG += c++20
+CONFIG += c++17
 
 CONFIG += plugin
 
@@ -20,10 +20,21 @@ RCC_DIR     = objects
 DEFINES += SEMANTICANALYZER_EXPORTS
 
 SOURCES += \
+    AstStatementParser.cpp \
     SemanticAnalyzer.cpp
 
 HEADERS += \
+    AstStatementParser.h \
     SemanticAnalyzer.h
+
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../AST/src/release/ -lAST
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../AST/src/debug/ -lAST
+else:unix: LIBS += -L$$OUT_PWD/../AST/src/ -lAST
+
+INCLUDEPATH += $$PWD/../AST/src
+DEPENDPATH += $$PWD/../AST/src
+
 
 # Default rules for deployment.
 unix {
