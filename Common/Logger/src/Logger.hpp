@@ -14,6 +14,7 @@ inline constexpr auto BACKEND_LOG = "BACKEND";
 inline constexpr auto TRANSLATOR_LOG = "TRANSLATOR";
 inline constexpr auto RETRANSLATOR_LOG = "RETRANSLATOR";
 inline constexpr auto PARSER_LOG = "PARSER";
+inline constexpr auto FILE_MANAGER_LOG = "FILE_MANAGER";
 
 inline constexpr auto LOG_FILE_PATH = "build/log.log";
 
