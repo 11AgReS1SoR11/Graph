@@ -1,6 +1,12 @@
 #include "Circle.hpp"
 
-void Circle::draw() const
+std::string Circle::toJson() const
 {
-    // TODO: implement during GRAP-17
+    return "{"
+           "\"type\": \"Circle\","
+           + Shape::toJson() + ","
+           "\"property\": {"
+               "\"radius\": " + std::to_string(radius) +
+           "}"
+           "}";
 }

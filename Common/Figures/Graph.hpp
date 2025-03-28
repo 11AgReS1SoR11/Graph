@@ -6,7 +6,7 @@
 
 struct Graph : Shape
 {
-    void draw() const override;
+    std::string toJson() const override;
 
     std::vector<Shape*> nodes;
 };

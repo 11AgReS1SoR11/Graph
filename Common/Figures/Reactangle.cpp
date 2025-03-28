@@ -1,6 +1,13 @@
 #include "Reactangle.hpp"
 
-void Reactangle::draw() const
+std::string Reactangle::toJson() const
 {
-    // TODO: implement during GRAP-17
+    return "{"
+           "\"type\": \"Reactangle\","
+           + Shape::toJson() + ","
+           "\"property\": {"
+               "\"sizeA\": " + std::to_string(sizeA) + ","
+               "\"sizeB\": " + std::to_string(sizeB) +
+           "}"
+           "}";
 }

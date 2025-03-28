@@ -4,7 +4,7 @@
 
 struct Circle : Shape
 {
-    void draw() const override;
+    std::string toJson() const override;
 
     double radius = 1;
 };

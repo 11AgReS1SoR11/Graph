@@ -2,12 +2,11 @@
 
 #include "Style.hpp"
 
-#include <string>
-
 struct Shape
 {
-    virtual void draw() const = 0;
+    virtual std::string toJson() const;
 
+    std::string id{};
     std::string text{};
     Style style{};
     int x{};

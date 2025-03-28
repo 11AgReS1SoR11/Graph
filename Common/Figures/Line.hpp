@@ -17,7 +17,7 @@ enum class line_orientation_e : short
 
 struct Line : Shape
 {
-    void draw() const override;
+    std::string toJson() const override;
 
     std::string idFrom;
     std::string idTo;
