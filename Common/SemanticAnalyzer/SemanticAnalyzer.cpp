@@ -1,45 +1,75 @@
 #include "SemanticAnalyzer.h"
 
 
-void SEMANTICANALYZER::SemanticAnalyzer::semanticAnalysis(const std::vector<std::pair<std::string, std::any>> &programTree, int rowNumber)
+void SEMANTICANALYZER::SemanticAnalyzer::semanticAnalysis(const std::vector<std::pair<std::string, std::any>> &programTree, int statementNumber)
 {
-    declaredObjects.clear();
+    enterScope();
 
     for (const auto& [type, statement] : programTree)
     {
         if (type == OBJECT_DECL)
         {
-            checkObjectDecl(std::any_cast<ObjectDecl>(statement), rowNumber);
+            checkObjectDecl(std::any_cast<ObjectDecl>(statement), statementNumber);
         }
         else if (type == RELATION)
         {
-            checkRelation(std::any_cast<Relation>(statement), rowNumber);
+            checkRelation(std::any_cast<Relation>(statement), statementNumber);
         }
         else if (type == NOTE)
         {
-            checkNote(std::any_cast<Note>(statement), rowNumber);
+            checkNote(std::any_cast<Note>(statement), statementNumber);
         }
         else if (type == GRAPH)
         {
-            checkGraph(std::any_cast<Graph>(statement), rowNumber);
+            enterScope();
+            checkGraph(std::any_cast<Graph>(statement), statementNumber);
+            exitScope();
         }
         else if (type == DOT_CLOUD)
         {
-            checkDotCloud(std::any_cast<DotCloud>(statement), rowNumber);
+            enterScope();
+            checkDotCloud(std::any_cast<DotCloud>(statement), statementNumber);
+            exitScope();
         }
 
-        rowNumber++;
+        statementNumber++;
     }
+
+    exitScope();
 }
 
 
-void SEMANTICANALYZER::SemanticAnalyzer::checkPropertyValue(const Property &property, const ConstraintInfo &constraints, int rowNumber) const
+bool SEMANTICANALYZER::SemanticAnalyzer::isObjectDeclared(const std::string &id) const
+{
+    for(const auto& scope : scopeStack)
+    {
+        if(scope.count(id))
+            return true;
+    }
+    return false;
+}
+
+
+void SEMANTICANALYZER::SemanticAnalyzer::declareObject(const std::string &id, int statementNumber)
+{
+    if(scopeStack.empty())
+        enterScope();
+
+    if(scopeStack.back().count(id))
+    {
+        throw SemanticError("Объект " + id + " уже объявлен в текущей области видимости.", statementNumber);
+    }
+    scopeStack.back().insert(id);
+}
+
+
+void SEMANTICANALYZER::SemanticAnalyzer::checkPropertyValue(const Property &property, const ConstraintInfo &constraints, int statementNumber) const
 {
     if (constraints.type == TYPE_NUMBER)
     {
         if (!isNumber(property.value))
         {
-            throw SemanticError("Значение свойства " + property.key + " должно быть числом.", rowNumber);
+            throw SemanticError("Значение свойства " + property.key + " должно быть числом.", statementNumber);
         }
 
         int value = std::stoi(property.value);
@@ -47,103 +77,146 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkPropertyValue(const Property &prop
         if (constraints.min.has_value() && value < constraints.min.value())
         {
             throw SemanticError("Значение свойства " + property.key + " должно быть не меньше " +
-                                std::to_string(constraints.min.value()) + ".", rowNumber);
+                                std::to_string(constraints.min.value()) + ".", statementNumber);
         }
 
         if (constraints.max.has_value() && value > constraints.max.value())
         {
             throw SemanticError("Значение свойства " + property.key + " должно быть не больше " +
-                                std::to_string(constraints.max.value()) + ".", rowNumber);
+                                std::to_string(constraints.max.value()) + ".", statementNumber);
+        }
+    }
+    else if(constraints.type == TYPE_STRING)
+    {
+        if (property.key == PROP_COLOR &&
+                std::find(ALLOWED_COLORS.begin(), ALLOWED_COLORS.end(), property.value) == ALLOWED_COLORS.end())
+        {
+            std::string allowed = std::accumulate(ALLOWED_COLORS.begin(), ALLOWED_COLORS.end(), std::string(),
+                                                  [](const std::string& a, const std::string& b) { return a.empty() ? b : a + ", " + b; });
+
+            throw SemanticError("Значение свойства color должно быть одним из: " + allowed + ".", statementNumber);
+        }
+    }
+    else if(constraints.type == TYPE_BOOLEAN)
+    {
+        if (property.value != "true" && property.value != "false")
+        {
+            throw SemanticError("Значение свойства " + property.key + " должно быть логическим (true/false).", statementNumber);
         }
     }
 }
 
 
-void SEMANTICANALYZER::SemanticAnalyzer::checkObjectDecl(const ObjectDecl &obj, int rowNumber, bool isDotCloud)
+void SEMANTICANALYZER::SemanticAnalyzer::checkObjectDecl(const ObjectDecl &obj, int statementNumber)
 {
-    if (declaredObjects.count(obj.id))
+    if (isObjectDeclared(obj.id))
     {
-        throw SemanticError("Объект " + obj.id + " уже объявлен.", rowNumber);
+        throw SemanticError("Объект " + obj.id + " уже объявлен.", statementNumber);
     }
 
-    declaredObjects.insert(obj.id);
+    declareObject(obj.id, statementNumber);
 
     std::vector<std::string> allowedProperties = COMMON_PROPERTIES;
-    auto specificProps = SHAPE_SPECIFIC_PROPERTIES.at(obj.shape);
-    allowedProperties.insert(allowedProperties.end(), specificProps.begin(), specificProps.end());
+
+    if (SHAPE_SPECIFIC_PROPERTIES.count(obj.shape))
+    {
+        auto specificProps = SHAPE_SPECIFIC_PROPERTIES.at(obj.shape);
+        allowedProperties.insert(allowedProperties.end(), specificProps.begin(), specificProps.end());
+    }
 
     for (const Property& prop : obj.properties)
     {
         if (std::find(allowedProperties.begin(), allowedProperties.end(), prop.key) == allowedProperties.end())
         {
-            throw SemanticError("Недопустимое свойство " + prop.key + " для фигуры " + obj.shape, rowNumber);
+            throw SemanticError("Недопустимое свойство " + prop.key + " для фигуры " + obj.shape, statementNumber);
         }
 
         if (PROPERTY_CONSTRAINTS.count(prop.key))
         {
-            checkPropertyValue(prop, PROPERTY_CONSTRAINTS.at(prop.key), rowNumber);
-        }
-    }
-
-    if (isDotCloud)
-    {
-        bool hasX = false, hasY = false;
-
-        for (const Property& prop : obj.properties)
-        {
-            if (prop.key == PROP_X) hasX = true;
-            if (prop.key == PROP_Y) hasY = true;
-        }
-
-        if (!hasX || !hasY)
-        {
-            throw SemanticError("Для точки в облаке точек обязательны свойства x и y.", rowNumber);
+            checkPropertyValue(prop, PROPERTY_CONSTRAINTS.at(prop.key), statementNumber);
         }
     }
 }
 
 
-void SEMANTICANALYZER::SemanticAnalyzer::checkRelation(const Relation &rel, int rowNumber)
+void SEMANTICANALYZER::SemanticAnalyzer::checkRelation(const Relation &rel, int statementNumber)
 {
-    if (!declaredObjects.count(rel.id1))
+    if (!isObjectDeclared(rel.id1))
     {
-        throw SemanticError("Объект " + rel.id1 + " не объявлен.", rowNumber);
+        throw SemanticError("Объект " + rel.id1 + " не объявлен.", statementNumber);
     }
 
-    if (!declaredObjects.count(rel.id2))
+    if (!isObjectDeclared(rel.id2))
     {
-        throw SemanticError("Объект " + rel.id2 + " не объявлен.", rowNumber);
+        throw SemanticError("Объект " + rel.id2 + " не объявлен.", statementNumber);
+    }
+
+    if (rel.id1 == GRAPH || rel.id1 == DOT_CLOUD || rel.id2 == GRAPH || rel.id2 == DOT_CLOUD)
+    {
+        throw SemanticError("Связь не может быть создана с графом или облаком точек.", statementNumber);
     }
 
     for (const Property& prop : rel.properties)
     {
         if (std::find(COMMON_PROPERTIES.begin(), COMMON_PROPERTIES.end(), prop.key) == COMMON_PROPERTIES.end())
         {
-            throw SemanticError("Недопустимое свойство " + prop.key + " для отношения.", rowNumber);
+            throw SemanticError("Недопустимое свойство " + prop.key + " для отношения.", statementNumber);
+        }
+
+        if (PROPERTY_CONSTRAINTS.count(prop.key))
+        {
+            checkPropertyValue(prop, PROPERTY_CONSTRAINTS.at(prop.key), statementNumber);
         }
     }
 }
 
 
-void SEMANTICANALYZER::SemanticAnalyzer::checkNote(const Note &note, int rowNumber)
+void SEMANTICANALYZER::SemanticAnalyzer::checkNote(const Note &note, int statementNumber)
 {
+    if (isObjectDeclared(note.id))
+    {
+        throw SemanticError("Заметка " + note.id + " уже объявлена.", statementNumber);
+    }
+
+    declareObject(note.id, statementNumber);
+
     for (const Property& prop : note.properties)
     {
         if (std::find(COMMON_PROPERTIES.begin(), COMMON_PROPERTIES.end(), prop.key) == COMMON_PROPERTIES.end())
         {
-            throw SemanticError("Недопустимое свойство " + prop.key + " для заметки.", rowNumber);
+            throw SemanticError("Недопустимое свойство " + prop.key + " для заметки.", statementNumber);
+        }
+
+        if (PROPERTY_CONSTRAINTS.count(prop.key))
+        {
+            checkPropertyValue(prop, PROPERTY_CONSTRAINTS.at(prop.key), statementNumber);
         }
     }
 }
 
 
-void SEMANTICANALYZER::SemanticAnalyzer::checkGraph(const Graph &graph, int rowNumber)
+void SEMANTICANALYZER::SemanticAnalyzer::checkGraph(const Graph &graph, int statementNumber)
 {
     for (const Property& prop : graph.properties)
     {
         if (std::find(COMMON_PROPERTIES.begin(), COMMON_PROPERTIES.end(), prop.key) == COMMON_PROPERTIES.end())
         {
-            throw SemanticError("Недопустимое свойство " + prop.key + " для графа.", rowNumber);
+            throw SemanticError("Недопустимое свойство " + prop.key + " для графа.", statementNumber);
+        }
+    }
+
+    declareObject(graph.id, statementNumber);
+
+    for (const auto& prop : graph.properties)
+    {
+        if (std::find(COMMON_PROPERTIES.begin(), COMMON_PROPERTIES.end(), prop.key) == COMMON_PROPERTIES.end())
+        {
+            throw SemanticError("Недопустимое свойство " + prop.key + " для графа.", statementNumber);
+        }
+
+        if (PROPERTY_CONSTRAINTS.count(prop.key))
+        {
+            checkPropertyValue(prop, PROPERTY_CONSTRAINTS.at(prop.key), statementNumber);
         }
     }
 
@@ -155,52 +228,76 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkGraph(const Graph &graph, int rowN
 
         if (relationPairs.count(pair) || relationPairs.count(reversePair))
         {
-            throw SemanticError("Объекты " + rel.id1 + " и " + rel.id2 + " уже соединены в графе.", rowNumber);
+            throw SemanticError("Объекты " + rel.id1 + " и " + rel.id2 + " уже соединены в графе.", statementNumber);
         }
         relationPairs.insert(pair);
     }
 
     for (const ObjectDecl& obj : graph.objects)
     {
-        checkObjectDecl(obj, rowNumber, false);
+        checkObjectDecl(obj, statementNumber);
     }
 
     for (const Relation& rel : graph.relations)
     {
-        checkRelation(rel, rowNumber);
+        checkRelation(rel, statementNumber);
     }
 }
 
 
-void SEMANTICANALYZER::SemanticAnalyzer::checkDotCloud(const DotCloud &dotCloud, int rowNumber)
+void SEMANTICANALYZER::SemanticAnalyzer::checkDotCloud(const DotCloud &dotCloud, int statementNumber)
 {
-    for (const Property& prop : dotCloud.properties)
+    if (isObjectDeclared(dotCloud.id))
     {
-        if (std::find(COMMON_PROPERTIES.begin(), COMMON_PROPERTIES.end(), prop.key) == COMMON_PROPERTIES.end())
+        throw SemanticError("Облако точек " + dotCloud.id + " уже объявлено.", statementNumber);
+    }
+
+    declareObject(dotCloud.id, statementNumber);
+
+
+    std::vector<std::string> allowedExternalProperties = COMMON_PROPERTIES;
+    auto specificProps = SHAPE_SPECIFIC_PROPERTIES.at(DOT_CLOUD);
+    allowedExternalProperties.insert(allowedExternalProperties.end(), specificProps.begin(), specificProps.end());
+
+    for (const Property& prop : dotCloud.externalProperties)
+    {
+        if (std::find(allowedExternalProperties.begin(), allowedExternalProperties.end(), prop.key) == allowedExternalProperties.end())
         {
-            throw SemanticError("Недопустимое свойство " + prop.key + " для облака точек.", rowNumber);
+            throw SemanticError("Недопустимое свойство " + prop.key + " для облака точек.", statementNumber);
+        }
+
+        if (PROPERTY_CONSTRAINTS.count(prop.key))
+        {
+            checkPropertyValue(prop, PROPERTY_CONSTRAINTS.at(prop.key), statementNumber);
         }
     }
 
-    for (const ObjectDecl& obj : dotCloud.objects)
+    for(const Property& prop : dotCloud.internalProperties)
     {
-        if (obj.shape != SHAPE_CIRCLE)
-        {
-            throw SemanticError("Объект " + obj.id + " в облаке точек должен быть кругом.", rowNumber);
+        bool hasX = false, hasY = false;
+
+        if (prop.key == PROP_X) hasX = true;
+        if (prop.key == PROP_Y) hasY = true;
+
+        if (!hasX || !hasY) {
+            throw SemanticError("Для точки в облаке точек обязательны свойства x и y.", statementNumber);
         }
 
-        checkObjectDecl(obj, rowNumber, true);
+        checkPropertyValue(prop, PROPERTY_CONSTRAINTS.at(prop.key), statementNumber);
     }
 }
 
 
 bool SEMANTICANALYZER::SemanticAnalyzer::isNumber(const std::string &str) const
 {
+    if (str.empty()) return false;
+
     try {
         std::size_t pos;
-        std::stoi(str, &pos);
+        std::stod(str, &pos);
         return pos == str.length();
     } catch (...) {
         return false;
     }
+
 }
