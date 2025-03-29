@@ -23,7 +23,8 @@ if [ "$PLATFORM" == "win32" ]; then
     PATH="$PWD/build/Backend/src${PATHSEP}$PATH"
     PATH="$PWD/build/Common/AST/src${PATHSEP}$PATH"
     PATH="$PWD/build/Common/Logger/src${PATHSEP}$PATH"
-    PATH="$PWD/build/Common/Figures/src${PATHSEP}$PATH"
+    PATH="$PWD/build/Common/Figures${PATHSEP}$PATH"
+    PATH="$PWD/build/Common/FileManager/src/:$PATH"
     PATH="$PWD/build/Common/SemanticAnalyzer/src${PATHSEP}$PATH"
     export PATH
 else
