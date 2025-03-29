@@ -1,11 +1,45 @@
 #!/bin/bash
 
-LD_LIBRARY_PATH=$PWD/build/Frontend/src/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Backend/src/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Common/AST/src/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Common/Logger/src/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Common/Figures/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Common/FileManager/src/:${LD_LIBRARY_PATH}
-export LD_LIBRARY_PATH
+if [ "$(uname -s)" = "Windows_NT" ] || [ "$OS" = "Windows_NT" ]; then
+    PLATFORM="win32"
+    PATHSEP=";"
+    EXE_EXT=".exe"
+else
+    PLATFORM="unix"
+    PATHSEP=":"
+    EXE_EXT=""
+fi
 
-./build/App/Graph
+if [ "$PLATFORM" = "win32" ]; then
+    PATH="$PWD/build/Frontend/src/:$PATH"
+    PATH="$PWD/build/Backend/src/:$PATH"
+    PATH="$PWD/build/Common/AST/src/:$PATH"
+    PATH="$PWD/build/Common/Logger/src/:$PATH"
+    PATH="$PWD/build/Common/Figures/:$PATH"
+    PATH="$PWD/build/Common/FileManager/src/:$PATH"
+    PATH="$PWD/build/Common/SemanticAnalyzer/src/:$PATH"
+    export PATH
+    echo "Пути для Windows обновлены в PATH"
+else
+    LD_LIBRARY_PATH="$PWD/build/Frontend/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Backend/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/AST/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/Logger/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/Figures/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/FileManager/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/SemanticAnalyzer/src/:${LD_LIBRARY_PATH}"
+    export LD_LIBRARY_PATH
+    echo "Пути для Unix обновлены в LD_LIBRARY_PATH"
+fi
+
+APP_PATH="build/App/Graph"
+
+if [ -f "$APP_PATH$EXE_EXT" ]; then
+    echo "Запуск $APP_PATH$EXE_EXT..."
+    "./$APP_PATH$EXE_EXT" || { echo "Ошибка при запуске $APP_PATH$EXE_EXT"; exit 1; }
+else
+    echo "Ошибка: $APP_PATH$EXE_EXT не найден"
+    exit 1
+fi
+
+echo "Приложение успешно завершено!"
