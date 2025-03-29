@@ -8,6 +8,6 @@ struct DotCloud : Shape
 {
     std::string toJson() const override;
 
-    bool grid = false;
     std::vector<Circle*> dots;
+    bool grid = false;
 };
