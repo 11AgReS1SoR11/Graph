@@ -26,7 +26,6 @@
 #include <numeric>
 
 
-
 #define OBJECT_DECL             "object_decl"
 #define RELATION                "relation"
 #define NOTE                    "note"
