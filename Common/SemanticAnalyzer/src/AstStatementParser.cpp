@@ -5,38 +5,51 @@ std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementPar
 {
     for(auto it = astTree.begin(); it != astTree.end(); ++it)
     {
+        std::cout << it->value << std::endl;
+
         std::pair<std::string, std::any> statement;
 
         if(it->value == OBJECT_DECL)
         {
             statement.first = OBJECT_DECL;
+            statement.second = ObjectDecl();
+
             AST::ASTTree::DSFIterator objectIter(it.get());
             serializeObjectDec(objectIter, std::any_cast<ObjectDecl&>(statement.second));
         }
         else if(it->value == RELATION)
         {
             statement.first = RELATION;
+            statement.second = Relation();
+
             AST::ASTTree::DSFIterator relationIter(it.get());
             serializeRelation(relationIter, std::any_cast<Relation&>(statement.second));
         }
         else if(it->value == NOTE)
         {
             statement.first = NOTE;
+            statement.second = Note();
+
             AST::ASTTree::DSFIterator noteIter(it.get());
             serializeNote(noteIter, std::any_cast<Note&>(statement.second));
         }
         else if(it->value == GRAPH)
         {
             statement.first = GRAPH;
+            statement.second = Graph();
+
             AST::ASTTree::DSFIterator graphIter(it.get());
             serializeGraph(graphIter, std::any_cast<Graph&>(statement.second));
         }
         else if(it->value == DOT_CLOUD)
         {
             statement.first = DOT_CLOUD;
+            statement.second = DotCloud();
+
             AST::ASTTree::DSFIterator dotCloudIter(it.get());
             serializeDotCloud(dotCloudIter, std::any_cast<DotCloud&>(statement.second));
         }
+        else continue;
 
         programTree.push_back(std::move(statement));
     }
@@ -121,14 +134,21 @@ void SEMANTICANALYZER::AstStatementParser::serializeNote(AST::ASTTree::DSFIterat
 
 void SEMANTICANALYZER::AstStatementParser::serializeGraph(AST::ASTTree::DSFIterator &graphIter, Graph &graph) noexcept
 {
+    bool startInternalBlock = false;
+
     for(auto it = graphIter; it != AST::ASTTree::DSFIterator(); ++it)
     {
-        if(it->value == ID)
+        if(it->value == START_INTERNAL_BLOCK && startInternalBlock == false)
+        {
+            startInternalBlock = true;
+            continue;
+        }
+        else if(it->value == ID)
         {
             ++it;
             graph.id = it->value;
         }
-        else if(it->value == PROPERTY)
+        else if(it->value == PROPERTY && startInternalBlock == false)
         {
             Property property;
             AST::ASTTree::DSFIterator propertyIter(it.get());

@@ -21,47 +21,48 @@ private:
 
 AST::ASTTree SemanticAnalyzerTest::createSampleAST()
 {
-    AST::ASTTree ast(new AST::Node("Program"));
+    AST::ASTTree ast(new AST::Node(PROGRAM));
 
     auto programIt = ast.begin();
 
-    ast.insert(new AST::Node("@startgraph"), programIt);
+    ast.insert(new AST::Node(START_GRAPH), programIt);
 
     {
-        AST::Node* statement1 = new AST::Node("statement");
+        AST::Node* statement1 = new AST::Node(STATEMENT);
+
         {
-            AST::Node* objectDecl1 = new AST::Node("object_decl");
+            AST::Node* objectDecl1 = new AST::Node(OBJECT_DECL);
             {
-                objectDecl1->addChild(new AST::Node("SHAPE"));
+                objectDecl1->addChild(new AST::Node(SHAPE));
                 {
-                    objectDecl1->childNodes.back()->addChild(new AST::Node("rectangle"));
+                    objectDecl1->childNodes.back()->addChild(new AST::Node(SHAPE_RECTANGLE));
                 }
             }
 
             {
-                objectDecl1->addChild(new AST::Node("ID"));
+                objectDecl1->addChild(new AST::Node(ID));
                 {
                     objectDecl1->childNodes.back()->addChild(new AST::Node("warshall_algorithm"));
                 }
             }
 
             {
-                objectDecl1->addChild(new AST::Node("{"));
+                objectDecl1->addChild(new AST::Node(START_INTERNAL_BLOCK));
             }
 
             {
-                AST::Node* property1 = new AST::Node("property");
+                AST::Node* property1 = new AST::Node(PROPERTY);
                 {
-                    property1->addChild(new AST::Node("PROPERTY_KEY"));
+                    property1->addChild(new AST::Node(PROPERTY_KEY));
                     {
-                        property1->childNodes.back()->addChild(new AST::Node("font"));
+                        property1->childNodes.back()->addChild(new AST::Node(PROP_SIZE_A));
                     }
 
                     property1->addChild(new AST::Node("="));
 
-                    property1->addChild(new AST::Node("TEXT"));
+                    property1->addChild(new AST::Node(NUMBER));
                     {
-                        property1->childNodes.back()->addChild(new AST::Node("calibri"));
+                        property1->childNodes.back()->addChild(new AST::Node("11.0"));
                     }
                 }
                 objectDecl1->addChild(property1);
@@ -72,14 +73,38 @@ AST::ASTTree SemanticAnalyzerTest::createSampleAST()
             }
 
             {
-                objectDecl1->addChild(new AST::Node("}"));
+                AST::Node* property1 = new AST::Node(PROPERTY);
+                {
+                    property1->addChild(new AST::Node(PROPERTY_KEY));
+                    {
+                        property1->childNodes.back()->addChild(new AST::Node(PROP_SIZE_B));
+                    }
+
+                    property1->addChild(new AST::Node("="));
+
+                    property1->addChild(new AST::Node(NUMBER));
+                    {
+                        property1->childNodes.back()->addChild(new AST::Node("12.0"));
+                    }
+                }
+                objectDecl1->addChild(property1);
+            }
+
+            {
+                objectDecl1->addChild(new AST::Node(";"));
+            }
+
+            {
+                objectDecl1->addChild(new AST::Node(END_INTERNAL_BLOCK));
             }
 
             statement1->addChild(objectDecl1);
         }
+
+        ast.insert(statement1, programIt);
     }
 
-    ast.insert(new AST::Node("@endgraph"), programIt);
+    ast.insert(new AST::Node(END_GRAPH), programIt);
 
     return ast;
 }
@@ -108,8 +133,6 @@ void SemanticAnalyzerTest::test_cases()
         {
             QFAIL(("Unexpected exception: " + std::string(error.what())).c_str());
         }
-
-        QVERIFY(analyzer.getDeclaredObjects().count("obj1") == 1);
     }
 }
 

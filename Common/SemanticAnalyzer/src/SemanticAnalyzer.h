@@ -27,6 +27,10 @@
 
 #include "Logger.hpp"
 
+#define PROGRAM                 "Program"
+#define START_GRAPH             "@startgraph"
+#define END_GRAPH               "@endgraph"
+#define STATEMENT               "statement"
 #define OBJECT_DECL             "object_decl"
 #define RELATION                "relation"
 #define NOTE                    "note"
