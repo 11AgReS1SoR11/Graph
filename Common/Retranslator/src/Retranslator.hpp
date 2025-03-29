@@ -10,6 +10,7 @@
 #include "Style.hpp"
 #include "Graph.hpp"
 #include "DotCloud.hpp"
+#include "Note.hpp"
 #pragma once
 
 using namespace AST;
@@ -21,7 +22,7 @@ public:
         return *instance;
     };
 
-    ASTTree parseTree(std::map<std::string, Shape*> const& map);
+    ASTTree parseTree(std::vector<Shape*> const& vec);
 
 private:
     Retranslator(){};
@@ -30,9 +31,9 @@ private:
     
     static std::unique_ptr<Retranslator> instance;
 
-    Node* makeObject(std::pair<std::string const, Shape*> const& pair) const;
-    Node* makeNote(std::pair<std::string const, Shape*> const& pair) const;
-    Node* makeLink(std::pair<std::string const, Shape*> const& pair) const;
-    Node* makeGraph(std::pair<std::string const, Shape*> const& pair) const;
-    Node* makeDotCloud(std::pair<std::string const, Shape*> const& pair) const;
+    Node* makeObject(const Shape* const shape) const;
+    Node* makeNote(const Note* const shape) const;
+    Node* makeLink(const Line* const shape) const;
+    Node* makeGraph(const Graph* const shape) const;
+    Node* makeDotCloud(const DotCloud* const shape) const;
 };

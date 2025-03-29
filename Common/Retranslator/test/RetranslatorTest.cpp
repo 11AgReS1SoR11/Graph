@@ -13,44 +13,47 @@ private slots:
 
 void TestClass::test_objectDecl()
 {
-    std::map<std::string, Shape*> map;
+    std::vector<Shape*> vec;
 
     Circle circle;
     circle.text = "circleTEXT";
+    circle.id = "circleID";
     circle.x = 1;
     circle.y = 1;
 
     Shape* circle_ptr = &circle;
-    map["circleID"] = circle_ptr;
+    vec.push_back(circle_ptr);
 
     Diamond diamond;
     diamond.text = "diamondTEXT";
+    diamond.id = "diamondID";
     diamond.x = 2;
     diamond.y = 2;
 
     Shape* diamond_ptr = &diamond;
-    map["diamondID"] = diamond_ptr;
+    vec.push_back(diamond_ptr);
 
     Reactangle reactangle;
     reactangle.text = "reactangleTEXT";
+    reactangle.id = "reactangleID";
     reactangle.x = 3;
     reactangle.y = 3;
 
     Shape* reactangle_ptr = &reactangle;
-    map["reactangleID"] = reactangle_ptr;
+    vec.push_back(reactangle_ptr);
 
     Line line;
     line.text = "lineTEXT";
+    line.id = "lineID";
     line.x = 4;
     line.y = 4;
     line.idFrom = "diamondID";
     line.idTo = "reactangleID";
 
     Shape* line_ptr = &line;
-    map["zlineID"] = line_ptr;
+    vec.push_back(line_ptr);
 
-
-    ASTTree tree(Retranslator::getInstance().parseTree(map));
+    ASTTree tree(Retranslator::getInstance().parseTree(vec));
     auto it = tree.begin();
     QVERIFY(it->getValue() == "root");
     ++it;

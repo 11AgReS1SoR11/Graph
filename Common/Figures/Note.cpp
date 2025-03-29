@@ -1,6 +1,6 @@
 #include "Note.hpp"
 
-void Note::draw() const
+std::string Note::toJson() const
 {
     // TODO: implement during GRAP-17
 }
