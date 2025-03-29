@@ -36,6 +36,14 @@ INCLUDEPATH += $$PWD/../../AST/src
 DEPENDPATH += $$PWD/../../AST/src
 
 
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../Logger/src/release/ -lLogger
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../Logger/src/debug/ -lLogger
+else:unix: LIBS += -L$$OUT_PWD/../../Logger/src/ -lAST
+
+INCLUDEPATH += $$PWD/../../Logger/src
+DEPENDPATH += $$PWD/../../Logger/src
+
+
 # Default rules for deployment.
 unix {
     target.path = /usr/lib

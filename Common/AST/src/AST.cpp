@@ -97,4 +97,4 @@ bool ASTTree::DSFIterator::operator==(DSFIterator const& other) const noexcept
     return !(*this != other);
 }
 
-} // namespace ASTz
+} // namespace AST
