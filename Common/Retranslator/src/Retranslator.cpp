@@ -5,7 +5,7 @@ using namespace AST;
 
 std::unique_ptr<Retranslator> Retranslator::instance = nullptr;
 
-ASTTree Retranslator::parseTree(std::vector<Shape*> const& vec){
+ASTTree Retranslator::parseTree(std::vector<Shape*> const& vec) const{
     
     Node* root = new Node("root");
     root->addChild(new Node("STARTGRAPH"));
@@ -21,6 +21,10 @@ ASTTree Retranslator::parseTree(std::vector<Shape*> const& vec){
         if (const Line* const line = dynamic_cast<const Line* const>(elem))
         {
             cur->addChild(makeLink(line));
+        }
+        else if (const Graph* const graph = dynamic_cast<const Graph* const>(elem))
+        {
+            cur->addChild(makeGraph(graph));
         }
         else 
         {
@@ -162,18 +166,20 @@ Node* Retranslator::makeGraph(const Graph* const shape) const
 
     for (auto const& elem : shape->nodes)
     {
+        Node* cur = new Node("STATEMENT");
+        node->addChild(cur);
         if (const Line* const line = dynamic_cast<const Line* const>(elem))
         { 
-            node->addChild(makeLink(line));
+            cur->addChild(makeLink(line));
         }
         else 
         {
-            node->addChild(makeObject(elem));
+            cur->addChild(makeObject(elem));
         }
     }
 
     node->addChild(new Node("}"));
-
+    
     return node;
 
 }
@@ -192,8 +198,11 @@ Node* Retranslator::makeDotCloud(const DotCloud* const shape) const
 
     for (auto const& elem : shape->dots)
     {
-        node->addChild(makeObject(elem));
+        Node* cur = new Node("STATEMENT");
+        node->addChild(cur);
+        cur->addChild(makeObject(elem));
     }
+
 
     node->addChild(new Node("}"));
 

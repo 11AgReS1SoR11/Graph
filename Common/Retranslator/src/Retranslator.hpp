@@ -22,7 +22,7 @@ public:
         return *instance;
     };
 
-    ASTTree parseTree(std::vector<Shape*> const& vec);
+    ASTTree parseTree(std::vector<Shape*> const& vec) const;
 
 private:
     Retranslator(){};
