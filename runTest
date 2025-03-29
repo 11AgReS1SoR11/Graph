@@ -6,6 +6,8 @@ LD_LIBRARY_PATH=$PWD/build/Common/AST/src/:${LD_LIBRARY_PATH}
 LD_LIBRARY_PATH=$PWD/build/Common/Logger/src/:${LD_LIBRARY_PATH}
 LD_LIBRARY_PATH=$PWD/build/Common/Figures/:${LD_LIBRARY_PATH}
 LD_LIBRARY_PATH=$PWD/build/Common/FileManager/src/:${LD_LIBRARY_PATH}
+LD_LIBRARY_PATH=$PWD/build/Common/SemanticAnalyzer/src/:${LD_LIBRARY_PATH}
+
 export LD_LIBRARY_PATH
 export QT_QPA_PLATFORM=offscreen
 
@@ -18,10 +20,14 @@ elif [ "$1" = "--Common" ]; then
     ./build/Common/AST/test/ASTTest
     ./build/Common/Logger/test/LoggerTest
     ./build/Common/FileManager/test/FileManagerTest
+    ./build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest
+elif [ "$1" = "--SA" ]; then
+    ./build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest
 else
     # default - run all tests
     ./build/Frontend/test/FrontendTest
     ./build/Backend/test/BackendTest
     ./build/Common/AST/test/ASTTest
     ./build/Common/Logger/test/LoggerTest
+    ./build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest
 fi

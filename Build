@@ -1,19 +1,44 @@
 #!/bin/bash
 
-# Creating the build directory (if it doesn't exist)
+if [ "$OS" == "Windows_NT" ]; then
+    PLATFORM="win32"
+    PATHSEP=";"
+    LIB_EXT=".dll"
+    QMAKE="qmake"
+    MAKE="mingw32-make"
+else
+    PLATFORM="unix"
+    PATHSEP=":"
+    LIB_EXT=".so"
+    QMAKE="qmake"
+    MAKE="make"
+fi
+
 mkdir -p build
 
-# Changing to the build directory
-cd build
+cd build || exit 1
 
-LD_LIBRARY_PATH=$PWD/build/Frontend/src/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Backend/src/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Common/AST/src/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Common/Logger/src/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Common/Figures/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Common/FileManager/src/:${LD_LIBRARY_PATH}
-export LD_LIBRARY_PATH
+if [ "$PLATFORM" == "win32" ]; then
+    PATH="$PWD/build/Frontend/src${PATHSEP}$PATH"
+    PATH="$PWD/build/Backend/src${PATHSEP}$PATH"
+    PATH="$PWD/build/Common/AST/src${PATHSEP}$PATH"
+    PATH="$PWD/build/Common/Logger/src${PATHSEP}$PATH"
+    PATH="$PWD/build/Common/Figures${PATHSEP}$PATH"
+    PATH="$PWD/build/Common/FileManager/src/:$PATH"
+    PATH="$PWD/build/Common/SemanticAnalyzer/src${PATHSEP}$PATH"
+    export PATH
+else
+    LD_LIBRARY_PATH="$PWD/build/Frontend/src${PATHSEP}${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Backend/src${PATHSEP}${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/AST/src${PATHSEP}${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/Logger/src${PATHSEP}${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/Figures/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/FileManager/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/SemanticAnalyzer/src${PATHSEP}${LD_LIBRARY_PATH}"
+    export LD_LIBRARY_PATH
+fi
 
-qmake ../Graph.pro
+export PATH=/usr/bin:$PATH
+"$QMAKE" ../Graph.pro
 
-make
+"$MAKE"
