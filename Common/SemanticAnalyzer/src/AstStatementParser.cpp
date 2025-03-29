@@ -1,7 +1,7 @@
 #include "AstStatementParser.h"
 
 
-std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementParser::parse()
+std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementParser::parse() noexcept
 {
     for(auto it = astTree.begin(); it != astTree.end(); ++it)
     {
@@ -10,37 +10,42 @@ std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementPar
         if(it->value == OBJECT_DECL)
         {
             statement.first = OBJECT_DECL;
-            serializeObjectDec(it, std::any_cast<ObjectDecl&>(statement.second));
+            AST::ASTTree::DSFIterator objectIter(it.get());
+            serializeObjectDec(objectIter, std::any_cast<ObjectDecl&>(statement.second));
         }
         else if(it->value == RELATION)
         {
             statement.first = RELATION;
-            serializeRelation(it, std::any_cast<Relation&>(statement.second));
+            AST::ASTTree::DSFIterator relationIter(it.get());
+            serializeRelation(relationIter, std::any_cast<Relation&>(statement.second));
         }
         else if(it->value == NOTE)
         {
             statement.first = NOTE;
-            serializeNote(it, std::any_cast<Note&>(statement.second));
+            AST::ASTTree::DSFIterator noteIter(it.get());
+            serializeNote(noteIter, std::any_cast<Note&>(statement.second));
         }
         else if(it->value == GRAPH)
         {
             statement.first = GRAPH;
-            serializeGraph(it, std::any_cast<Graph&>(statement.second));
+            AST::ASTTree::DSFIterator graphIter(it.get());
+            serializeGraph(graphIter, std::any_cast<Graph&>(statement.second));
         }
         else if(it->value == DOT_CLOUD)
         {
             statement.first = DOT_CLOUD;
-            serializeDotCloud(it, std::any_cast<DotCloud&>(statement.second));
+            AST::ASTTree::DSFIterator dotCloudIter(it.get());
+            serializeDotCloud(dotCloudIter, std::any_cast<DotCloud&>(statement.second));
         }
 
-        programTree.push_back(statement);
+        programTree.push_back(std::move(statement));
     }
 
     return programTree;
 }
 
 
-void SEMANTICANALYZER::AstStatementParser::serializeObjectDec(AST::ASTTree::DSFIterator& objectDecIter, ObjectDecl& objectDecl)
+void SEMANTICANALYZER::AstStatementParser::serializeObjectDec(AST::ASTTree::DSFIterator& objectDecIter, ObjectDecl& objectDecl) noexcept
 {
     for(auto it = objectDecIter; it != AST::ASTTree::DSFIterator(); ++it)
     {
@@ -57,14 +62,16 @@ void SEMANTICANALYZER::AstStatementParser::serializeObjectDec(AST::ASTTree::DSFI
         else if(it->value == PROPERTY)
         {
             Property property;
-            serializeProperty(it, property);
-            objectDecl.properties.push_back(property);
+            AST::ASTTree::DSFIterator propertyIter(it.get());
+
+            serializeProperty(propertyIter, property);
+            objectDecl.properties.push_back(std::move(property));
         }
     }
 }
 
 
-void SEMANTICANALYZER::AstStatementParser::serializeRelation(AST::ASTTree::DSFIterator &relationIter, Relation &relation)
+void SEMANTICANALYZER::AstStatementParser::serializeRelation(AST::ASTTree::DSFIterator &relationIter, Relation &relation) noexcept
 {
     for(auto it = relationIter; it != AST::ASTTree::DSFIterator(); ++it)
     {
@@ -82,14 +89,16 @@ void SEMANTICANALYZER::AstStatementParser::serializeRelation(AST::ASTTree::DSFIt
         else if(it->value == PROPERTY)
         {
             Property property;
-            serializeProperty(it, property);
-            relation.properties.push_back(property);
+            AST::ASTTree::DSFIterator propertyIter(it.get());
+
+            serializeProperty(propertyIter, property);
+            relation.properties.push_back(std::move(property));
         }
     }
 }
 
 
-void SEMANTICANALYZER::AstStatementParser::serializeNote(AST::ASTTree::DSFIterator &noteIter, Note &note)
+void SEMANTICANALYZER::AstStatementParser::serializeNote(AST::ASTTree::DSFIterator &noteIter, Note &note) noexcept
 {
     for(auto it = noteIter; it != AST::ASTTree::DSFIterator(); ++it)
     {
@@ -101,14 +110,16 @@ void SEMANTICANALYZER::AstStatementParser::serializeNote(AST::ASTTree::DSFIterat
         else if(it->value == PROPERTY)
         {
             Property property;
-            serializeProperty(it, property);
-            note.properties.push_back(property);
+            AST::ASTTree::DSFIterator propertyIter(it.get());
+
+            serializeProperty(propertyIter, property);
+            note.properties.push_back(std::move(property));
         }
     }
 }
 
 
-void SEMANTICANALYZER::AstStatementParser::serializeGraph(AST::ASTTree::DSFIterator &graphIter, Graph &graph)
+void SEMANTICANALYZER::AstStatementParser::serializeGraph(AST::ASTTree::DSFIterator &graphIter, Graph &graph) noexcept
 {
     for(auto it = graphIter; it != AST::ASTTree::DSFIterator(); ++it)
     {
@@ -120,52 +131,75 @@ void SEMANTICANALYZER::AstStatementParser::serializeGraph(AST::ASTTree::DSFItera
         else if(it->value == PROPERTY)
         {
             Property property;
-            serializeProperty(it, property);
+            AST::ASTTree::DSFIterator propertyIter(it.get());
+
+            serializeProperty(propertyIter, property);
             graph.properties.push_back(property);
         }
         else if(it->value == OBJECT_DECL)
         {
             ObjectDecl objectDecl;
-            serializeObjectDec(it, objectDecl);
-            graph.objects.push_back(objectDecl);
+            AST::ASTTree::DSFIterator objectDeclIter(it.get());
+
+            serializeObjectDec(objectDeclIter, objectDecl);
+            graph.objects.push_back(std::move(objectDecl));
         }
         else if(it->value == RELATION)
         {
             Relation relation;
-            serializeRelation(it, relation);
-            graph.relations.push_back(relation);
+            AST::ASTTree::DSFIterator relationIter(it.get());
+
+            serializeRelation(relationIter, relation);
+            graph.relations.push_back(std::move(relation));
         }
     }
 }
 
 
-void SEMANTICANALYZER::AstStatementParser::serializeDotCloud(AST::ASTTree::DSFIterator &dotCloudIter, DotCloud &dotCloud)
+void SEMANTICANALYZER::AstStatementParser::serializeDotCloud(AST::ASTTree::DSFIterator &dotCloudIter, DotCloud &dotCloud) noexcept
 {
     bool startInternalBlock = false;
 
     for(auto it = dotCloudIter; it != AST::ASTTree::DSFIterator(); ++it)
     {
-        if(it->value == START_INTERNAL_BLOCK)
+        if(it->value == START_INTERNAL_BLOCK && startInternalBlock == false)
         {
             startInternalBlock = true;
+            continue;
         }
         if(it->value == PROPERTY && startInternalBlock == false)
         {
             Property property;
-            serializeProperty(it, property);
-            dotCloud.externalProperties.push_back(property);
+            AST::ASTTree::DSFIterator propertyIter(it.get());
+
+            serializeProperty(propertyIter, property);
+            dotCloud.externalProperties.push_back(std::move(property));
         }
-        if(it->value == PROPERTY && startInternalBlock == true)
+        if(it->value == START_DOT_BLOCK)
         {
-            Property property;
-            serializeProperty(it, property);
-            dotCloud.internalProperties.push_back(property);
+            Dot dot;
+
+            while(it->value != END_DOT_BLOCK)
+            {
+                if(it->value == PROPERTY)
+                {
+                    Property property;
+                    AST::ASTTree::DSFIterator proppertyIter(it.get());
+
+                    serializeProperty(proppertyIter, property);
+                    dot.internalProperties.push_back(std::move(property));
+                }
+
+                ++it;
+            }
+
+            dotCloud.dots.push_back(std::move(dot));
         }
     }
 }
 
 
-void SEMANTICANALYZER::AstStatementParser::serializeProperty(AST::ASTTree::DSFIterator &propertyIter, Property &property)
+void SEMANTICANALYZER::AstStatementParser::serializeProperty(AST::ASTTree::DSFIterator &propertyIter, Property &property) noexcept
 {
     for(auto it = propertyIter; it != AST::ASTTree::DSFIterator(); ++it)
     {

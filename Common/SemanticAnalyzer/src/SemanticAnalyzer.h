@@ -11,7 +11,7 @@
 #define SEMANTICANALYZER_API
 #endif
 
-#include <iostream>
+
 #include <string>
 #include <set>
 #include <vector>
@@ -25,6 +25,7 @@
 #include <string_view>
 #include <numeric>
 
+#include "Logger.hpp"
 
 #define OBJECT_DECL             "object_decl"
 #define RELATION                "relation"
@@ -40,6 +41,8 @@
 #define TEXT                    "TEXT"
 #define NUMBER                  "NUMBER"
 #define ARROW                   "ARROW"
+#define START_DOT_BLOCK         "{"
+#define END_DOT_BLOCK           "}"
 
 #define PROP_COLOR      "color"
 #define PROP_TEXT       "text"
@@ -109,11 +112,16 @@ struct Graph
     std::vector<Relation> relations;
 };
 
+struct Dot
+{
+    std::vector<Property> internalProperties;
+};
+
 struct DotCloud
 {
     std::string id;
     std::vector<Property> externalProperties;
-    std::vector<Property> internalProperties;
+    std::vector<Dot> dots;
 };
 
 struct ConstraintInfo
@@ -240,11 +248,6 @@ private:
      * \brief Функция проверяет корректность Statement "Облако точек".
      */
     void checkDotCloud(const DotCloud& dotCloud, int statementNumber);
-
-    /*!
-     * \brief Функция проверяет, является ли строка целым числом.
-     */
-    bool isNumber(const std::string& str) const;
 
 private:
     std::vector<std::set<std::string>> scopeStack;
