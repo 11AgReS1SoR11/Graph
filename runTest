@@ -21,6 +21,8 @@ elif [ "$1" = "--Common" ]; then
     ./build/Common/Logger/test/LoggerTest
     ./build/Common/FileManager/test/FileManagerTest
     ./build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest
+elif [ "$1" = "--SA" ]; then
+    ./build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest
 else
     # default - run all tests
     ./build/Frontend/test/FrontendTest
