@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$OS" == "Windows_NT" ]; then
+if [ "$(uname -s)" = "Windows_NT" ] || [ "$OS" = "Windows_NT" ]; then
     PLATFORM="win32"
     PATHSEP=";"
     LIB_EXT=".dll"
@@ -14,31 +14,39 @@ else
     MAKE="make"
 fi
 
-mkdir -p build
+command -v "$QMAKE" >/dev/null 2>&1 || { echo "Ошибка: $QMAKE не найден в PATH"; exit 1; }
 
-cd build || exit 1
+command -v "$MAKE" >/dev/null 2>&1 || { echo "Ошибка: $MAKE не найден в PATH"; exit 1; }
 
-if [ "$PLATFORM" == "win32" ]; then
-    PATH="$PWD/build/Frontend/src${PATHSEP}$PATH"
-    PATH="$PWD/build/Backend/src${PATHSEP}$PATH"
-    PATH="$PWD/build/Common/AST/src${PATHSEP}$PATH"
-    PATH="$PWD/build/Common/Logger/src${PATHSEP}$PATH"
-    PATH="$PWD/build/Common/Figures${PATHSEP}$PATH"
-    PATH="$PWD/build/Common/FileManager/src/:$PATH"
-    PATH="$PWD/build/Common/SemanticAnalyzer/src${PATHSEP}$PATH"
+mkdir -p build || { echo "Ошибка: не удалось создать директорию build"; exit 1; }
+cd build || { echo "Ошибка: не удалось перейти в директорию build"; exit 1; }
+
+export PATH="/usr/bin:$PATH"
+
+"$QMAKE" ../Graph.pro || { echo "Ошибка при выполнении $QMAKE"; exit 1; }
+
+"$MAKE" || { echo "Ошибка при выполнении $MAKE"; exit 1; }
+
+if [ "$PLATFORM" = "win32" ]; then
+    PATH="$PWD/Frontend/src/:$PATH"
+    PATH="$PWD/Backend/src/:$PATH"
+    PATH="$PWD/Common/AST/src/:$PATH"
+    PATH="$PWD/Common/Logger/src/:$PATH"
+    PATH="$PWD/Common/Figures/:$PATH"
+    PATH="$PWD/Common/FileManager/src/:$PATH"
+    PATH="$PWD/Common/SemanticAnalyzer/src/:$PATH"
     export PATH
+    echo "Пути для Windows обновлены в PATH"
 else
-    LD_LIBRARY_PATH="$PWD/build/Frontend/src${PATHSEP}${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Backend/src${PATHSEP}${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Common/AST/src${PATHSEP}${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Common/Logger/src${PATHSEP}${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Common/Figures/:${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Common/FileManager/src/:${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Common/SemanticAnalyzer/src${PATHSEP}${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/Frontend/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/Backend/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/Common/AST/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/Common/Logger/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/Common/Figures/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/Common/FileManager/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/Common/SemanticAnalyzer/src/:${LD_LIBRARY_PATH}"
     export LD_LIBRARY_PATH
+    echo "Пути для Unix обновлены в LD_LIBRARY_PATH"
 fi
 
-export PATH=/usr/bin:$PATH
-"$QMAKE" ../Graph.pro
-
-"$MAKE"
+echo "Сборка успешно завершена!"

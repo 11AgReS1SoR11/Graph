@@ -1,33 +1,68 @@
 #!/bin/bash
 
-LD_LIBRARY_PATH=$PWD/build/Frontend/src/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Backend/src/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Common/AST/src/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Common/Logger/src/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Common/Figures/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Common/FileManager/src/:${LD_LIBRARY_PATH}
-LD_LIBRARY_PATH=$PWD/build/Common/SemanticAnalyzer/src/:${LD_LIBRARY_PATH}
+if [ "$(uname -s)" = "Windows_NT" ] || [ "$OS" = "Windows_NT" ]; then
+    PLATFORM="win32"
+    PATHSEP=";"
+    EXE_EXT=".exe"
+else
+    PLATFORM="unix"
+    PATHSEP=":"
+    EXE_EXT=""
+fi
 
-export LD_LIBRARY_PATH
+if [ "$PLATFORM" = "win32" ]; then
+    PATH="$PWD/build/Frontend/src/:$PATH"
+    PATH="$PWD/build/Backend/src/:$PATH"
+    PATH="$PWD/build/Common/AST/src/:$PATH"
+    PATH="$PWD/build/Common/Logger/src/:$PATH"
+    PATH="$PWD/build/Common/Figures/:$PATH"
+    PATH="$PWD/build/Common/FileManager/src/:$PATH"
+    PATH="$PWD/build/Common/SemanticAnalyzer/src/:$PATH"
+    export PATH
+    echo "Пути для Windows обновлены в PATH"
+else
+    LD_LIBRARY_PATH="$PWD/build/Frontend/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Backend/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/AST/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/Logger/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/Figures/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/FileManager/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/SemanticAnalyzer/src/:${LD_LIBRARY_PATH}"
+    export LD_LIBRARY_PATH
+    echo "Пути для Unix обновлены в LD_LIBRARY_PATH"
+fi
+
 export QT_QPA_PLATFORM=offscreen
 
-# check choosen component to build
+run_test() {
+    local test_path="$1"
+    if [ -f "$test_path$EXE_EXT" ]; then
+        echo "Запуск $test_path$EXE_EXT..."
+        "./$test_path$EXE_EXT" || { echo "Ошибка при запуске $test_path$EXE_EXT"; exit 1; }
+    else
+        echo "Тест $test_path$EXE_EXT не найден"
+        exit 1
+    fi
+}
+
 if [ "$1" = "--Front" ]; then
-    ./build/Frontend/test/FrontendTest
+    run_test "build/Frontend/test/FrontendTest"
 elif [ "$1" = "--Backend" ]; then
-    ./build/Backend/test/BackendTest
+    run_test "build/Backend/test/BackendTest"
 elif [ "$1" = "--Common" ]; then
-    ./build/Common/AST/test/ASTTest
-    ./build/Common/Logger/test/LoggerTest
-    ./build/Common/FileManager/test/FileManagerTest
-    ./build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest
+    run_test "build/Common/AST/test/ASTTest"
+    run_test "build/Common/Logger/test/LoggerTest"
+    run_test "build/Common/FileManager/test/FileManagerTest"
+    run_test "build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
 elif [ "$1" = "--SA" ]; then
-    ./build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest
+    run_test "build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
 else
-    # default - run all tests
-    ./build/Frontend/test/FrontendTest
-    ./build/Backend/test/BackendTest
-    ./build/Common/AST/test/ASTTest
-    ./build/Common/Logger/test/LoggerTest
-    ./build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest
+    run_test "build/Frontend/test/FrontendTest"
+    run_test "build/Backend/test/BackendTest"
+    run_test "build/Common/AST/test/ASTTest"
+    run_test "build/Common/Logger/test/LoggerTest"
+    run_test "build/Common/FileManager/test/FileManagerTest"
+    run_test "build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
 fi
+
+echo "Все выбранные тесты завершены!"
