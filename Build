@@ -24,7 +24,7 @@ if [ "$PLATFORM" == "win32" ]; then
     PATH="$PWD/build/Common/AST/src${PATHSEP}$PATH"
     PATH="$PWD/build/Common/Logger/src${PATHSEP}$PATH"
     PATH="$PWD/build/Common/Figures/src${PATHSEP}$PATH"
-    PATH="$PWD/build/Common/SemanticAnalyzer${PATHSEP}$PATH"
+    PATH="$PWD/build/Common/SemanticAnalyzer/src${PATHSEP}$PATH"
     export PATH
 else
     LD_LIBRARY_PATH="$PWD/build/Frontend/src${PATHSEP}${LD_LIBRARY_PATH}"
@@ -33,7 +33,7 @@ else
     LD_LIBRARY_PATH="$PWD/build/Common/Logger/src${PATHSEP}${LD_LIBRARY_PATH}"
     LD_LIBRARY_PATH="$PWD/build/Common/Figures/:${LD_LIBRARY_PATH}"
     LD_LIBRARY_PATH="$PWD/build/Common/FileManager/src/:${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Common/SemanticAnalyzer${PATHSEP}${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/SemanticAnalyzer/src${PATHSEP}${LD_LIBRARY_PATH}"
     export LD_LIBRARY_PATH
 fi
 
