@@ -5,12 +5,12 @@ using namespace AST;
 
 std::unique_ptr<Retranslator> Retranslator::instance = nullptr;
 
-ASTTree Retranslator::parseTree(std::map<std::string, Shape*> const& map){
+ASTTree Retranslator::parseTree(std::vector<Shape*> const& vec){
     
     Node* root = new Node("root");
     root->addChild(new Node("STARTGRAPH"));
 
-    for (const auto& elem : map)
+    for (const auto& elem : vec)
     {
         Node* cur = new Node("STATEMENT");
         root->addChild(cur);
@@ -18,9 +18,9 @@ ASTTree Retranslator::parseTree(std::map<std::string, Shape*> const& map){
         // {
         //     root->addChild(makeNote(elem));
         // }
-        if (dynamic_cast<Line*>(elem.second))
+        if (const Line* const line = dynamic_cast<const Line* const>(elem))
         {
-            cur->addChild(makeLink(elem));
+            cur->addChild(makeLink(line));
         }
         else 
         {
@@ -63,39 +63,38 @@ void addBasicParams(Node* node, const Shape* const shape)
     addProperty(node, "y", std::to_string(shape->y));
 }
 
-Node* Retranslator::makeObject(std::pair<std::string const, Shape*> const& pair) const
+Node* Retranslator::makeObject(const Shape* const shape) const
 {
-    Shape* shape = pair.second;
     Node* node = new Node("object_decl");
     node->addChild(new Node("SHAPE"));
 
-    if (dynamic_cast<Circle*>(shape))
+    if (dynamic_cast<const Circle* const>(shape))
         node->childNodes[0]->addChild(new Node("circle"));
-    else if (dynamic_cast<Diamond*>(shape))
+    else if (dynamic_cast<const Diamond* const>(shape))
         node->childNodes[0]->addChild(new Node("diamond"));
-    else if (dynamic_cast<Reactangle*>(shape))
+    else if (dynamic_cast<const Reactangle* const>(shape))
         node->childNodes[0]->addChild(new Node("reactangle"));
 
     node->addChild(new Node("ID"));
-    node->childNodes[1]->addChild(new Node(pair.first));
+    node->childNodes[1]->addChild(new Node(shape->id));
 
     node->addChild(new Node("{"));
 
     addBasicParams(node, shape);
 
-    if (Circle* circle = dynamic_cast<Circle*>(shape))
+    if (const Circle* const circle = dynamic_cast<const Circle* const>(shape))
     {   
         addProperty(node, "radius", std::to_string(circle->radius));
     }
 
-    else if (Diamond* diamond = dynamic_cast<Diamond*>(shape))
+    else if (const Diamond* const diamond = dynamic_cast<const Diamond* const>(shape))
     {
         addProperty(node, "size_A", std::to_string(diamond->sizeA));
         addProperty(node, "size_B", std::to_string(diamond->sizeB));
         addProperty(node, "angle", std::to_string(diamond->angle));
     }
 
-    else if (Reactangle* reactangle = dynamic_cast<Reactangle*>(shape))
+    else if (const Reactangle* const reactangle = dynamic_cast<const Reactangle* const>(shape))
     {
         addProperty(node, "size_A", std::to_string(reactangle->sizeA));
         addProperty(node, "size_B", std::to_string(reactangle->sizeB));
@@ -107,12 +106,12 @@ Node* Retranslator::makeObject(std::pair<std::string const, Shape*> const& pair)
 
 }
 
-// Node* Retranslator::makeNote(std::pair<std::string const, Shape*> const& pair) const
+// Node* Retranslator::makeNote(const Shape* const shape) const
 // {
 //     //to be inmpelented...
 // }
 
-std::string arrowMaker(Line* line)
+std::string arrowMaker(const Line* const line)
 {
     if (static_cast<short>(line->type) == 0 && static_cast<short>(line->orientation) == 0)
         return "--";
@@ -128,9 +127,8 @@ std::string arrowMaker(Line* line)
         return "<->";   
 }
 
-Node* Retranslator::makeLink(std::pair<std::string const, Shape*> const& pair) const
+Node* Retranslator::makeLink(const Line* const shape) const
 {
-    Line* shape = static_cast<Line*>(pair.second);
     Node* node = new Node("relation");
     
     node->addChild(new Node("ID"));
@@ -151,13 +149,12 @@ Node* Retranslator::makeLink(std::pair<std::string const, Shape*> const& pair) c
     return node;
 }
 
-Node* Retranslator::makeGraph(std::pair<std::string const, Shape*> const& pair) const
+Node* Retranslator::makeGraph(const Graph* const shape) const
 {
-    Graph* shape = static_cast<Graph*>(pair.second);
     Node* node = new Node("graph");
 
     node->addChild(new Node("ID"));
-    node->childNodes[0]->addChild(new Node(pair.first));
+    node->childNodes[0]->addChild(new Node(shape->id));
 
     addBasicParams(node, shape);
 
@@ -165,9 +162,9 @@ Node* Retranslator::makeGraph(std::pair<std::string const, Shape*> const& pair) 
 
     for (auto const& elem : shape->nodes)
     {
-        if (dynamic_cast<Line*>(elem.second))
-        {
-            node->addChild(makeLink(elem));
+        if (const Line* const line = dynamic_cast<const Line* const>(elem))
+        { 
+            node->addChild(makeLink(line));
         }
         else 
         {
@@ -182,13 +179,12 @@ Node* Retranslator::makeGraph(std::pair<std::string const, Shape*> const& pair) 
 }
 
 
-Node* Retranslator::makeDotCloud(std::pair<std::string const, Shape*> const& pair) const
+Node* Retranslator::makeDotCloud(const DotCloud* const shape) const
 {
-    DotCloud* shape = static_cast<DotCloud*>(pair.second);
     Node* node = new Node("dot_cloud");
 
     node->addChild(new Node("ID"));
-    node->childNodes[0]->addChild(new Node(pair.first));
+    node->childNodes[0]->addChild(new Node(shape->id));
 
     addBasicParams(node, shape);
 
@@ -196,14 +192,7 @@ Node* Retranslator::makeDotCloud(std::pair<std::string const, Shape*> const& pai
 
     for (auto const& elem : shape->dots)
     {
-        if (dynamic_cast<Line*>(elem.second))
-        {
-            node->addChild(makeLink(elem));
-        }
-        else 
-        {
-            node->addChild(makeObject(elem));
-        }
+        node->addChild(makeObject(elem));
     }
 
     node->addChild(new Node("}"));

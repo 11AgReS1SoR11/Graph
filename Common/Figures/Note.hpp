@@ -3,7 +3,7 @@
 
 struct Note : Shape
 {
-    void draw() const override;
+    std::string toJson() const override;
 
     
-}
+};
