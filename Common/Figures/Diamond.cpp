@@ -1,6 +1,14 @@
 #include "Diamond.hpp"
 
-void Diamond::draw() const
+std::string Diamond::toJson() const
 {
-    // TODO: implement during GRAP-17
+    return "{"
+           "\"type\": \"Diamond\","
+           + Shape::toJson() + ","
+           "\"property\": {"
+               "\"sizeA\": " + std::to_string(sizeA) + ","
+               "\"sizeB\": " + std::to_string(sizeB) + ","
+               "\"angle\": " + std::to_string(angle) +
+           "}"
+           "}";
 }

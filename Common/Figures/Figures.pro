@@ -18,11 +18,15 @@ SOURCES += Diamond.cpp \
            DotCloud.cpp \
            Graph.cpp \
            Line.cpp \
-           Reactangle.cpp
+           Reactangle.cpp \
+           Style.cpp \
+           Shape.cpp
 
 HEADERS += Diamond.hpp \
            Circle.hpp \
            DotCloud.hpp \
            Graph.hpp \
            Line.hpp \
-           Reactangle.hpp
+           Reactangle.hpp \
+           Style.hpp \
+           Shape.hpp
