@@ -1,6 +1,5 @@
 #include <QtTest/QtTest>
 #include <stdexcept>
-#include <iostream>
 #include "Retranslator.hpp"
 using namespace AST;
 class TestClass : public QObject
@@ -103,7 +102,7 @@ void TestClass::test_objectDecl()
     ++it;
     QVERIFY(it->getValue() == "PROPERTY_KEY");
     ++it;
-    QVERIFY(it->getValue() == "сolor");
+    QVERIFY(it->getValue() == "color");
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
@@ -231,7 +230,7 @@ void TestClass::test_objectDecl()
     ++it;
     QVERIFY(it->getValue() == "PROPERTY_KEY");
     ++it;
-    QVERIFY(it->getValue() == "сolor");
+    QVERIFY(it->getValue() == "color");
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
@@ -392,7 +391,7 @@ void TestClass::test_objectDecl()
     ++it;
     QVERIFY(it->getValue() == "PROPERTY_KEY");
     ++it;
-    QVERIFY(it->getValue() == "сolor");
+    QVERIFY(it->getValue() == "color");
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
@@ -546,7 +545,7 @@ void TestClass::test_objectDecl()
     ++it;
     QVERIFY(it->getValue() == "PROPERTY_KEY");
     ++it;
-    QVERIFY(it->getValue() == "сolor");
+    QVERIFY(it->getValue() == "color");
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
@@ -724,7 +723,7 @@ void TestClass::test_graph()
     ++it;
     QVERIFY(it->getValue() == "PROPERTY_KEY");
     ++it;
-    QVERIFY(it->getValue() == "сolor");
+    QVERIFY(it->getValue() == "color");
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
@@ -837,7 +836,7 @@ void TestClass::test_graph()
     ++it;
     QVERIFY(it->getValue() == "PROPERTY_KEY");
     ++it;
-    QVERIFY(it->getValue() == "сolor");
+    QVERIFY(it->getValue() == "color");
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
@@ -965,7 +964,7 @@ void TestClass::test_graph()
     ++it;
     QVERIFY(it->getValue() == "PROPERTY_KEY");
     ++it;
-    QVERIFY(it->getValue() == "сolor");
+    QVERIFY(it->getValue() == "color");
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
@@ -1125,7 +1124,7 @@ void TestClass::test_graph()
     ++it;
     QVERIFY(it->getValue() == "PROPERTY_KEY");
     ++it;
-    QVERIFY(it->getValue() == "сolor");
+    QVERIFY(it->getValue() == "color");
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
@@ -1277,7 +1276,7 @@ void TestClass::test_graph()
     ++it;
     QVERIFY(it->getValue() == "PROPERTY_KEY");
     ++it;
-    QVERIFY(it->getValue() == "сolor");
+    QVERIFY(it->getValue() == "color");
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
@@ -1363,6 +1362,9 @@ void TestClass::test_dotCloud()
     std::vector<Shape*> vec;
     DotCloud cloud;
 
+    cloud.x = 0;
+    cloud.y = 0;
+
     Circle circle1;
     circle1.x = 1;
     circle1.y = 1;
@@ -1405,6 +1407,150 @@ void TestClass::test_dotCloud()
     QVERIFY(it->getValue() == "(");
     ++it;
 
+    ///params ---------------------------------
+
+    QVERIFY(it->getValue() == "property");
+    ++it;
+
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+
+    QVERIFY(it->getValue() == "text");
+    ++it;
+    
+    QVERIFY(it->getValue() == "=");
+    ++it;
+
+    QVERIFY(it->getValue() == "TEXT");
+    ++it;
+    
+
+    QVERIFY(it->getValue() == "");
+    ++it;
+    
+    QVERIFY(it->getValue() == ";");
+    ++it;
+    
+    QVERIFY(it->getValue() == "property");
+    ++it;
+
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+
+    
+
+    QVERIFY(it->getValue() == "color");
+    ++it;
+    
+    QVERIFY(it->getValue() == "=");
+    ++it;
+
+    QVERIFY(it->getValue() == "TEXT");
+    ++it;
+    
+
+    QVERIFY(it->getValue() == "NONE");
+    ++it;
+
+    QVERIFY(it->getValue() == ";");
+    ++it;
+
+    QVERIFY(it->getValue() == "property");
+    ++it;
+
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+
+    QVERIFY(it->getValue() == "border");
+    ++it;
+    
+    QVERIFY(it->getValue() == "=");
+    ++it;
+
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    
+
+    QVERIFY(it->getValue() == "1");
+    ++it;
+
+
+    QVERIFY(it->getValue() == ";");
+    ++it;
+
+
+    QVERIFY(it->getValue() == "property");
+    ++it;
+
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+
+    QVERIFY(it->getValue() == "size_text");
+    ++it;
+    
+    QVERIFY(it->getValue() == "=");
+    ++it;
+
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    
+
+    QVERIFY(it->getValue() == "10");
+    ++it;
+
+    QVERIFY(it->getValue() == ";");
+    ++it;
+
+    QVERIFY(it->getValue() == "property");
+    ++it;
+
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+
+    QVERIFY(it->getValue() == "x");
+    ++it;
+    
+    QVERIFY(it->getValue() == "=");
+    ++it;
+
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    
+
+    QVERIFY(it->getValue() == "0");
+    ++it;
+
+    QVERIFY(it->getValue() == ";");
+    ++it;
+
+
+    QVERIFY(it->getValue() == "property");
+    ++it;
+
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+
+    QVERIFY(it->getValue() == "y");
+    ++it;
+    
+    QVERIFY(it->getValue() == "=");
+    ++it;
+
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    
+
+    QVERIFY(it->getValue() == "0");
+    ++it;
+
+    QVERIFY(it->getValue() == ";");
+    ++it;
+    
+    ///params end --------------------------------
+
+
+
+
     QVERIFY(it->getValue() == "property");
     ++it;
 
@@ -1424,9 +1570,13 @@ void TestClass::test_dotCloud()
     QVERIFY(it->getValue() == "false");
     ++it;
     
+    QVERIFY(it->getValue() == ";");
+    ++it;
+
     QVERIFY(it->getValue() == ")");
     ++it;
 
+   
     ///first---------------------------------
 
     QVERIFY(it->getValue() == "{");

@@ -1,3 +1,4 @@
+#pragma once
 #include <memory>
 #include "AST.hpp"
 #include <map>
@@ -11,7 +12,6 @@
 #include "Graph.hpp"
 #include "DotCloud.hpp"
 #include "Note.hpp"
-#pragma once
 
 using namespace AST;
 class Retranslator{

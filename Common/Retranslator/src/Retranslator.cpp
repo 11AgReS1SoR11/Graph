@@ -1,6 +1,5 @@
 #include "Retranslator.hpp"
 #include <typeinfo>
-#include <iostream>
 
 using namespace AST;
 
@@ -65,7 +64,7 @@ void addProperty(Node* node, std::string const& key, std::string const& value, b
 void addBasicParams(Node* node, const Shape* const shape)
 {
     addProperty(node, "text", shape->text, true);
-    addProperty(node, "сolor", colorToString(shape->style.color), true);
+    addProperty(node, "color", colorToString(shape->style.color), true);
     addProperty(node, "border", std::to_string(shape->style.border));
     addProperty(node, "size_text", std::to_string(shape->style.textSize));
     addProperty(node, "x", std::to_string(shape->x));
@@ -197,7 +196,8 @@ Node* Retranslator::makeDotCloud(const DotCloud* const shape) const
     Node* node = new Node("dot_cloud");
 
     node->addChild(new Node("("));
-    node->addChild(makeNodeWithProperty("grid", shape->grid ? "true" : "false", true));
+    addBasicParams(node, shape);
+    addProperty(node, "grid", shape->grid ? "true" : "false", true);
     node->addChild(new Node (")"));
 
     

@@ -1,6 +1,5 @@
 #include <QtTest/QtTest>
 #include <stdexcept>
-#include <iostream>
 #include "AST.hpp"
 
 using namespace AST;
