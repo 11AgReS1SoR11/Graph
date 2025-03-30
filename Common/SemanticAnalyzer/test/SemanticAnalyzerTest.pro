@@ -4,6 +4,12 @@ QT -= gui
 CONFIG += qt console warn_on depend_includepath testcase
 CONFIG -= app_bundle
 
+CONFIG(debug, debug|release) {
+    DEFINES += DEBUG
+} else {
+    DEFINES -= DEBUG
+}
+
 TEMPLATE = app
 
 OBJECTS_DIR = objects
