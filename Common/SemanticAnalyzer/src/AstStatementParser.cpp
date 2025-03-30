@@ -5,7 +5,10 @@ std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementPar
 {
     for(auto it = astTree.begin(); it != astTree.end(); ++it)
     {
+
+#ifdef DEBUG
         std::cout << it->value << std::endl;
+#endif
 
         std::pair<std::string, std::any> statement;
 
@@ -17,9 +20,9 @@ std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementPar
             AST::ASTTree::DSFIterator objectIter(it.get());
             serializeObjectDec(objectIter, std::any_cast<ObjectDecl&>(statement.second));
 
-//            while(it != objectIter) {
-//                ++it;
-//            }
+            while(it != objectIter) {
+                ++it;
+            }
         }
         else if(it->value == RELATION)
         {

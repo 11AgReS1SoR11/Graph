@@ -1,9 +1,14 @@
 #include <QtTest>
 
 #include <iostream>
+#include <memory>
+#include <string_view>
+#include <optional>
 
 #include "SemanticAnalyzer.h"
 #include "AstStatementParser.h"
+
+#define CI_SYSTEM "CI"
 
 class SemanticAnalyzerTest : public QObject
 {
@@ -15,10 +20,10 @@ public:
 
 private slots:
     void testObjectDecl();
-    //    void testRelation();
-    //    void testNote();
-    //    void testGraph();
-    //    void testDotCloud();
+    void testRelation();
+    void testNote();
+    void testGraph();
+    void testDotCloud();
 
 private:
     AST::Node* createObjectDeclAST(SEMANTICANALYZER::ObjectDecl& objectDecl);
@@ -164,7 +169,12 @@ AST::Node* SemanticAnalyzerTest::createDotCloudAST(SEMANTICANALYZER::DotCloud& d
 
             for(auto& dot : dotCloud.dots)
             {
-                dot_cloud->addChild(createDotAST(dot)->childNodes.front());
+                AST::Node* _dot = createDotAST(dot);
+
+                for(auto& child : _dot->childNodes)
+                {
+                    dot_cloud->addChild(child);
+                }
             }
 
             dot_cloud->addChild(new AST::Node(END_INTERNAL_BLOCK));
@@ -218,46 +228,66 @@ void SemanticAnalyzerTest::testObjectDecl()
 {
     AST::ASTTree ast(new AST::Node(PROGRAM));
     auto programIt = ast.begin();
+
     ast.insert(new AST::Node(START_GRAPH), programIt);
 
     SEMANTICANALYZER::ObjectDecl objectDecl;
-    const char* ciEnv = std::getenv("CI");
 
-    if(ciEnv != nullptr && std::string(ciEnv) == "true")
+    const auto* ciEnv = std::getenv(CI_SYSTEM);
+    const std::string_view ciFlag = ciEnv ? std::string_view(ciEnv) : std::string_view{};
+
+    if (ciEnv && ciFlag == "true")
     {
         objectDecl.id = "rect";
         objectDecl.shape = "rectangle";
     }
     else
     {
-        std::cout << "Please enter an id of object: " << std::endl;
+        std::cout << "TEST OBJECT_DECL: " << std::endl;
+
+        std::cout << "Please enter an id of object: ";
         std::cin >> objectDecl.id;
-        std::cout << "Please enter a shape of object: " << std::endl;
+
+        std::cout << "Please enter a shape of object: ";
         std::cin >> objectDecl.shape;
-        std::cout << "Please enter an number of properties: " << std::endl;
-        std::size_t numberProp;
-        std::cin >> numberProp;
-        for(std::size_t i = 0; i < numberProp; ++i)
+
+        std::cout << "Please enter a number of properties: ";
+        std::size_t numberProp{};
+
+        if (std::cin >> numberProp)
         {
-            SEMANTICANALYZER::Property property;
-            std::cout << "Please enter a key of property number " << i + 1 << " :" << std::endl;
-            std::cin >> property.key;
-            std::cout << "Please enter a value of property number " << i + 1 << " :" << std::endl;
-            std::cin >> property.value;
+            for(std::size_t i = 0; i < numberProp; ++i)
+            {
+                SEMANTICANALYZER::Property property;
+                std::cout << "Please enter a key of property number " << (i + 1) << ": ";
+                std::cin >> property.key;
+
+                std::cout << "Please enter a value of property number " << (i + 1) << ": ";
+                std::cin >> property.value;
+
+                objectDecl.properties.push_back(std::move(property));
+            }
         }
     }
 
     ast.insert(createObjectDeclAST(objectDecl), programIt);
     ast.insert(new AST::Node(END_GRAPH), programIt);
 
+#ifdef DEBUG
+    for(auto it = ast.begin(); it != ast.end(); ++it)
+    {
+        std::cout << it.get()->value << std::endl;
+    }
+#endif
+
     SEMANTICANALYZER::AstStatementParser parser(ast);
 
     auto programTree = parser.parse();
-    SEMANTICANALYZER::SemanticAnalyzer& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
+    auto& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
     analyzer.reset();
 
-    QVERIFY(programTree.size() == 1);
-    QVERIFY(programTree[0].first == OBJECT_DECL);
+    QVERIFY2(programTree.size() == 1, "Program tree size should be 1");
+    QVERIFY2(programTree[0].first == OBJECT_DECL, "First element should be OBJECT_DECL");
 
     try
     {
@@ -269,121 +299,406 @@ void SemanticAnalyzerTest::testObjectDecl()
     }
 }
 
-//void SemanticAnalyzerTest::testRelation()
-//{
-//    AST::ASTTree ast(new AST::Node(PROGRAM));
 
-//    auto programIt = ast.begin();
+void SemanticAnalyzerTest::testRelation()
+{
+    AST::ASTTree ast(new AST::Node(PROGRAM));
+    auto programIt = ast.begin();
 
-//    ast.insert(new AST::Node(START_GRAPH), programIt);
-//    ast.insert(createRelationAST(), programIt);
-//    ast.insert(new AST::Node(END_GRAPH), programIt);
+    ast.insert(new AST::Node(START_GRAPH), programIt);
 
-//    SEMANTICANALYZER::AstStatementParser parser(ast);
+    SEMANTICANALYZER::Relation relation;
 
-//    auto programTree = parser.parse();
-//    SEMANTICANALYZER::SemanticAnalyzer& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
-//    analyzer.reset();
+    const auto* ciEnv = std::getenv(CI_SYSTEM);
+    const std::string_view ciFlag = ciEnv ? std::string_view(ciEnv) : std::string_view{};
 
-//    QVERIFY(programTree.size() == 1);
-//    QVERIFY(programTree[0].first == RELATION);
+    if (ciEnv && ciFlag == "true")
+    {
+        relation.id1 = "rect1";
+        relation.arrow = "->";
+        relation.id2 = "rect2";
+    }
+    else
+    {
+        std::cout << "TEST RELATION: " << std::endl;
 
-//    try
-//    {
-//        analyzer.semanticAnalysis(programTree, 1);
-//    }
-//    catch (const SEMANTICANALYZER::SemanticError& error)
-//    {
-//        QFAIL(("Unexpected exception: " + std::string(error.what())).c_str());
-//    }
-//}
+        std::cout << "Please enter an id1 of object: ";
+        std::cin >> relation.id1;
 
-//void SemanticAnalyzerTest::testNote()
-//{
-//    AST::ASTTree ast(new AST::Node(PROGRAM));
+        std::cout << "Please enter an id2 of object: ";
+        std::cin >> relation.id2;
 
-//    auto programIt = ast.begin();
+        std::cout << "Please enter an arrow: ";
+        std::cin >> relation.arrow;
 
-//    ast.insert(new AST::Node(START_GRAPH), programIt);
-//    ast.insert(createNoteAST(), programIt);
-//    ast.insert(new AST::Node(END_GRAPH), programIt);
+        std::cout << "Please enter a number of properties: ";
+        std::size_t numberProp{};
 
-//    SEMANTICANALYZER::AstStatementParser parser(ast);
+        if (std::cin >> numberProp)
+        {
+            for(std::size_t i = 0; i < numberProp; ++i)
+            {
+                SEMANTICANALYZER::Property property;
+                std::cout << "Please enter a key of property number " << (i + 1) << ": ";
+                std::cin >> property.key;
 
-//    auto programTree = parser.parse();
-//    SEMANTICANALYZER::SemanticAnalyzer& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
-//    analyzer.reset();
+                std::cout << "Please enter a value of property number " << (i + 1) << ": ";
+                std::cin >> property.value;
 
-//    QVERIFY(programTree.size() == 1);
-//    QVERIFY(programTree[0].first == NOTE);
+                relation.properties.push_back(std::move(property));
+            }
+        }
+    }
 
-//    try
-//    {
-//        analyzer.semanticAnalysis(programTree, 1);
-//    }
-//    catch (const SEMANTICANALYZER::SemanticError& error)
-//    {
-//        QFAIL(("Unexpected exception: " + std::string(error.what())).c_str());
-//    }
-//}
+    ast.insert(createRelationAST(relation), programIt);
+    ast.insert(new AST::Node(END_GRAPH), programIt);
 
-//void SemanticAnalyzerTest::testGraph()
-//{
-//    AST::ASTTree ast(new AST::Node(PROGRAM));
+#ifdef DEBUG
+    for(auto it = ast.begin(); it != ast.end(); ++it)
+    {
+        std::cout << it.get()->value << std::endl;
+    }
+#endif
 
-//    auto programIt = ast.begin();
+    SEMANTICANALYZER::AstStatementParser parser(ast);
 
-//    ast.insert(new AST::Node(START_GRAPH), programIt);
-//    ast.insert(createGraphAST(), programIt);
-//    ast.insert(new AST::Node(END_GRAPH), programIt);
+    auto programTree = parser.parse();
+    auto& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
+    analyzer.reset();
 
-//    SEMANTICANALYZER::AstStatementParser parser(ast);
+    QVERIFY2(programTree.size() == 1, "Program tree size should be 1");
+    QVERIFY2(programTree[0].first == RELATION, "First element should be RELATION");
 
-//    auto programTree = parser.parse();
-//    SEMANTICANALYZER::SemanticAnalyzer& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
-//    analyzer.reset();
+    try
+    {
+        analyzer.semanticAnalysis(programTree, 1);
+    }
+    catch (const SEMANTICANALYZER::SemanticError& error)
+    {
+        QFAIL(("Unexpected exception: " + std::string(error.what())).c_str());
+    }
+}
 
-//    QVERIFY(programTree.size() == 1);
-//    QVERIFY(programTree[0].first == GRAPH);
+void SemanticAnalyzerTest::testNote()
+{
+    AST::ASTTree ast(new AST::Node(PROGRAM));
+    auto programIt = ast.begin();
 
-//    try
-//    {
-//        analyzer.semanticAnalysis(programTree, 1);
-//    }
-//    catch (const SEMANTICANALYZER::SemanticError& error)
-//    {
-//        QFAIL(("Unexpected exception: " + std::string(error.what())).c_str());
-//    }
-//}
+    ast.insert(new AST::Node(START_GRAPH), programIt);
 
-//void SemanticAnalyzerTest::testDotCloud()
-//{
-//    AST::ASTTree ast(new AST::Node(PROGRAM));
+    SEMANTICANALYZER::Note note;
 
-//    auto programIt = ast.begin();
+    const auto* ciEnv = std::getenv(CI_SYSTEM);
+    const std::string_view ciFlag = ciEnv ? std::string_view(ciEnv) : std::string_view{};
 
-//    ast.insert(new AST::Node(START_GRAPH), programIt);
-//    ast.insert(createDotCloudAST(), programIt);
-//    ast.insert(new AST::Node(END_GRAPH), programIt);
+    if (ciEnv && ciFlag == "true")
+    {
+        note.id = "rect";
+    }
+    else
+    {
+        std::cout << "TEST NOTE: " << std::endl;
 
-//    SEMANTICANALYZER::AstStatementParser parser(ast);
+        std::cout << "Please enter an id of object: ";
+        std::cin >> note.id;
 
-//    auto programTree = parser.parse();
-//    SEMANTICANALYZER::SemanticAnalyzer& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
-//    analyzer.reset();
+        std::cout << "Please enter a number of properties: ";
+        std::size_t numberProp{};
 
-//    QVERIFY(programTree.size() == 1);
-//    QVERIFY(programTree[0].first == DOT_CLOUD);
+        if (std::cin >> numberProp)
+        {
+            for(std::size_t i = 0; i < numberProp; ++i)
+            {
+                SEMANTICANALYZER::Property property;
+                std::cout << "Please enter a key of property number " << (i + 1) << ": ";
+                std::cin >> property.key;
 
-//    try
-//    {
-//        analyzer.semanticAnalysis(programTree, 1);
-//    }
-//    catch (const SEMANTICANALYZER::SemanticError& error)
-//    {
-//        QFAIL(("Unexpected exception: " + std::string(error.what())).c_str());
-//    }
-//}
+                std::cout << "Please enter a value of property number " << (i + 1) << ": ";
+                std::cin >> property.value;
+
+                note.properties.push_back(std::move(property));
+            }
+        }
+    }
+
+    ast.insert(createNoteAST(note), programIt);
+    ast.insert(new AST::Node(END_GRAPH), programIt);
+
+#ifdef DEBUG
+    for(auto it = ast.begin(); it != ast.end(); ++it)
+    {
+        std::cout << it.get()->value << std::endl;
+    }
+#endif
+
+    SEMANTICANALYZER::AstStatementParser parser(ast);
+
+    auto programTree = parser.parse();
+    auto& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
+    analyzer.reset();
+
+    QVERIFY2(programTree.size() == 1, "Program tree size should be 1");
+    QVERIFY2(programTree[0].first == NOTE, "First element should be NOTE");
+
+    try
+    {
+        analyzer.semanticAnalysis(programTree, 1);
+    }
+    catch (const SEMANTICANALYZER::SemanticError& error)
+    {
+        QFAIL(("Unexpected exception: " + std::string(error.what())).c_str());
+    }
+}
+
+void SemanticAnalyzerTest::testGraph()
+{
+    AST::ASTTree ast(new AST::Node(PROGRAM));
+    auto programIt = ast.begin();
+
+    ast.insert(new AST::Node(START_GRAPH), programIt);
+
+    SEMANTICANALYZER::Graph graph;
+
+    const auto* ciEnv = std::getenv(CI_SYSTEM);
+    const std::string_view ciFlag = ciEnv ? std::string_view(ciEnv) : std::string_view{};
+
+    if (ciEnv && ciFlag == "true")
+    {
+        graph.id = "graph";
+    }
+    else
+    {
+        std::cout << "TEST GRAPH: " << std::endl;
+
+        std::cout << "Please enter an id of graph: ";
+        std::cin >> graph.id;
+
+        std::cout << "Please enter a number of properties of graph: ";
+        std::size_t numberProp{};
+
+        if (std::cin >> numberProp)
+        {
+            for(std::size_t i = 0; i < numberProp; ++i)
+            {
+                SEMANTICANALYZER::Property property;
+                std::cout << "Please enter a key of property number " << (i + 1) << ": ";
+                std::cin >> property.key;
+
+                std::cout << "Please enter a value of property number " << (i + 1) << ": ";
+                std::cin >> property.value;
+
+                graph.properties.push_back(std::move(property));
+            }
+        }
+
+        std::cout << "Please enter a number of objects: ";
+        std::size_t numberObj{};
+
+        if (std::cin >> numberObj)
+        {
+            for(std::size_t i = 0; i < numberObj; ++i)
+            {
+                SEMANTICANALYZER::ObjectDecl objectDecl;
+
+                std::cout << "Please enter an id of object number " << (i + 1) << ": ";
+                std::cin >> objectDecl.id;
+
+                std::cout << "Please enter a shape of object number " << (i + 1) << ": ";
+                std::cin >> objectDecl.shape;
+
+                std::cout << "Please enter a number of properties of object number " << (i + 1) << ": ";
+                std::size_t numberProp{};
+
+                if (std::cin >> numberProp)
+                {
+                    for(std::size_t i = 0; i < numberProp; ++i)
+                    {
+                        SEMANTICANALYZER::Property property;
+                        std::cout << "Please enter a key of property number " << (i + 1) << ": ";
+                        std::cin >> property.key;
+
+                        std::cout << "Please enter a value of property number " << (i + 1) << ": ";
+                        std::cin >> property.value;
+
+                        objectDecl.properties.push_back(std::move(property));
+                    }
+                }
+
+                graph.objects.push_back(std::move(objectDecl));
+            }
+        }
+
+        std::cout << "Please enter a number of relations: ";
+        std::size_t numberRel{};
+
+        if (std::cin >> numberRel)
+        {
+            for(std::size_t i = 0; i < numberRel; ++i)
+            {
+                SEMANTICANALYZER::Relation relation;
+
+                std::cout << "Please enter an id1 of object in relation number: " << (i + 1) << ": ";
+                std::cin >> relation.id1;
+
+                std::cout << "Please enter an id2 of object in relation number: " << (i + 1) << ": ";
+                std::cin >> relation.id2;
+
+                std::cout << "Please enter an arrow: ";
+                std::cin >> relation.arrow;
+
+                std::cout << "Please enter a number of properties of relation number " << (i + 1) << ": ";
+                std::size_t numberProp{};
+
+                if (std::cin >> numberProp)
+                {
+                    for(std::size_t i = 0; i < numberProp; ++i)
+                    {
+                        SEMANTICANALYZER::Property property;
+                        std::cout << "Please enter a key of property number " << (i + 1) << ": ";
+                        std::cin >> property.key;
+
+                        std::cout << "Please enter a value of property number " << (i + 1) << ": ";
+                        std::cin >> property.value;
+
+                        relation.properties.push_back(std::move(property));
+                    }
+                }
+
+                graph.relations.push_back(std::move(relation));
+            }
+        }
+    }
+
+    ast.insert(createGraphAST(graph), programIt);
+    ast.insert(new AST::Node(END_GRAPH), programIt);
+
+#ifdef DEBUG
+    for(auto it = ast.begin(); it != ast.end(); ++it)
+    {
+        std::cout << it.get()->value << std::endl;
+    }
+#endif
+
+    SEMANTICANALYZER::AstStatementParser parser(ast);
+
+    auto programTree = parser.parse();
+    auto& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
+    analyzer.reset();
+
+    QVERIFY2(programTree.size() == 1, "Program tree size should be 1");
+    QVERIFY2(programTree[0].first == GRAPH, "First element should be GRAPH");
+
+    try
+    {
+        analyzer.semanticAnalysis(programTree, 1);
+    }
+    catch (const SEMANTICANALYZER::SemanticError& error)
+    {
+        QFAIL(("Unexpected exception: " + std::string(error.what())).c_str());
+    }
+}
+
+void SemanticAnalyzerTest::testDotCloud()
+{
+    AST::ASTTree ast(new AST::Node(PROGRAM));
+    auto programIt = ast.begin();
+
+    ast.insert(new AST::Node(START_GRAPH), programIt);
+
+    SEMANTICANALYZER::DotCloud dotCloud;
+
+    const auto* ciEnv = std::getenv(CI_SYSTEM);
+    const std::string_view ciFlag = ciEnv ? std::string_view(ciEnv) : std::string_view{};
+
+    if (ciEnv && ciFlag == "true")
+    {
+        dotCloud.id = "dot_cloud";
+    }
+    else
+    {
+        std::cout << "TEST DOT_CLOUD: " << std::endl;
+
+        std::cout << "Please enter an id of dot_cloud: ";
+        std::cin >> dotCloud.id;
+
+        std::cout << "Please enter a number of properties of dot_cloud: ";
+        std::size_t numberProp{};
+
+        if (std::cin >> numberProp)
+        {
+            for(std::size_t i = 0; i < numberProp; ++i)
+            {
+                SEMANTICANALYZER::Property property;
+                std::cout << "Please enter a key of property number " << (i + 1) << ": ";
+                std::cin >> property.key;
+
+                std::cout << "Please enter a value of property number " << (i + 1) << ": ";
+                std::cin >> property.value;
+
+                dotCloud.externalProperties.push_back(std::move(property));
+            }
+        }
+
+        std::cout << "Please enter a number of dots: ";
+        std::size_t numberDot{};
+
+        if (std::cin >> numberDot)
+        {
+            for(std::size_t i = 0; i < numberDot; ++i)
+            {
+                SEMANTICANALYZER::Dot dot;
+
+                std::cout << "Please enter a number of properties of dot number " << (i + 1) << ": ";
+                std::size_t numberProp{};
+
+                if (std::cin >> numberProp)
+                {
+                    for(std::size_t i = 0; i < numberProp; ++i)
+                    {
+                        SEMANTICANALYZER::Property property;
+                        std::cout << "Please enter a key of property number " << (i + 1) << ": ";
+                        std::cin >> property.key;
+
+                        std::cout << "Please enter a value of property number " << (i + 1) << ": ";
+                        std::cin >> property.value;
+
+                        dot.internalProperties.push_back(std::move(property));
+                    }
+                }
+
+                dotCloud.dots.push_back(std::move(dot));
+            }
+        }
+    }
+
+    ast.insert(createDotCloudAST(dotCloud), programIt);
+    ast.insert(new AST::Node(END_GRAPH), programIt);
+
+#ifdef DEBUG
+    for(auto it = ast.begin(); it != ast.end(); ++it)
+    {
+        std::cout << it.get()->value << std::endl;
+    }
+#endif
+
+    SEMANTICANALYZER::AstStatementParser parser(ast);
+
+    auto programTree = parser.parse();
+    auto& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
+    analyzer.reset();
+
+    QVERIFY2(programTree.size() == 1, "Program tree size should be 1");
+    QVERIFY2(programTree[0].first == DOT_CLOUD, "First element should be DOT_CLOUD");
+
+    try
+    {
+        analyzer.semanticAnalysis(programTree, 1);
+    }
+    catch (const SEMANTICANALYZER::SemanticError& error)
+    {
+        QFAIL(("Unexpected exception: " + std::string(error.what())).c_str());
+    }
+}
 
 QTEST_APPLESS_MAIN(SemanticAnalyzerTest)
 
