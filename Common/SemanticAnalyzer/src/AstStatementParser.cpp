@@ -16,6 +16,10 @@ std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementPar
 
             AST::ASTTree::DSFIterator objectIter(it.get());
             serializeObjectDec(objectIter, std::any_cast<ObjectDecl&>(statement.second));
+
+//            while(it != objectIter) {
+//                ++it;
+//            }
         }
         else if(it->value == RELATION)
         {
@@ -24,6 +28,10 @@ std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementPar
 
             AST::ASTTree::DSFIterator relationIter(it.get());
             serializeRelation(relationIter, std::any_cast<Relation&>(statement.second));
+
+            while(it != relationIter) {
+                ++it;
+            }
         }
         else if(it->value == NOTE)
         {
@@ -32,6 +40,10 @@ std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementPar
 
             AST::ASTTree::DSFIterator noteIter(it.get());
             serializeNote(noteIter, std::any_cast<Note&>(statement.second));
+
+            while(it != noteIter) {
+                ++it;
+            }
         }
         else if(it->value == GRAPH)
         {
@@ -40,6 +52,10 @@ std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementPar
 
             AST::ASTTree::DSFIterator graphIter(it.get());
             serializeGraph(graphIter, std::any_cast<Graph&>(statement.second));
+
+            while(it != graphIter) {
+                ++it;
+            }
         }
         else if(it->value == DOT_CLOUD)
         {
@@ -48,6 +64,10 @@ std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementPar
 
             AST::ASTTree::DSFIterator dotCloudIter(it.get());
             serializeDotCloud(dotCloudIter, std::any_cast<DotCloud&>(statement.second));
+
+            while(it != dotCloudIter) {
+                ++it;
+            }
         }
         else continue;
 
@@ -60,7 +80,7 @@ std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementPar
 
 void SEMANTICANALYZER::AstStatementParser::serializeObjectDec(AST::ASTTree::DSFIterator& objectDecIter, ObjectDecl& objectDecl) noexcept
 {
-    for(auto it = objectDecIter; it != AST::ASTTree::DSFIterator(); ++it)
+    for(auto& it = objectDecIter; it != AST::ASTTree::DSFIterator(); ++it)
     {
         if(it->value == SHAPE)
         {
@@ -86,7 +106,7 @@ void SEMANTICANALYZER::AstStatementParser::serializeObjectDec(AST::ASTTree::DSFI
 
 void SEMANTICANALYZER::AstStatementParser::serializeRelation(AST::ASTTree::DSFIterator &relationIter, Relation &relation) noexcept
 {
-    for(auto it = relationIter; it != AST::ASTTree::DSFIterator(); ++it)
+    for(auto& it = relationIter; it != AST::ASTTree::DSFIterator(); ++it)
     {
         if(it->value == ID)
         {
@@ -113,7 +133,7 @@ void SEMANTICANALYZER::AstStatementParser::serializeRelation(AST::ASTTree::DSFIt
 
 void SEMANTICANALYZER::AstStatementParser::serializeNote(AST::ASTTree::DSFIterator &noteIter, Note &note) noexcept
 {
-    for(auto it = noteIter; it != AST::ASTTree::DSFIterator(); ++it)
+    for(auto& it = noteIter; it != AST::ASTTree::DSFIterator(); ++it)
     {
         if(it->value == ID)
         {
@@ -136,7 +156,7 @@ void SEMANTICANALYZER::AstStatementParser::serializeGraph(AST::ASTTree::DSFItera
 {
     bool startInternalBlock = false;
 
-    for(auto it = graphIter; it != AST::ASTTree::DSFIterator(); ++it)
+    for(auto& it = graphIter; it != AST::ASTTree::DSFIterator(); ++it)
     {
         if(it->value == START_INTERNAL_BLOCK && startInternalBlock == false)
         {
@@ -180,7 +200,7 @@ void SEMANTICANALYZER::AstStatementParser::serializeDotCloud(AST::ASTTree::DSFIt
 {
     bool startInternalBlock = false;
 
-    for(auto it = dotCloudIter; it != AST::ASTTree::DSFIterator(); ++it)
+    for(auto& it = dotCloudIter; it != AST::ASTTree::DSFIterator(); ++it)
     {
         if(it->value == START_INTERNAL_BLOCK && startInternalBlock == false)
         {
@@ -221,7 +241,7 @@ void SEMANTICANALYZER::AstStatementParser::serializeDotCloud(AST::ASTTree::DSFIt
 
 void SEMANTICANALYZER::AstStatementParser::serializeProperty(AST::ASTTree::DSFIterator &propertyIter, Property &property) noexcept
 {
-    for(auto it = propertyIter; it != AST::ASTTree::DSFIterator(); ++it)
+    for(auto& it = propertyIter; it != AST::ASTTree::DSFIterator(); ++it)
     {
         if(it->value == PROPERTY_KEY)
         {

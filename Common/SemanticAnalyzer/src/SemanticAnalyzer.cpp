@@ -21,15 +21,11 @@ void SEMANTICANALYZER::SemanticAnalyzer::semanticAnalysis(const std::vector<std:
         }
         else if (type == GRAPH)
         {
-            enterScope();
             checkGraph(std::any_cast<const Graph&>(statement), statementNumber);
-            exitScope();
         }
         else if (type == DOT_CLOUD)
         {
-            enterScope();
             checkDotCloud(std::any_cast<const DotCloud&>(statement), statementNumber);
-            exitScope();
         }
 
         statementNumber++;
@@ -139,12 +135,12 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkObjectDecl(const ObjectDecl &obj, 
 
 void SEMANTICANALYZER::SemanticAnalyzer::checkRelation(const Relation &rel, int statementNumber)
 {
-    if (!isObjectDeclared(rel.id1))
+    if (isObjectDeclared(rel.id1))
     {
         throw SemanticError("Объект " + rel.id1 + " не объявлен.", statementNumber);
     }
 
-    if (!isObjectDeclared(rel.id2))
+    if (isObjectDeclared(rel.id2))
     {
         throw SemanticError("Объект " + rel.id2 + " не объявлен.", statementNumber);
     }
@@ -189,7 +185,14 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkNote(const Note &note, int stateme
 
 void SEMANTICANALYZER::SemanticAnalyzer::checkGraph(const Graph &graph, int statementNumber)
 {
+    if (isObjectDeclared(graph.id))
+    {
+        throw SemanticError("Граф " + graph.id + " уже объявлено.", statementNumber);
+    }
+
     declareObject(graph.id, statementNumber);
+
+    enterScope();
 
     for (const auto& prop : graph.properties)
     {
@@ -224,6 +227,8 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkGraph(const Graph &graph, int stat
     {
         checkRelation(rel, statementNumber);
     }
+
+    exitScope();
 }
 
 
@@ -236,6 +241,7 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkDotCloud(const DotCloud &dotCloud,
 
     declareObject(dotCloud.id, statementNumber);
 
+    enterScope();
 
     std::vector<std::string> allowedExternalProperties = COMMON_PROPERTIES;
     auto specificProps = SHAPE_SPECIFIC_PROPERTIES.at(DOT_CLOUD);
@@ -267,4 +273,6 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkDotCloud(const DotCloud &dotCloud,
             throw SemanticError("Для точки в облаке точек обязательны свойства x и y.", statementNumber);
         }
     }
+
+    exitScope();
 }
