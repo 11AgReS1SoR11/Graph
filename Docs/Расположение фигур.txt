@@ -4,6 +4,8 @@ CANVAS_HEIGHT = 800  # Высота холста по умолчанию
 
 DECLARE DEFAULT_SPACING AS INTEGER
 DEFAULT_SPACING = 50  # Минимальное расстояние между объектами
+DECLARE SMALL_DISTANCE AS INTEGER
+SMALL_DISTANCE = 50 # константа для проверки близкого расположения фигур
 
 DECLARE SHAPE_SIZES AS MAP OF SHAPE TO (width, height)
 SHAPE_SIZES["circle"] = (100, 100)    # Диаметр круга по умолчанию
@@ -236,7 +238,7 @@ FUNCTION layout_component(component, relations, start_x, start_y):
         DECLARE max_height_in_level AS INTEGER = 0
         
         FOR i FROM 0 TO level_size - 1:
-            DECLARE obj AS ObjectInfo = DEQUEUE(queue)
+            DECLARE obj AS ObjectInfo = POP(queue)
             
             # Находим всех непосещенных соседей
             DECLARE neighbors AS LIST OF ObjectInfo
@@ -302,7 +304,7 @@ FUNCTION generate_relation_points(objects, relations):
             start_point = calculate_connection_point(obj1, start_side)
             end_point = calculate_connection_point(obj2, end_side)
             
-            IF abs(start_point.x - end_point.x) < 50:
+            IF abs(start_point.x - end_point.x) < SMALL_DISTANCE:
                 rel.points = [start_point, (start_point.x, end_point.y), end_point]
 
             # Добавляем контрольные точки 
