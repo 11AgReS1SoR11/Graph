@@ -1,9 +1,9 @@
-#include "AstStatementParser.h"
+﻿#include "AstStatementParser.h"
 
 
 std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementParser::parse() noexcept
 {
-    for(auto it = astTree.begin(); it != astTree.end(); ++it)
+    for(astIter = astTree.begin(); astIter != astTree.end(); ++astIter)
     {
 
 #ifdef DEBUG
@@ -12,65 +12,45 @@ std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementPar
 
         std::pair<std::string, std::any> statement;
 
-        if(it->value == OBJECT_DECL)
+        if(astIter->value == OBJECT_DECL)
         {
             statement.first = OBJECT_DECL;
             statement.second = ObjectDecl();
 
-            AST::ASTTree::DSFIterator objectIter(it.get());
+            AST::ASTTree::DSFIterator objectIter(astIter.get());
             serializeObjectDec(objectIter, std::any_cast<ObjectDecl&>(statement.second));
-
-            while(it != objectIter) {
-                ++it;
-            }
         }
-        else if(it->value == RELATION)
+        else if(astIter->value == RELATION)
         {
             statement.first = RELATION;
             statement.second = Relation();
 
-            AST::ASTTree::DSFIterator relationIter(it.get());
+            AST::ASTTree::DSFIterator relationIter(astIter.get());
             serializeRelation(relationIter, std::any_cast<Relation&>(statement.second));
-
-            while(it != relationIter) {
-                ++it;
-            }
         }
-        else if(it->value == NOTE)
+        else if(astIter->value == NOTE)
         {
             statement.first = NOTE;
             statement.second = Note();
 
-            AST::ASTTree::DSFIterator noteIter(it.get());
+            AST::ASTTree::DSFIterator noteIter(astIter.get());
             serializeNote(noteIter, std::any_cast<Note&>(statement.second));
-
-            while(it != noteIter) {
-                ++it;
-            }
         }
-        else if(it->value == GRAPH)
+        else if(astIter->value == GRAPH)
         {
             statement.first = GRAPH;
             statement.second = Graph();
 
-            AST::ASTTree::DSFIterator graphIter(it.get());
+            AST::ASTTree::DSFIterator graphIter(astIter.get());
             serializeGraph(graphIter, std::any_cast<Graph&>(statement.second));
-
-            while(it != graphIter) {
-                ++it;
-            }
         }
-        else if(it->value == DOT_CLOUD)
+        else if(astIter->value == DOT_CLOUD)
         {
             statement.first = DOT_CLOUD;
             statement.second = DotCloud();
 
-            AST::ASTTree::DSFIterator dotCloudIter(it.get());
+            AST::ASTTree::DSFIterator dotCloudIter(astIter.get());
             serializeDotCloud(dotCloudIter, std::any_cast<DotCloud&>(statement.second));
-
-            while(it != dotCloudIter) {
-                ++it;
-            }
         }
         else continue;
 
@@ -88,11 +68,13 @@ void SEMANTICANALYZER::AstStatementParser::serializeObjectDec(AST::ASTTree::DSFI
         if(it->value == SHAPE)
         {
             ++it;
+            ++astIter;
             objectDecl.shape = it->value;
         }
         else if(it->value == ID)
         {
             ++it;
+            ++astIter;
             objectDecl.id = it->value;
         }
         else if(it->value == PROPERTY)
@@ -102,6 +84,17 @@ void SEMANTICANALYZER::AstStatementParser::serializeObjectDec(AST::ASTTree::DSFI
 
             serializeProperty(propertyIter, property);
             objectDecl.properties.push_back(std::move(property));
+
+            while(it.get() != astIter.get()) {
+                ++it;
+            }
+        }
+
+        auto nextIt = it;
+        ++nextIt;
+        if(nextIt != AST::ASTTree::DSFIterator())
+        {
+            ++astIter;
         }
     }
 }
@@ -114,12 +107,14 @@ void SEMANTICANALYZER::AstStatementParser::serializeRelation(AST::ASTTree::DSFIt
         if(it->value == ID)
         {
             ++it;
+            ++astIter;
             if(relation.id1.empty()) relation.id1 = it->value;
             else relation.id2 = it->value;
         }
         else if(it->value == ARROW)
         {
             ++it;
+            ++astIter;
             relation.arrow = it->value;
         }
         else if(it->value == PROPERTY)
@@ -129,6 +124,17 @@ void SEMANTICANALYZER::AstStatementParser::serializeRelation(AST::ASTTree::DSFIt
 
             serializeProperty(propertyIter, property);
             relation.properties.push_back(std::move(property));
+
+            while(it.get() != astIter.get()) {
+                ++it;
+            }
+        }
+
+        auto nextIt = it;
+        ++nextIt;
+        if(nextIt != AST::ASTTree::DSFIterator())
+        {
+            ++astIter;
         }
     }
 }
@@ -141,6 +147,7 @@ void SEMANTICANALYZER::AstStatementParser::serializeNote(AST::ASTTree::DSFIterat
         if(it->value == ID)
         {
             ++it;
+            ++astIter;
             note.id = it->value;
         }
         else if(it->value == PROPERTY)
@@ -150,6 +157,17 @@ void SEMANTICANALYZER::AstStatementParser::serializeNote(AST::ASTTree::DSFIterat
 
             serializeProperty(propertyIter, property);
             note.properties.push_back(std::move(property));
+
+            while(it.get() != astIter.get()) {
+                ++it;
+            }
+        }
+
+        auto nextIt = it;
+        ++nextIt;
+        if(nextIt != AST::ASTTree::DSFIterator())
+        {
+            ++astIter;
         }
     }
 }
@@ -164,11 +182,11 @@ void SEMANTICANALYZER::AstStatementParser::serializeGraph(AST::ASTTree::DSFItera
         if(it->value == START_INTERNAL_BLOCK && startInternalBlock == false)
         {
             startInternalBlock = true;
-            continue;
         }
         else if(it->value == ID)
         {
             ++it;
+            ++astIter;
             graph.id = it->value;
         }
         else if(it->value == PROPERTY && startInternalBlock == false)
@@ -178,6 +196,11 @@ void SEMANTICANALYZER::AstStatementParser::serializeGraph(AST::ASTTree::DSFItera
 
             serializeProperty(propertyIter, property);
             graph.properties.push_back(property);
+
+            while(it.get() != astIter.get()) {
+                ++it;
+            }
+
         }
         else if(it->value == OBJECT_DECL)
         {
@@ -186,6 +209,10 @@ void SEMANTICANALYZER::AstStatementParser::serializeGraph(AST::ASTTree::DSFItera
 
             serializeObjectDec(objectDeclIter, objectDecl);
             graph.objects.push_back(std::move(objectDecl));
+
+            while(it.get() != astIter.get()) {
+                ++it;
+            }
         }
         else if(it->value == RELATION)
         {
@@ -194,6 +221,17 @@ void SEMANTICANALYZER::AstStatementParser::serializeGraph(AST::ASTTree::DSFItera
 
             serializeRelation(relationIter, relation);
             graph.relations.push_back(std::move(relation));
+
+            while(it.get() != astIter.get()) {
+                ++it;
+            }
+        }
+
+        auto nextIt = it;
+        ++nextIt;
+        if(nextIt != AST::ASTTree::DSFIterator())
+        {
+            ++astIter;
         }
     }
 }
@@ -208,17 +246,26 @@ void SEMANTICANALYZER::AstStatementParser::serializeDotCloud(AST::ASTTree::DSFIt
         if(it->value == START_INTERNAL_BLOCK && startInternalBlock == false)
         {
             startInternalBlock = true;
-            continue;
         }
-        if(it->value == PROPERTY && startInternalBlock == false)
+        else if(it->value == ID)
+        {
+            ++it;
+            ++astIter;
+            dotCloud.id = it->value;
+        }
+        else if(it->value == PROPERTY && startInternalBlock == false)
         {
             Property property;
             AST::ASTTree::DSFIterator propertyIter(it.get());
 
             serializeProperty(propertyIter, property);
             dotCloud.externalProperties.push_back(std::move(property));
+
+            while(it.get() != astIter.get()) {
+                ++it;
+            }
         }
-        if(it->value == START_DOT_BLOCK)
+        else if(it->value == START_DOT_BLOCK)
         {
             Dot dot;
 
@@ -227,16 +274,28 @@ void SEMANTICANALYZER::AstStatementParser::serializeDotCloud(AST::ASTTree::DSFIt
                 if(it->value == PROPERTY)
                 {
                     Property property;
-                    AST::ASTTree::DSFIterator proppertyIter(it.get());
+                    AST::ASTTree::DSFIterator propertyIter(it.get());
 
-                    serializeProperty(proppertyIter, property);
+                    serializeProperty(propertyIter, property);
                     dot.internalProperties.push_back(std::move(property));
+
+                    while(it.get() != astIter.get()) {
+                        ++it;
+                    }
                 }
 
                 ++it;
+                ++astIter;
             }
 
             dotCloud.dots.push_back(std::move(dot));
+        }
+
+        auto nextIt = it;
+        ++nextIt;
+        if(nextIt != AST::ASTTree::DSFIterator())
+        {
+            ++astIter;
         }
     }
 }
@@ -249,12 +308,21 @@ void SEMANTICANALYZER::AstStatementParser::serializeProperty(AST::ASTTree::DSFIt
         if(it->value == PROPERTY_KEY)
         {
             ++it;
+            ++astIter;
             property.key = it->value;
         }
         else if(it->value == TEXT || it->value == NUMBER)
         {
             ++it;
+            ++astIter;
             property.value = it->value;
+        }
+
+        auto nextIt = it;
+        ++nextIt;
+        if(nextIt != AST::ASTTree::DSFIterator())
+        {
+            ++astIter;
         }
     }
 }

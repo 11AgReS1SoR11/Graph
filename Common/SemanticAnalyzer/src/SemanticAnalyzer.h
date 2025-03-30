@@ -39,7 +39,6 @@
 #define SHAPE                   "SHAPE"
 #define ID                      "ID"
 #define PROPERTY                "property"
-#define DOT                     "dot"
 #define START_INTERNAL_BLOCK    "{"
 #define END_INTERNAL_BLOCK      "}"
 #define PROPERTY_KEY            "PROPERTY_KEY"

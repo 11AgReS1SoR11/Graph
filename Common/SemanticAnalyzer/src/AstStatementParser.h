@@ -30,6 +30,7 @@ private:
 
 private:
     AST::ASTTree& astTree;
+    AST::ASTTree::DSFIterator astIter;
     std::vector<std::pair<std::string, std::any>> programTree;
 };
 

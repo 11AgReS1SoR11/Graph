@@ -135,12 +135,12 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkObjectDecl(const ObjectDecl &obj, 
 
 void SEMANTICANALYZER::SemanticAnalyzer::checkRelation(const Relation &rel, int statementNumber)
 {
-    if (isObjectDeclared(rel.id1))
+    if (!isObjectDeclared(rel.id1))
     {
         throw SemanticError("Объект " + rel.id1 + " не объявлен.", statementNumber);
     }
 
-    if (isObjectDeclared(rel.id2))
+    if (!isObjectDeclared(rel.id2))
     {
         throw SemanticError("Объект " + rel.id2 + " не объявлен.", statementNumber);
     }
@@ -164,9 +164,9 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkRelation(const Relation &rel, int 
 
 void SEMANTICANALYZER::SemanticAnalyzer::checkNote(const Note &note, int statementNumber)
 {
-    if (isObjectDeclared(note.id))
+    if (!isObjectDeclared(note.id))
     {
-        throw SemanticError("Заметка " + note.id + " уже объявлена.", statementNumber);
+        throw SemanticError("Объект " + note.id + " не объявлен.", statementNumber);
     }
 
     declareObject(note.id, statementNumber);
