@@ -13,6 +13,8 @@ private slots:
     void test_dotCloud();
 };
 
+
+
 void TestClass::test_objectDecl()
 {
     std::vector<Shape*> vec;
@@ -62,7 +64,7 @@ void TestClass::test_objectDecl()
     auto it = tree.begin();
     QVERIFY(it->getValue() == "root");
     ++it;
-    QVERIFY(it->getValue() == "STARTGRAPH");
+    QVERIFY(it->getValue() == "@startgraph");
     ++it;
 
     ///circle-------------------------------
@@ -105,9 +107,9 @@ void TestClass::test_objectDecl()
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
-    QVERIFY(it->getValue() == "NUMBER");
+    QVERIFY(it->getValue() == "TEXT");
     ++it;
-    QVERIFY(it->getValue() == "0");
+    QVERIFY(it->getValue() == "NONE");
     ++it;
     QVERIFY(it->getValue() == ";");
 
@@ -233,9 +235,9 @@ void TestClass::test_objectDecl()
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
-    QVERIFY(it->getValue() == "NUMBER");
+    QVERIFY(it->getValue() == "TEXT");
     ++it;
-    QVERIFY(it->getValue() == "0");
+    QVERIFY(it->getValue() == "NONE");
     ++it;
     QVERIFY(it->getValue() == ";");
 
@@ -394,9 +396,9 @@ void TestClass::test_objectDecl()
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
-    QVERIFY(it->getValue() == "NUMBER");
+    QVERIFY(it->getValue() == "TEXT");
     ++it;
-    QVERIFY(it->getValue() == "0");
+    QVERIFY(it->getValue() == "NONE");
     ++it;
     QVERIFY(it->getValue() == ";");
 
@@ -548,9 +550,9 @@ void TestClass::test_objectDecl()
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
-    QVERIFY(it->getValue() == "NUMBER");
+    QVERIFY(it->getValue() == "TEXT");
     ++it;
-    QVERIFY(it->getValue() == "0");
+    QVERIFY(it->getValue() == "NONE");
     ++it;
     QVERIFY(it->getValue() == ";");
 
@@ -620,7 +622,9 @@ void TestClass::test_objectDecl()
     ///line end------------------------------
 
     ++it;
-    QVERIFY(it->getValue() == "ENDGRAPH");
+    
+
+    QVERIFY(it->getValue() == "@endgraph");
 }
 
 
@@ -683,7 +687,7 @@ void TestClass::test_graph()
     auto it = tree.begin();
     QVERIFY(it->getValue() == "root");
     ++it;
-    QVERIFY(it->getValue() == "STARTGRAPH");
+    QVERIFY(it->getValue() == "@startgraph");
     ++it;
 
     QVERIFY(it->getValue() == "STATEMENT");
@@ -696,6 +700,9 @@ void TestClass::test_graph()
     ++it;
 
     QVERIFY(it->getValue() == "graphID");
+    ++it;
+
+    QVERIFY(it->getValue() == "(");
     ++it;
     
     QVERIFY(it->getValue() == "property");
@@ -721,9 +728,9 @@ void TestClass::test_graph()
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
-    QVERIFY(it->getValue() == "NUMBER");
+    QVERIFY(it->getValue() == "TEXT");
     ++it;
-    QVERIFY(it->getValue() == "0");
+    QVERIFY(it->getValue() == "NONE");
     ++it;
     QVERIFY(it->getValue() == ";");
 
@@ -787,13 +794,17 @@ void TestClass::test_graph()
     ++it;
     QVERIFY(it->getValue() == ";");
     ++it;
-    QVERIFY(it->getValue() == "{");
     
-    ++it;
 
-    
-    QVERIFY(it->getValue() == "STATEMENT");
+    QVERIFY(it->getValue() == ")");
     ++it;
+    
+    QVERIFY(it->getValue() == "{");
+
+
+    ///circle-------------------------------------
+    ++it;
+    
     QVERIFY(it->getValue() == "object_decl");
     ++it;
     QVERIFY(it->getValue() == "SHAPE");
@@ -830,9 +841,9 @@ void TestClass::test_graph()
     ++it;
     QVERIFY(it->getValue() == "=");
     ++it;
-    QVERIFY(it->getValue() == "NUMBER");
+    QVERIFY(it->getValue() == "TEXT");
     ++it;
-    QVERIFY(it->getValue() == "0");
+    QVERIFY(it->getValue() == "NONE");
     ++it;
     QVERIFY(it->getValue() == ";");
 
@@ -915,6 +926,436 @@ void TestClass::test_graph()
     ++it;
     QVERIFY(it->getValue() == "}");
     ++it;
+
+    ///circle end ----------------------------------------
+
+
+
+    ///diamond --------------------------------------------
+
+    QVERIFY(it->getValue() == "object_decl");
+    ++it;
+    QVERIFY(it->getValue() == "SHAPE");
+    ++it;
+    QVERIFY(it->getValue() == "diamond");
+    ++it;
+    QVERIFY(it->getValue() == "ID");
+    ++it;
+    QVERIFY(it->getValue() == "diamondID");
+    ++it;
+    QVERIFY(it->getValue() == "{");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "text");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "TEXT");
+    ++it;
+    QVERIFY(it->getValue() == "diamondTEXT");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "сolor");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "TEXT");
+    ++it;
+    QVERIFY(it->getValue() == "NONE");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "border");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QVERIFY(it->getValue() == "1");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "size_text");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QVERIFY(it->getValue() == "10");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "x");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QVERIFY(it->getValue() == "2");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "y");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QVERIFY(it->getValue() == "2");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "size_A");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QCOMPARE(std::stod(it->getValue()), (double)1);
+    ++it;
+    QVERIFY(it->getValue() == ";");
+    ++it;
+
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "size_B");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QCOMPARE(std::stod(it->getValue()), (double)1);
+    ++it;
+    QVERIFY(it->getValue() == ";");
+    ++it;
+
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "angle");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QCOMPARE(std::stod(it->getValue()), (double)90);
+    ++it;
+    QVERIFY(it->getValue() == ";");
+    ++it;
+
+    
+    QVERIFY(it->getValue() == "}");
+    ++it;
+
+    ///diamond end-------------------------------------------
+
+
+    ///reactangle---------------------------------------
+
+    QVERIFY(it->getValue() == "object_decl");
+    ++it;
+    QVERIFY(it->getValue() == "SHAPE");
+    ++it;
+    
+    QVERIFY(it->getValue() == "reactangle");
+    ++it;
+    
+    QVERIFY(it->getValue() == "ID");
+    ++it;
+    QVERIFY(it->getValue() == "reactangleID");
+    ++it;
+    QVERIFY(it->getValue() == "{");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "text");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "TEXT");
+    ++it;
+    
+    QVERIFY(it->getValue() == "reactangleTEXT");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "сolor");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "TEXT");
+    ++it;
+    QVERIFY(it->getValue() == "NONE");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "border");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QVERIFY(it->getValue() == "1");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "size_text");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QVERIFY(it->getValue() == "10");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "x");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QVERIFY(it->getValue() == "3");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "y");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QVERIFY(it->getValue() == "3");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+    
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "size_A");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QCOMPARE(std::stod(it->getValue()), (double)1);
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "size_B");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QCOMPARE(std::stod(it->getValue()), (double)1);
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "}");
+    ++it;
+
+    ///reactangle end-----------------------------------
+
+    ///line------------------------------------------
+
+    QVERIFY(it->getValue() == "relation");
+    ++it;
+    
+    QVERIFY(it->getValue() == "ID");
+    ++it;
+    
+    QVERIFY(it->getValue() == "diamondID");
+    ++it;
+    
+    QVERIFY(it->getValue() == "ARROW");
+
+    ++it;
+    QVERIFY(it->getValue() == "-");
+    ++it;
+
+    QVERIFY(it->getValue() == "ID");
+    ++it;
+    QVERIFY(it->getValue() == "reactangleID");
+    ++it;
+
+    QVERIFY(it->getValue() == "{");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "text");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "TEXT");
+    ++it;
+    
+    QVERIFY(it->getValue() == "lineTEXT");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "сolor");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "TEXT");
+    ++it;
+    QVERIFY(it->getValue() == "NONE");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "border");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QVERIFY(it->getValue() == "1");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "size_text");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QVERIFY(it->getValue() == "10");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "x");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QVERIFY(it->getValue() == "4");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+
+    ++it;
+    QVERIFY(it->getValue() == "property");
+    ++it;
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    QVERIFY(it->getValue() == "y");
+    ++it;
+    QVERIFY(it->getValue() == "=");
+    ++it;
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+    QVERIFY(it->getValue() == "4");
+    ++it;
+    QVERIFY(it->getValue() == ";");
+    
+    ++it;
+    QVERIFY(it->getValue() == "}");
+    ++it;
+
+    ///line end-------------------------------------
+    QVERIFY(it->getValue() == "}");
+    ++it;
+    QVERIFY(it->getValue() == "@endgraph");
+
 }
 
 void TestClass::test_dotCloud()
@@ -944,26 +1385,187 @@ void TestClass::test_dotCloud()
     cloud.dots.push_back(circle2_ptr);
     cloud.dots.push_back(circle3_ptr);
 
-    vec.push_back(cloud);
+    vec.push_back(&cloud);
 
     ASTTree tree(Retranslator::getInstance().parseTree(vec));
     auto it = tree.begin();
     QVERIFY(it->getValue() == "root");
     ++it;
-    QVERIFY(it->getValue() == "STARTGRAPH");
+    QVERIFY(it->getValue() == "@startgraph");
     ++it;
 
+    QVERIFY(it->getValue() == "STATEMENT");
+    ++it;
+
+    
+    
     QVERIFY(it->getValue() == "dot_cloud");
     ++it;
 
-    QVERIFY(it->getValue() == "dot_cloud");
+    QVERIFY(it->getValue() == "(");
     ++it;
 
-    QVERIFY(it->getValue() == "dot_cloud");
+    QVERIFY(it->getValue() == "property");
     ++it;
 
-    QVERIFY(it->getValue() == "dot_cloud");
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
     ++it;
+
+    QVERIFY(it->getValue() == "grid");
+    ++it;
+    
+    QVERIFY(it->getValue() == "=");
+    ++it;
+
+    QVERIFY(it->getValue() == "TEXT");
+    ++it;
+    
+
+    QVERIFY(it->getValue() == "false");
+    ++it;
+    
+    QVERIFY(it->getValue() == ")");
+    ++it;
+
+    ///first---------------------------------
+
+    QVERIFY(it->getValue() == "{");
+    ++it;
+
+    QVERIFY(it->getValue() == "property");
+    ++it;
+
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+
+    QVERIFY(it->getValue() == "x");
+    ++it;
+    
+    QVERIFY(it->getValue() == "=");
+    ++it;
+
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+
+    QVERIFY(it->getValue() == "1");
+    ++it;
+
+    QVERIFY(it->getValue() == "property");
+    ++it;
+
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+
+    QVERIFY(it->getValue() == "y");
+    ++it;
+    
+    QVERIFY(it->getValue() == "=");
+    ++it;
+
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+
+    QVERIFY(it->getValue() == "1");
+    ++it;
+
+    QVERIFY(it->getValue() == "}");
+    ++it;
+
+    ///end of first------------------------------------------------
+
+    ///second-------------------------------------------------
+
+    QVERIFY(it->getValue() == "{");
+    ++it;
+
+    QVERIFY(it->getValue() == "property");
+    ++it;
+
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+
+    QVERIFY(it->getValue() == "x");
+    ++it;
+    
+    QVERIFY(it->getValue() == "=");
+    ++it;
+
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+
+    QVERIFY(it->getValue() == "2");
+    ++it;
+
+    QVERIFY(it->getValue() == "property");
+    ++it;
+
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+
+    QVERIFY(it->getValue() == "y");
+    ++it;
+    
+    QVERIFY(it->getValue() == "=");
+    ++it;
+
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+
+    QVERIFY(it->getValue() == "2");
+    ++it;
+
+    QVERIFY(it->getValue() == "}");
+    ++it;
+
+    ///end of second-------------------------------------------
+
+    ///third---------------------------------------------------
+
+    QVERIFY(it->getValue() == "{");
+    ++it;
+
+    QVERIFY(it->getValue() == "property");
+    ++it;
+
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+
+    QVERIFY(it->getValue() == "x");
+    ++it;
+    
+    QVERIFY(it->getValue() == "=");
+    ++it;
+
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+
+    QVERIFY(it->getValue() == "3");
+    ++it;
+
+    QVERIFY(it->getValue() == "property");
+    ++it;
+
+    QVERIFY(it->getValue() == "PROPERTY_KEY");
+    ++it;
+
+    QVERIFY(it->getValue() == "y");
+    ++it;
+    
+    QVERIFY(it->getValue() == "=");
+    ++it;
+
+    QVERIFY(it->getValue() == "NUMBER");
+    ++it;
+
+    QVERIFY(it->getValue() == "3");
+    ++it;
+
+    QVERIFY(it->getValue() == "}");
+    ++it;
+
+    ///end of third------------------------------------------
+
+    QVERIFY(it->getValue() == "@endgraph");
 }
 
 

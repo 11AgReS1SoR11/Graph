@@ -1,6 +1,6 @@
 #include <QtTest/QtTest>
 #include <stdexcept>
-
+#include <iostream>
 #include "AST.hpp"
 
 using namespace AST;
@@ -47,7 +47,7 @@ void TestClass::test_insertToBeginTree()
     }
 
     { // insert second node to tree
-        Node* node = new Node("STARTGRAPH");
+        Node* node = new Node("@startgraph");
         tree.insert(node, tree.begin());
 
         auto it = tree.begin();
@@ -57,7 +57,8 @@ void TestClass::test_insertToBeginTree()
         ++it;
 
         QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "STARTGRAPH");
+        
+        QVERIFY(it->getValue() == "@startgraph");
 
         ++it;
 
@@ -65,7 +66,7 @@ void TestClass::test_insertToBeginTree()
     }
 
     { // insert third node to tree
-        Node* node = new Node("ENDGRAPH");
+        Node* node = new Node("@endgraph");
         tree.insert(node, tree.begin());
 
         auto it = tree.begin();
@@ -75,12 +76,12 @@ void TestClass::test_insertToBeginTree()
         ++it;
 
         QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "STARTGRAPH");
+        QVERIFY(it->getValue() == "@startgraph");
 
         ++it;
 
         QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "ENDGRAPH");
+        QVERIFY(it->getValue() == "@endgraph");
 
         ++it;
 

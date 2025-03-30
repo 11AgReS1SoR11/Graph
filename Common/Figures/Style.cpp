@@ -1,7 +1,5 @@
 #include "Style.hpp"
 
-namespace detail
-{
 
 std::string colorToString(color_e color)
 {
@@ -20,12 +18,11 @@ std::string colorToString(color_e color)
     return {};
 }
 
-} // namespace detail
 
 std::string Style::toJson() const
 {
     return  "\"style\": {"
-            "\"color\": \"" + detail::colorToString(color) + "\","
+            "\"color\": \"" + colorToString(color) + "\","
             "\"border\": " + std::to_string(border) + ","
             "\"textSize\": " + std::to_string(textSize) +
             "}";

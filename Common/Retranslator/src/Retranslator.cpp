@@ -1,6 +1,7 @@
 #include "Retranslator.hpp"
 #include <typeinfo>
 #include <iostream>
+
 using namespace AST;
 
 std::unique_ptr<Retranslator> Retranslator::instance = nullptr;
@@ -8,7 +9,7 @@ std::unique_ptr<Retranslator> Retranslator::instance = nullptr;
 ASTTree Retranslator::parseTree(std::vector<Shape*> const& vec) const{
     
     Node* root = new Node("root");
-    root->addChild(new Node("STARTGRAPH"));
+    root->addChild(new Node("@startgraph"));
 
     for (const auto& elem : vec)
     {
@@ -26,18 +27,22 @@ ASTTree Retranslator::parseTree(std::vector<Shape*> const& vec) const{
         {
             cur->addChild(makeGraph(graph));
         }
+        else if (const DotCloud* const cloud = dynamic_cast<const DotCloud* const>(elem))
+        {
+            cur->addChild(makeDotCloud(cloud));
+        }
         else 
         {
             cur->addChild(makeObject(elem));
         }
     }
 
-    root->addChild(new Node("ENDGRAPH"));
+    root->addChild(new Node("@endgraph"));
 
     return ASTTree(root);
 }
 
-Node* makeNodeWithProperty(std::string key, std::string value, bool isText){
+Node* makeNodeWithProperty(std::string const& key, std::string const& value, bool isText){
     Node* property = new Node("property");
     property->addChild(new Node("PROPERTY_KEY"));
     property->childNodes[0]->addChild(new Node(key));
@@ -60,7 +65,7 @@ void addProperty(Node* node, std::string const& key, std::string const& value, b
 void addBasicParams(Node* node, const Shape* const shape)
 {
     addProperty(node, "text", shape->text, true);
-    addProperty(node, "сolor", std::to_string(static_cast<short>(shape->style.color)));
+    addProperty(node, "сolor", colorToString(shape->style.color), true);
     addProperty(node, "border", std::to_string(shape->style.border));
     addProperty(node, "size_text", std::to_string(shape->style.textSize));
     addProperty(node, "x", std::to_string(shape->x));
@@ -159,22 +164,24 @@ Node* Retranslator::makeGraph(const Graph* const shape) const
 
     node->addChild(new Node("ID"));
     node->childNodes[0]->addChild(new Node(shape->id));
+    
+    node->addChild(new Node("("));
 
     addBasicParams(node, shape);
+
+    node->addChild(new Node(")"));
 
     node->addChild(new Node("{"));
 
     for (auto const& elem : shape->nodes)
     {
-        Node* cur = new Node("STATEMENT");
-        node->addChild(cur);
         if (const Line* const line = dynamic_cast<const Line* const>(elem))
         { 
-            cur->addChild(makeLink(line));
+            node->addChild(makeLink(line));
         }
         else 
         {
-            cur->addChild(makeObject(elem));
+            node->addChild(makeObject(elem));
         }
     }
 
@@ -189,22 +196,22 @@ Node* Retranslator::makeDotCloud(const DotCloud* const shape) const
 {
     Node* node = new Node("dot_cloud");
 
-    node->addChild(new Node("ID"));
-    node->childNodes[0]->addChild(new Node(shape->id));
+    node->addChild(new Node("("));
+    node->addChild(makeNodeWithProperty("grid", shape->grid ? "true" : "false", true));
+    node->addChild(new Node (")"));
 
-    addBasicParams(node, shape);
-
-    node->addChild(new Node("{"));
+    
 
     for (auto const& elem : shape->dots)
     {
-        Node* cur = new Node("STATEMENT");
-        node->addChild(cur);
-        cur->addChild(makeObject(elem));
+        node->addChild(new Node("{"));
+        node->addChild(makeNodeWithProperty("x", std::to_string(elem->x), false));
+        node->addChild(makeNodeWithProperty("y", std::to_string(elem->y), false));
+        node->addChild(new Node("}"));
     }
 
 
-    node->addChild(new Node("}"));
+    
 
     return node;
 }
