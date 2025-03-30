@@ -6,6 +6,7 @@ SUBDIRS += AST \
            Figures \
            Logger \
            FileManager \
-           SemanticAnalyzer
+           SemanticAnalyzer \ 
+           Retranslator
 
 CONFIG += ordered

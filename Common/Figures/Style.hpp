@@ -22,3 +22,5 @@ struct Style
     unsigned int border = 1;
     unsigned int textSize = 10;
 };
+
+std::string colorToString(color_e color);

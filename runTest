@@ -28,7 +28,8 @@ else
     LD_LIBRARY_PATH="$PWD/build/Common/Figures/:${LD_LIBRARY_PATH}"
     LD_LIBRARY_PATH="$PWD/build/Common/FileManager/src/:${LD_LIBRARY_PATH}"
     LD_LIBRARY_PATH="$PWD/build/Common/SemanticAnalyzer/src/:${LD_LIBRARY_PATH}"
-    export LD_LIBRARY_PATH
+    LD_LIBRARY_PATH=$PWD/build/Common/Retranslator/src/:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH
     echo "Пути для Unix обновлены в LD_LIBRARY_PATH"
 fi
 
@@ -54,6 +55,7 @@ elif [ "$1" = "--Common" ]; then
     run_test "build/Common/Logger/test/LoggerTest"
     run_test "build/Common/FileManager/test/FileManagerTest"
     run_test "build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
+    run_test "build/Common/Retranslator/test/RetranslatorTest"
 elif [ "$1" = "--SA" ]; then
     run_test "build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
 else
@@ -63,6 +65,7 @@ else
     run_test "build/Common/Logger/test/LoggerTest"
     run_test "build/Common/FileManager/test/FileManagerTest"
     run_test "build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
+    run_test "build/Common/Retranslator/test/RetranslatorTest"
 fi
 
 echo "Все выбранные тесты завершены!"

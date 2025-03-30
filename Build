@@ -45,6 +45,7 @@ else
     LD_LIBRARY_PATH="$PWD/Common/Figures/:${LD_LIBRARY_PATH}"
     LD_LIBRARY_PATH="$PWD/Common/FileManager/src/:${LD_LIBRARY_PATH}"
     LD_LIBRARY_PATH="$PWD/Common/SemanticAnalyzer/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH=$PWD/build/Common/Retranslator/src/:${LD_LIBRARY_PATH}
     export LD_LIBRARY_PATH
     echo "Пути для Unix обновлены в LD_LIBRARY_PATH"
 fi
