@@ -1,19 +1,10 @@
-#include <QtTest/QtTest>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
+
 #include "FiguresStorage.hpp"
 #include "Figures.hpp"
 
-class TestClass : public QObject
-{
-    Q_OBJECT
-
-    std::string getJsonFromFigures(std::vector<Shape*> const& figures);
-    bool compareShape(Shape const& first, Shape const& second);
-
-private slots:
-    void test_createFromJsonWithSimpleFigures();
-};
-
-std::string TestClass::getJsonFromFigures(std::vector<Shape*> const& figures)
+std::string getJsonFromFigures(std::vector<Shape*> const& figures)
 {
     std::string json = "[";
     for (Shape* figure : figures)
@@ -25,14 +16,14 @@ std::string TestClass::getJsonFromFigures(std::vector<Shape*> const& figures)
     return json;
 }
 
-bool TestClass::compareShape(Shape const& first, Shape const& second)
+bool compareShape(Shape const& first, Shape const& second)
 {
     return first.id == second.id && first.text == second.text && first.x == second.x && first.y == second.y
             && first.style.border == second.style.border && first.style.color == second.style.color &&
             first.style.textSize == second.style.textSize;
 }
 
-void TestClass::test_createFromJsonWithSimpleFigures()
+TEST_CASE("Creates simpe figures", "[FiguresStorage]")
 {
     Circle circle;
     Rectangle rectangle;
@@ -42,38 +33,35 @@ void TestClass::test_createFromJsonWithSimpleFigures()
     std::string const json = getJsonFromFigures({&circle, &rectangle, &diamond, &line});
 
     FiguresStorage figures = FiguresStorage::createFigures(json);
-    QVERIFY(figures.size() == 4);
+    REQUIRE(figures.size() == 4);
 
     // check Circle
     Circle* circleFromJson = dynamic_cast<Circle*>(figures[0]);
-    QVERIFY(circleFromJson);
-    QVERIFY(compareShape(*circleFromJson, circle));
-    QVERIFY(circleFromJson->radius == circle.radius);
+    REQUIRE(circleFromJson);
+    REQUIRE(compareShape(*circleFromJson, circle));
+    REQUIRE(circleFromJson->radius == circle.radius);
 
     // check Rectangle
     Rectangle* rectangleFromJson = dynamic_cast<Rectangle*>(figures[1]);
-    QVERIFY(rectangleFromJson);
-    QVERIFY(compareShape(*rectangleFromJson, rectangle));
-    QVERIFY(rectangleFromJson->sizeA == rectangle.sizeA);
-    QVERIFY(rectangleFromJson->sizeB == rectangle.sizeB);
+    REQUIRE(rectangleFromJson);
+    REQUIRE(compareShape(*rectangleFromJson, rectangle));
+    REQUIRE(rectangleFromJson->sizeA == rectangle.sizeA);
+    REQUIRE(rectangleFromJson->sizeB == rectangle.sizeB);
 
     // check Diamond
     Diamond* diamondFromJson = dynamic_cast<Diamond*>(figures[2]);
-    QVERIFY(diamondFromJson);
-    QVERIFY(compareShape(*diamondFromJson, diamond));
-    QVERIFY(diamondFromJson->sizeA == diamond.sizeA);
-    QVERIFY(diamondFromJson->sizeB == diamond.sizeB);
-    QVERIFY(diamondFromJson->angle == diamond.angle);
+    REQUIRE(diamondFromJson);
+    REQUIRE(compareShape(*diamondFromJson, diamond));
+    REQUIRE(diamondFromJson->sizeA == diamond.sizeA);
+    REQUIRE(diamondFromJson->sizeB == diamond.sizeB);
+    REQUIRE(diamondFromJson->angle == diamond.angle);
 
     // check Line
     Line* lineFromJson = dynamic_cast<Line*>(figures[3]);
-    QVERIFY(lineFromJson);
-    QVERIFY(compareShape(*lineFromJson, line));
-    QVERIFY(lineFromJson->idFrom == line.idFrom);
-    QVERIFY(lineFromJson->idTo == line.idTo);
-    QVERIFY(lineFromJson->orientation == line.orientation);
-    QVERIFY(lineFromJson->type == line.type);
+    REQUIRE(lineFromJson);
+    REQUIRE(compareShape(*lineFromJson, line));
+    REQUIRE(lineFromJson->idFrom == line.idFrom);
+    REQUIRE(lineFromJson->idTo == line.idTo);
+    REQUIRE(lineFromJson->orientation == line.orientation);
+    REQUIRE(lineFromJson->type == line.type);
 }
-
-QTEST_GUILESS_MAIN(TestClass)
-#include "test.moc"

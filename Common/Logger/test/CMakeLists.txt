@@ -1,22 +1,16 @@
-set(SOURCE_RETRANSLATOR_TEST test.cpp)	
+set(SOURCE_LOGGER_TEST test.cpp)
 
-add_executable(RetranslatorTest ${SOURCE_RETRANSLATOR_TEST})
+add_executable(LoggerTest ${SOURCE_LOGGER_TEST})
 
-target_link_libraries(RetranslatorTest PRIVATE Retranslator)
-
-target_include_directories(RetranslatorTest PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/src
+target_link_libraries(LoggerTest PRIVATE
+    Catch2::Catch2WithMain
+    Logger
 )
 
-# Включаем поддержку CTest (если еще не включена в корневом CMakeLists.txt)
-include(CTest)
+target_include_directories(LoggerTest PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/Common/Logger/src
+    ${Catch2_SOURCE_DIR}/single_include
+)
 
-# Добавляем тест
-add_test(NAME RetranslatorTest COMMAND RetranslatorTest)
-
-#Указываем директории с заголовочными файлами (если есть)
-#target_include_directories(Backend PUBLIC
-#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#    $<INSTALL_INTERFACE:include>
-#)
+add_test(NAME LoggerTest COMMAND LoggerTest)

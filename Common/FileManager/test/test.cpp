@@ -1,66 +1,50 @@
-#include <QtTest/QtTest>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
+
 #include "FileManager.hpp"
-#include <QFile>
+#include <fstream>
+#include <filesystem>
 
-class TestFileManager : public QObject
+namespace fs = std::filesystem;
+
+static std::string const FILE_PATH = "build/test_file.txt";
+
+TEST_CASE("Write to file", "[FileManager]")
 {
-    Q_OBJECT
-
-private slots:
-    void testWriteToFile();
-    void testReadFromFile();
-    void testFileExistsAfterWrite();
-    void testReadNonExistentFile();
-    void testOverwriteFile();
-};
-
-static QString const FILE_PATH = "build/test_file.txt";
-
-void TestFileManager::testWriteToFile()
-{
-    QVERIFY(FileManager::writeToFile(FILE_PATH.toStdString(), "Hello, QtTest!"));
+    REQUIRE(FileManager::writeToFile(FILE_PATH, "Hello"));
 }
 
-void TestFileManager::testReadFromFile()
+TEST_CASE("Read from file", "[FileManager]")
 {
-    QString const dataWrite = "Test Read";
-    auto const success = FileManager::writeToFile(FILE_PATH.toStdString(), dataWrite.toStdString());
-    QVERIFY(success);
+    std::string const dataWrite = "Test Read";
+    REQUIRE(FileManager::writeToFile(FILE_PATH, dataWrite));
 
-    auto const res = FileManager::readFromFile(FILE_PATH.toStdString());
-    QVERIFY(res);
+    auto const res = FileManager::readFromFile(FILE_PATH);
+    REQUIRE(res);
 
-    QCOMPARE(QString::fromStdString(*res), dataWrite);
+    REQUIRE(*res == dataWrite);
 }
 
-void TestFileManager::testFileExistsAfterWrite()
+TEST_CASE("Check file exists after write", "[FileManager]")
 {
-    auto const success = FileManager::writeToFile("build/Such_file_non_exist", "Checking existence");
-    QVERIFY(success);
+    REQUIRE(FileManager::writeToFile("build/Such_file_non_exist", "Checking existence"));
 
-    QFile file(FILE_PATH);
-    QVERIFY(file.exists());
+    REQUIRE(fs::exists(FILE_PATH));
 }
 
-void TestFileManager::testReadNonExistentFile()
+TEST_CASE("Read non existent file", "[FileManager]")
 {
     auto const res = FileManager::readFromFile("Lalala");
-    QVERIFY(!res);
+    REQUIRE(!res);
 }
 
-void TestFileManager::testOverwriteFile()
+TEST_CASE("Overwrite file", "[FileManager]")
 {
-    QString const lastData = "Second write";
-    auto success = FileManager::writeToFile(FILE_PATH.toStdString(), "First write");
-    QVERIFY(success);
+    std::string const lastData = "Second write";
+    REQUIRE(FileManager::writeToFile(FILE_PATH, "First write"));
+    REQUIRE(FileManager::writeToFile(FILE_PATH, lastData));
 
-    success = FileManager::writeToFile(FILE_PATH.toStdString(), lastData.toStdString());
-    QVERIFY(success);
-
-    auto const res = FileManager::readFromFile(FILE_PATH.toStdString());
-    QVERIFY(res);
-    QCOMPARE(QString::fromStdString(*res), lastData);
+    auto const res = FileManager::readFromFile(FILE_PATH);
+    REQUIRE(res);
+    REQUIRE(*res == lastData);
 }
-
-QTEST_GUILESS_MAIN(TestFileManager)
-#include "test.moc"

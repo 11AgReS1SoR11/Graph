@@ -1,3 +1,18 @@
 #!/bin/bash
-./build/App/Graph --retranslate --figuresJsonPath build/figures.json
+
+error()
+{
+    echo "Error: $1" >&2
+    exit 1
+}
+
+OS=$(uname -s)
+
+if [[ "$OS" == "Windows_NT" ]]; then
+    EXE_EXT=".exe"
+else
+    EXE_EXT=""
+fi
+
+./build/App/Graph --retranslate --figuresJsonPath build/figures.json || error "Ошибка при запуске приложения"
 echo "Приложение успешно завершено!"
