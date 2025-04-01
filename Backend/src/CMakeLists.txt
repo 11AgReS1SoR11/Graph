@@ -24,6 +24,12 @@ target_link_libraries(Backend PUBLIC
     FileManager
 )
 
-# Установка библиотеки (опционально)
+# Копирование библиотеки в bin
+set_target_properties(Backend PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+# Установка библиотеки
 install(TARGETS Backend DESTINATION lib)
 install(FILES Backend.hpp DESTINATION include)
