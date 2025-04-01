@@ -81,7 +81,7 @@ Node* Retranslator::makeObject(const Shape* const shape) const
     else if (dynamic_cast<const Diamond* const>(shape))
         node->childNodes[0]->addChild(new Node("diamond"));
     else if (dynamic_cast<const Reactangle* const>(shape))
-        node->childNodes[0]->addChild(new Node("reactangle"));
+        node->childNodes[0]->addChild(new Node("rectangle"));
 
     node->addChild(new Node("ID"));
     node->childNodes[1]->addChild(new Node(shape->id));
