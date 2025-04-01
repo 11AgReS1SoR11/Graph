@@ -1,22 +1,17 @@
-set(SOURCE_AST_TEST test.cpp)	
+set(SOURCE_AST_TEST test.cpp)
 
 add_executable(ASTTest ${SOURCE_AST_TEST})
 
-target_link_libraries(ASTTest PRIVATE AST)
+target_link_libraries(ASTTest PRIVATE
+    Catch2::Catch2WithMain
+    AST
+)
 
 target_include_directories(ASTTest PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/Common/AST/src
+    ${Catch2_SOURCE_DIR}/single_include
 )
 
-# Включаем поддержку CTest (если еще не включена в корневом CMakeLists.txt)
-include(CTest)
+add_test(NAME ASTTest COMMAND ASTTest)
 
-# Добавляем тест
-add_test(NAME ASTTests COMMAND ASTTest)
-
-#Указываем директории с заголовочными файлами (если есть)
-#target_include_directories(Backend PUBLIC
-#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#    $<INSTALL_INTERFACE:include>
-#)

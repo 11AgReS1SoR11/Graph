@@ -1,77 +1,66 @@
 #!/bin/bash
 
-if [ "$(uname -s)" = "Windows_NT" ] || [ "$OS" = "Windows_NT" ]; then
-    PLATFORM="win32"
-    PATHSEP=";"
+error()
+{
+    echo "Error: $1" >&2
+    exit 1
+}
+
+OS=$(uname -s)
+
+if [[ "$OS" == "Windows_NT" ]]; then
     EXE_EXT=".exe"
 else
-    PLATFORM="unix"
-    PATHSEP=":"
     EXE_EXT=""
 fi
 
-if [ "$PLATFORM" = "win32" ]; then
-    PATH="$PWD/build/Frontend/src/:$PATH"
-    PATH="$PWD/build/Backend/src/:$PATH"
-    PATH="$PWD/build/Common/AST/src/:$PATH"
-    PATH="$PWD/build/Common/Logger/src/:$PATH"
-    PATH="$PWD/build/Common/Figures/:$PATH"
-    PATH="$PWD/build/Common/FileManager/src/:$PATH"
-    PATH="$PWD/build/Common/SemanticAnalyzer/src/:$PATH"
-    PATH="$PWD/build/Common/FiguresStorage/src/:$PATH"
-    export PATH
-    echo "Пути для Windows обновлены в PATH"
-else
-    LD_LIBRARY_PATH="$PWD/build/Frontend/src/:${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Backend/src/:${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Common/AST/src/:${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Common/Logger/src/:${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Common/Figures/:${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Common/FileManager/src/:${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Common/SemanticAnalyzer/src/:${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Common/Retranslator/src/:${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH="$PWD/build/Common/FiguresStorage/src/:${LD_LIBRARY_PATH}"
-    export LD_LIBRARY_PATH
-    echo "Пути для Unix обновлены в LD_LIBRARY_PATH"
-fi
-
-export QT_QPA_PLATFORM=offscreen
-
 run_test() {
     local test_path="$1"
-    if [ -f "$test_path$EXE_EXT" ]; then
-        echo "Запуск $test_path$EXE_EXT..."
-        "./$test_path$EXE_EXT" || { echo "Ошибка при запуске $test_path$EXE_EXT"; exit 1; }
+    local full_path="build/$test_path$EXE_EXT"
+
+    if [ -f "$full_path" ]; then
+        echo "Запуск $full_path..."
+        "./$full_path" || error "Ошибка при запуске $full_path"
     else
-        echo "Тест $test_path$EXE_EXT не найден"
+        echo "Тест $full_path не найден" >&2
         exit 1
     fi
 }
 
-if [ "$1" = "--Front" ]; then
-    run_test "build/Frontend/test/FrontendTest"
-elif [ "$1" = "--Backend" ]; then
-    run_test "build/Backend/test/BackendTest"
-elif [ "$1" = "--Common" ]; then
-    run_test "build/Common/AST/test/ASTTest"
-    run_test "build/Common/Logger/test/LoggerTest"
-    run_test "build/Common/FileManager/test/FileManagerTest"
-    # run_test "build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
-    run_test "build/Common/Retranslator/test/RetranslatorTest"
-    run_test "build/Common/FiguresStorage/test/FiguresStorageTest"
-elif [ "$1" = "--SA" ]; then
-    run_test "build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
-elif [ "$1" = "--FiguresStorage" ]; then
-    run_test "build/Common/FiguresStorage/test/FiguresStorageTest"
+test_arg="$1"
+
+if [[ -z "$test_arg" || "$test_arg" == "--all" ]]; then
+    run_test "Backend/test/BackendTest"
+    run_test "Common/AST/test/ASTTest"
+    run_test "Common/Logger/test/LoggerTest"
+    run_test "Common/FileManager/test/FileManagerTest"
+    run_test "Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
+    run_test "Common/Retranslator/test/RetranslatorTest"
+    run_test "Common/FiguresStorage/test/FiguresStorageTest"
+elif [[ "$test_arg" == "--Common" ]]; then
+    run_test "Common/AST/test/ASTTest"
+    run_test "Common/Logger/test/LoggerTest"
+    run_test "Common/FileManager/test/FileManagerTest"
+    run_test "Common/Retranslator/test/RetranslatorTest"
+    run_test "Common/FiguresStorage/test/FiguresStorageTest"
+    run_test "Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
+elif [[ "$test_arg" == "--Backend" ]]; then
+    run_test "Backend/test/BackendTest"
+elif [[ "$test_arg" == "--AST" ]]; then
+    run_test "Common/AST/test/ASTTest"
+elif [[ "$test_arg" == "--Logger" ]]; then
+    run_test "Common/Logger/test/LoggerTest"
+elif [[ "$test_arg" == "--FileManager" ]]; then
+    run_test "Common/FileManager/test/FileManagerTest"
+elif [[ "$test_arg" == "--SA" ]]; then
+    run_test "Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
+elif [[ "$test_arg" == "--Retranslator" ]]; then
+    run_test "Common/Retranslator/test/RetranslatorTest"
+elif [[ "$test_arg" == "--FiguresStorage" ]]; then
+    run_test "Common/FiguresStorage/test/FiguresStorageTest"
 else
-    run_test "build/Frontend/test/FrontendTest"
-    run_test "build/Backend/test/BackendTest"
-    run_test "build/Common/AST/test/ASTTest"
-    run_test "build/Common/Logger/test/LoggerTest"
-    run_test "build/Common/FileManager/test/FileManagerTest"
-    run_test "build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
-    run_test "build/Common/Retranslator/test/RetranslatorTest"
-    run_test "build/Common/FiguresStorage/test/FiguresStorageTest"
+    echo "Usage: $0 [--all | | --Common | --Backend | --AST | --Logger | --FileManager | --SA | --Retranslator | --FiguresStorage]" >&2
+    exit 1
 fi
 
-echo "Все выбранные тесты завершены!"
+echo "Тесты завершены."

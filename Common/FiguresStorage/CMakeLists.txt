@@ -1,3 +1,6 @@
 # FiguresStorage
 add_subdirectory(src)
-# add_subdirectory(test)
+
+if(BUILD_TESTS)
+    add_subdirectory(test)
+endif()

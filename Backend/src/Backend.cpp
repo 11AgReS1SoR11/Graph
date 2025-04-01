@@ -5,8 +5,8 @@
 #include "FiguresStorage.hpp"
 #include "Retranslator.hpp"
 
-#include "AstStatementParser.h"
-#include "SemanticAnalyzer.h"
+#include "AstStatementParser.hpp"
+#include "SemanticAnalyzer.hpp"
 
 #include <stdexcept>
 
