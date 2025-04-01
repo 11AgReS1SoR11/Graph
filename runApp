@@ -19,6 +19,7 @@ if [ "$PLATFORM" = "win32" ]; then
     PATH="$PWD/build/Common/FileManager/src/:$PATH"
     PATH="$PWD/build/Common/SemanticAnalyzer/src/:$PATH"
     PATH="$PWD/build/Common/Retranslator/src/:$PATH"
+    PATH="$PWD/build/Common/FiguresStorage/src/:$PATH"
     export PATH
     echo "Пути для Windows обновлены в PATH"
 else
@@ -29,8 +30,9 @@ else
     LD_LIBRARY_PATH="$PWD/build/Common/Figures/:${LD_LIBRARY_PATH}"
     LD_LIBRARY_PATH="$PWD/build/Common/FileManager/src/:${LD_LIBRARY_PATH}"
     LD_LIBRARY_PATH="$PWD/build/Common/SemanticAnalyzer/src/:${LD_LIBRARY_PATH}"
-    LD_LIBRARY_PATH=$PWD/build/Common/Retranslator/src/:${LD_LIBRARY_PATH}
-export LD_LIBRARY_PATH
+    LD_LIBRARY_PATH="$PWD/build/Common/Retranslator/src/:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="$PWD/build/Common/FiguresStorage/src/:${LD_LIBRARY_PATH}"
+    export LD_LIBRARY_PATH
     echo "Пути для Unix обновлены в LD_LIBRARY_PATH"
 fi
 
@@ -38,7 +40,7 @@ APP_PATH="build/App/Graph"
 
 if [ -f "$APP_PATH$EXE_EXT" ]; then
     echo "Запуск $APP_PATH$EXE_EXT..."
-    "./$APP_PATH$EXE_EXT" || { echo "Ошибка при запуске $APP_PATH$EXE_EXT"; exit 1; }
+    "./$APP_PATH$EXE_EXT --retranslate --figuresJsonPath build/figures.json" || { echo "Ошибка при запуске $APP_PATH$EXE_EXT"; exit 1; }
 else
     echo "Ошибка: $APP_PATH$EXE_EXT не найден"
     exit 1

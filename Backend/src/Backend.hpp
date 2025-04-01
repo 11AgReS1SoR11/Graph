@@ -1,13 +1,15 @@
 #pragma once
 
+#include <string>
+
 namespace backend
 {
 
 class Backend
 {
-    /*
-    TODO: implement
-    */
+public:
+    void translate(std::string const& code);
+    std::string retranslate(std::string const& filePath);
 };
 
 } // namespace backend
