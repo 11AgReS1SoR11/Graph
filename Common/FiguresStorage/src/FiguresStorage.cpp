@@ -4,8 +4,7 @@
 #include "Logger.hpp"
 
 #include <stdexcept>
-
-#include <iostream>
+#include <algorithm>
 
 FiguresStorage::~FiguresStorage()
 {
@@ -57,7 +56,6 @@ std::string extractString(std::string const& json, std::string const& key)
 
     if (json[keyStart] != ':')
     {
-        std::cout << json[keyStart] << std::endl;
         std::string const errorMsg = "Invalid json format: expected \":\", for key = " + key + " here: " + json;
         LOG_ERROR(FIGURES_STORAGE_LOG, errorMsg);
         throw std::invalid_argument(errorMsg);

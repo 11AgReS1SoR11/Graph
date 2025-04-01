@@ -3,13 +3,11 @@
 #include <fstream>
 #include <string>
 #include <mutex>
-#include <QString>
 
 #define LOG_INFO(entity, message) Logger::getInstance().log(Logger::Level::INFO, entity, message);
 #define LOG_WARN(entity, message) Logger::getInstance().log(Logger::Level::WARN, entity, message);
 #define LOG_ERROR(entity, message) Logger::getInstance().log(Logger::Level::ERROR, entity, message);
 
-inline constexpr auto FRONTEND_LOG = "FRONTEND";
 inline constexpr auto BACKEND_LOG = "BACKEND";
 inline constexpr auto TRANSLATOR_LOG = "TRANSLATOR";
 inline constexpr auto RETRANSLATOR_LOG = "RETRANSLATOR";
@@ -26,9 +24,7 @@ public:
 
     static Logger& getInstance();
 
-    void log(Level level, const char* entity, const char* message);
     void log(Level level, std::string const& entity, std::string const& message);
-    void log(Level level, QString const& entity, QString const& message);
 
 private:
     Logger();
