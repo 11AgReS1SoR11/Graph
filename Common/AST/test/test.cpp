@@ -1,33 +1,21 @@
-#include <QtTest/QtTest>
-#include <stdexcept>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
+
 #include "AST.hpp"
 
 using namespace AST;
 
-class TestClass : public QObject
-{
-    Q_OBJECT
-
-private slots:
-    void test_initializeTree();
-    void test_insertToBeginTree();
-    void test_insertToAnyNodeTree();
-    void test_rangeForTree();
-    void test_TreeIterCompare();
-    void test_failureCaseTree();
-};
-
-void TestClass::test_initializeTree()
+TEST_CASE("initialization", "[AST]")
 {
     Node* root = new Node("PROGRAM");
     ASTTree tree(root);
 
     auto it = tree.begin();
-    QVERIFY(it != tree.end());
-    QVERIFY(it->getValue() == "PROGRAM");
+    REQUIRE(it != tree.end());
+    REQUIRE(it->getValue() == "PROGRAM");
 }
 
-void TestClass::test_insertToBeginTree()
+TEST_CASE("insert to begin tree", "[AST]")
 {
     ASTTree tree;
 
@@ -37,12 +25,12 @@ void TestClass::test_insertToBeginTree()
         tree.insert(node, tree.begin());
 
         auto it = tree.begin();
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "PROGRAM");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "PROGRAM");
 
         ++it;
 
-        QVERIFY(it == tree.end());
+        REQUIRE(it == tree.end());
     }
 
     { // insert second node to tree
@@ -50,18 +38,18 @@ void TestClass::test_insertToBeginTree()
         tree.insert(node, tree.begin());
 
         auto it = tree.begin();
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "PROGRAM");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "PROGRAM");
 
         ++it;
 
-        QVERIFY(it != tree.end());
+        REQUIRE(it != tree.end());
         
-        QVERIFY(it->getValue() == "@startgraph");
+        REQUIRE(it->getValue() == "@startgraph");
 
         ++it;
 
-        QVERIFY(it == tree.end());
+        REQUIRE(it == tree.end());
     }
 
     { // insert third node to tree
@@ -69,26 +57,26 @@ void TestClass::test_insertToBeginTree()
         tree.insert(node, tree.begin());
 
         auto it = tree.begin();
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "PROGRAM");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "PROGRAM");
 
         ++it;
 
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "@startgraph");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "@startgraph");
 
         ++it;
 
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "@endgraph");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "@endgraph");
 
         ++it;
 
-        QVERIFY(it == tree.end());
+        REQUIRE(it == tree.end());
     }
 }
 
-void TestClass::test_insertToAnyNodeTree()
+TEST_CASE("insert to any node of tree", "[AST]")
 {
     Node* root = new Node("PROGRAM");
     ASTTree tree(root);
@@ -96,95 +84,95 @@ void TestClass::test_insertToAnyNodeTree()
     // insert after PROGRAM
     Node* nodeStatement = new Node("STATEMENT");
     auto itStatement = tree.insert(nodeStatement, tree.begin());
-    QVERIFY(itStatement != tree.end());
-    QVERIFY(itStatement->getValue() == "STATEMENT");
+    REQUIRE(itStatement != tree.end());
+    REQUIRE(itStatement->getValue() == "STATEMENT");
 
     // insert after STATEMENT
     Node* nodeRelation = new Node("RELATION");
     auto itRelation = tree.insert(nodeRelation, itStatement);
-    QVERIFY(itRelation != tree.end());
-    QVERIFY(itRelation->getValue() == "RELATION");
+    REQUIRE(itRelation != tree.end());
+    REQUIRE(itRelation->getValue() == "RELATION");
 
     // insert after RELATION
     Node* nodePointer = new Node("<--");
     auto itPointer = tree.insert(nodePointer, itRelation);
-    QVERIFY(itPointer != tree.end());
-    QVERIFY(itPointer->getValue() == "<--");
+    REQUIRE(itPointer != tree.end());
+    REQUIRE(itPointer->getValue() == "<--");
 
     { // check tree sturcture
         auto it = tree.begin();
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "PROGRAM");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "PROGRAM");
 
         ++it;
 
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "STATEMENT");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "STATEMENT");
 
         ++it;
 
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "RELATION");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "RELATION");
 
         ++it;
 
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "<--");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "<--");
 
         ++it;
 
-        QVERIFY(it == tree.end());
+        REQUIRE(it == tree.end());
     }
 
     // insert after PROGRAM
     Node* nodeStatement2 = new Node("STATEMENT");
     auto itStatement2 = tree.insert(nodeStatement2, tree.begin());
-    QVERIFY(itStatement2 != tree.end());
-    QVERIFY(itStatement2->getValue() == "STATEMENT");
+    REQUIRE(itStatement2 != tree.end());
+    REQUIRE(itStatement2->getValue() == "STATEMENT");
 
     // insert after RELATION
     Node* nodeID = new Node("ID");
     auto itID = tree.insert(nodeID, itRelation);
-    QVERIFY(itID != tree.end());
-    QVERIFY(itID->getValue() == "ID");
+    REQUIRE(itID != tree.end());
+    REQUIRE(itID->getValue() == "ID");
 
     { // check tree sturcture
         auto it = tree.begin();
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "PROGRAM");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "PROGRAM");
 
         ++it;
 
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "STATEMENT");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "STATEMENT");
 
         ++it;
 
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "RELATION");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "RELATION");
 
         ++it;
 
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "<--");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "<--");
 
         ++it;
 
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "ID");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "ID");
 
         ++it;
 
-        QVERIFY(it != tree.end());
-        QVERIFY(it->getValue() == "STATEMENT");
+        REQUIRE(it != tree.end());
+        REQUIRE(it->getValue() == "STATEMENT");
 
         ++it;
 
-        QVERIFY(it == tree.end());
+        REQUIRE(it == tree.end());
     }
 }
 
-void TestClass::test_rangeForTree()
+TEST_CASE("range for", "[AST]")
 {
     Node* root = new Node("PROGRAM");
     ASTTree tree(root);
@@ -192,68 +180,67 @@ void TestClass::test_rangeForTree()
     // insert after PROGRAM
     Node* nodeStatement = new Node("STATEMENT");
     auto itStatement = tree.insert(nodeStatement, tree.begin());
-    QVERIFY(itStatement != tree.end());
-    QVERIFY(itStatement->getValue() == "STATEMENT");
+    REQUIRE(itStatement != tree.end());
+    REQUIRE(itStatement->getValue() == "STATEMENT");
 
     // insert after STATEMENT
     Node* nodeRelation = new Node("RELATION");
     auto itRelation = tree.insert(nodeRelation, itStatement);
-    QVERIFY(itRelation != tree.end());
-    QVERIFY(itRelation->getValue() == "RELATION");
+    REQUIRE(itRelation != tree.end());
+    REQUIRE(itRelation->getValue() == "RELATION");
 
     // insert after RELATION
     Node* nodePointer = new Node("<--");
     auto itPointer = tree.insert(nodePointer, itRelation);
-    QVERIFY(itPointer != tree.end());
-    QVERIFY(itPointer->getValue() == "<--");
+    REQUIRE(itPointer != tree.end());
+    REQUIRE(itPointer->getValue() == "<--");
 
     int idx = 0;
     for (auto it = tree.begin(); it != tree.end(); ++it, ++idx)
     {
-        if (idx == 0) { QVERIFY(it->getValue() == "PROGRAM"); }
-        if (idx == 1) { QVERIFY(it->getValue() == "STATEMENT"); }
-        if (idx == 2) { QVERIFY(it->getValue() == "RELATION"); }
-        if (idx == 3) { QVERIFY(it->getValue() == "<--"); }
+        if (idx == 0) { REQUIRE(it->getValue() == "PROGRAM"); }
+        if (idx == 1) { REQUIRE(it->getValue() == "STATEMENT"); }
+        if (idx == 2) { REQUIRE(it->getValue() == "RELATION"); }
+        if (idx == 3) { REQUIRE(it->getValue() == "<--"); }
     }
 }
 
-void TestClass::test_TreeIterCompare()
+TEST_CASE("DFSIterators compare", "[AST]")
 {
+    SECTION("Compare begin and end iterators")
     {
         Node* root = new Node("PROGRAM");
         ASTTree tree(root);
 
-        QVERIFY(tree.begin() != tree.end());
-        QVERIFY(++tree.begin() == tree.end());
+        REQUIRE(tree.begin() != tree.end());
+        REQUIRE(++tree.begin() == tree.end());
     }
 
+    SECTION("Compare all tree's iterators")
     {
         ASTTree tree;
-        QVERIFY(tree.begin() == tree.end());
+        REQUIRE(tree.begin() == tree.end());
 
         Node* root = new Node("PROGRAM");
         auto it = tree.insert(root, tree.begin());
 
-        QVERIFY(tree.begin() != tree.end());
-        QVERIFY(tree.begin() == it);
+        REQUIRE(tree.begin() != tree.end());
+        REQUIRE(tree.begin() == it);
 
-        QVERIFY(++tree.begin() == tree.end());
-        QVERIFY(it != tree.end());
-        QVERIFY(++it == tree.end());
+        REQUIRE(++tree.begin() == tree.end());
+        REQUIRE(it != tree.end());
+        REQUIRE(++it == tree.end());
     }
 }
 
-void TestClass::test_failureCaseTree()
+TEST_CASE("Unsuccesful outcome", "[AST][rainy]")
 {
     Node* root = new Node("PROGRAM");
     ASTTree tree(root);
 
-    QVERIFY_EXCEPTION_THROWN(tree.insert(nullptr, tree.begin()), std::runtime_error);
+    REQUIRE_THROWS_WITH(tree.insert(nullptr, tree.begin()), "Insert nullptr, bug!?");
 
     auto it = tree.end();
-    QVERIFY_EXCEPTION_THROWN(*it, std::runtime_error);
-    QVERIFY_EXCEPTION_THROWN(it->getValue(), std::runtime_error);
+    REQUIRE_THROWS_WITH(*it, "Dereference empty iter, bug!?");
+    REQUIRE_THROWS_WITH(it->getValue(), "Dereference empty iter, bug!?");
 }
-
-QTEST_GUILESS_MAIN(TestClass)
-#include "test.moc"

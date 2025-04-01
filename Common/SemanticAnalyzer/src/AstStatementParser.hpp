@@ -9,7 +9,7 @@
 
 #include "AST.hpp"
 #include "Logger.hpp"
-#include "SemanticAnalyzer.h"
+#include "SemanticAnalyzer.hpp"
 
 namespace SEMANTICANALYZER {
 

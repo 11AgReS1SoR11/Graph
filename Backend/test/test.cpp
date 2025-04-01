@@ -1,21 +1,8 @@
-#include <QtTest/QtTest>
+#include <catch2/catch_test_macros.hpp>
+
 #include "Backend.hpp"
 
-class TestClass : public QObject
+TEST_CASE("Backend initialization", "[Backend]")
 {
-    Q_OBJECT
-
-    void someTest();
-};
-
-void TestClass::someTest()
-{
-    /*
-    TODO: implement
-    */
-    backend::Backend back;
-    QVERIFY(&back);
+    backend::Backend backend;
 }
-
-QTEST_GUILESS_MAIN(TestClass)
-#include "test.moc"

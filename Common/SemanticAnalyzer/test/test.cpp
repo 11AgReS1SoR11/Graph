@@ -1,244 +1,22 @@
-#include <QtTest>
+#include <catch2/catch_test_macros.hpp>
+
+#include "SemanticAnalyzer.hpp"
+#include "AstStatementParser.hpp"
 
 #include <iostream>
-#include <memory>
-#include <string_view>
-#include <optional>
 
-#include "SemanticAnalyzer.h"
-#include "AstStatementParser.h"
+static constexpr auto CI_SYSTEM = "CI";
+static constexpr auto DOT = "dot";
 
-#define CI_SYSTEM "CI"
-#define DOT "dot"
+#define REQUIRE_MESSAGE(condition, message) {if (!(condition)) {FAIL(message);}}
 
-
-class SemanticAnalyzerTest : public QObject
-{
-    Q_OBJECT
-
-public:
-    SemanticAnalyzerTest() = default;
-    ~SemanticAnalyzerTest() = default;
-
-private slots:
-    void testGraph();
-    void testDotCloud();
-
-    /*
-    void testObjectDecl();
-    void testRelation();
-    void testNote(); */
-
-private:
-    AST::Node* createObjectDeclAST(SEMANTICANALYZER::ObjectDecl& objectDecl);
-    AST::Node* createRelationAST(SEMANTICANALYZER::Relation& relation);
-    AST::Node* createNoteAST(SEMANTICANALYZER::Note& note);
-    AST::Node* createGraphAST(SEMANTICANALYZER::Graph& graph);
-    AST::Node* createDotCloudAST(SEMANTICANALYZER::DotCloud& dotCloud);
-    AST::Node* createPropertyAST(SEMANTICANALYZER::Property& property);
-    AST::Node* createDotAST(SEMANTICANALYZER::Dot& dot);
-};
-
-
-AST::Node* SemanticAnalyzerTest::createObjectDeclAST(SEMANTICANALYZER::ObjectDecl& objectDecl)
-{
-    AST::Node* statement = new AST::Node(STATEMENT);
-    {
-        AST::Node* object_decl = new AST::Node(OBJECT_DECL);
-        {
-            object_decl->addChild(new AST::Node(SHAPE));
-            {
-                object_decl->childNodes.back()->addChild(new AST::Node(objectDecl.shape));
-            }
-
-            object_decl->addChild(new AST::Node(ID));
-            {
-                object_decl->childNodes.back()->addChild(new AST::Node(objectDecl.id));
-            }
-
-            object_decl->addChild(new AST::Node(START_INTERNAL_BLOCK));
-
-            for(auto& prop : objectDecl.properties)
-            {
-                object_decl->addChild(createPropertyAST(prop));
-            }
-
-            object_decl->addChild(new AST::Node(END_INTERNAL_BLOCK));
-        }
-        statement->addChild(object_decl);
-    }
-
-    return statement;
-}
-
-
-AST::Node* SemanticAnalyzerTest::createRelationAST(SEMANTICANALYZER::Relation& rel)
-{
-    AST::Node* statement = new AST::Node(STATEMENT);
-    {
-        AST::Node* relation = new AST::Node(RELATION);
-        {
-            relation->addChild(new AST::Node(ID));
-            {
-                relation->childNodes.back()->addChild(new AST::Node(rel.id1));
-            }
-
-            relation->addChild(new AST::Node(ARROW));
-            {
-                relation->childNodes.back()->addChild(new AST::Node(rel.arrow));
-            }
-
-            relation->addChild(new AST::Node(ID));
-            {
-                relation->childNodes.back()->addChild(new AST::Node(rel.id2));
-            }
-
-            relation->addChild(new AST::Node(START_INTERNAL_BLOCK));
-
-            for(auto& prop : rel.properties)
-            {
-                relation->addChild(createPropertyAST(prop));
-            }
-
-            relation->addChild(new AST::Node(END_INTERNAL_BLOCK));
-        }
-        statement->addChild(relation);
-    }
-
-    return statement;
-}
-
-
-AST::Node* SemanticAnalyzerTest::createNoteAST(SEMANTICANALYZER::Note& strNote)
-{
-    AST::Node* statement = new AST::Node(STATEMENT);
-    {
-        AST::Node* note = new AST::Node(NOTE);
-        {
-            note->addChild(new AST::Node(ID));
-            note->childNodes.back()->addChild(new AST::Node(strNote.id));
-
-            note->addChild(new AST::Node(START_INTERNAL_BLOCK));
-
-            for(auto& prop : strNote.properties)
-            {
-                note->addChild(createPropertyAST(prop));
-            }
-
-            note->addChild(new AST::Node(END_INTERNAL_BLOCK));
-        }
-        statement->addChild(note);
-    }
-
-    return statement;
-}
-
-
-AST::Node* SemanticAnalyzerTest::createGraphAST(SEMANTICANALYZER::Graph& strGraph)
-{
-    AST::Node* statement = new AST::Node(STATEMENT);
-    {
-        AST::Node* graph = new AST::Node(GRAPH);
-        {
-            graph->addChild(new AST::Node(ID));
-            graph->childNodes.back()->addChild(new AST::Node(strGraph.id));
-
-            graph->addChild(new AST::Node(START_INTERNAL_BLOCK));
-
-            for(auto& objectDecl : strGraph.objects)
-            {
-                AST::Node* object_decl = createObjectDeclAST(objectDecl);
-                graph->addChild(object_decl->childNodes.front());
-                object_decl->destroy();
-            }
-
-            for(auto& relation : strGraph.relations)
-            {
-                AST::Node* rel = createRelationAST(relation);
-                graph->addChild(rel->childNodes.front());
-                rel->destroy();
-            }
-
-            graph->addChild(new AST::Node(END_INTERNAL_BLOCK));
-        }
-        statement->addChild(graph);
-    }
-
-    return statement;
-}
-
-
-AST::Node* SemanticAnalyzerTest::createDotCloudAST(SEMANTICANALYZER::DotCloud& dotCloud)
-{
-    AST::Node* statement = new AST::Node(STATEMENT);
-    {
-        AST::Node* dot_cloud = new AST::Node(DOT_CLOUD);
-        {
-            dot_cloud->addChild(new AST::Node(ID));
-            dot_cloud->childNodes.back()->addChild(new AST::Node(dotCloud.id));
-
-            dot_cloud->addChild(new AST::Node(START_INTERNAL_BLOCK));
-
-            for(auto& dot : dotCloud.dots)
-            {
-                AST::Node* _dot = createDotAST(dot);
-
-                for(auto& child : _dot->childNodes)
-                {
-                    dot_cloud->addChild(child);
-                }
-
-                _dot->destroy();
-            }
-
-            dot_cloud->addChild(new AST::Node(END_INTERNAL_BLOCK));
-        }
-        statement->addChild(dot_cloud);
-    }
-
-    return statement;
-}
-
-
-AST::Node *SemanticAnalyzerTest::createPropertyAST(SEMANTICANALYZER::Property& prop)
-{
-    AST::Node* property = new AST::Node(PROPERTY);
-    {
-        property->addChild(new AST::Node(PROPERTY_KEY));
-        {
-            property->childNodes.back()->addChild(new AST::Node(prop.key));
-        }
-
-        property->addChild(new AST::Node("="));
-
-        property->addChild(new AST::Node(TEXT));
-        {
-            property->childNodes.back()->addChild(new AST::Node(prop.value));
-        }
-
-        property->addChild(new AST::Node(";"));
-    }
-
-    return property;
-}
-
-
-AST::Node *SemanticAnalyzerTest::createDotAST(SEMANTICANALYZER::Dot &strDot)
-{
-    AST::Node* dot = new AST::Node(DOT);
-    {
-        dot->addChild(new AST::Node(START_INTERNAL_BLOCK));
-
-        for(auto& property : strDot.internalProperties)
-        {
-            dot->addChild(createPropertyAST(property));
-        }
-
-        dot->addChild(new AST::Node(END_INTERNAL_BLOCK));
-    }
-
-    return dot;
-}
+AST::Node* createObjectDeclAST(SEMANTICANALYZER::ObjectDecl const& objectDecl);
+AST::Node* createRelationAST(SEMANTICANALYZER::Relation const& relation);
+AST::Node* createNoteAST(SEMANTICANALYZER::Note const& note);
+AST::Node* createGraphAST(SEMANTICANALYZER::Graph const& graph);
+AST::Node* createDotCloudAST(SEMANTICANALYZER::DotCloud const& dotCloud);
+AST::Node* createPropertyAST(SEMANTICANALYZER::Property const& property);
+AST::Node* createDotAST(SEMANTICANALYZER::Dot const& dot);
 
 /*
 void SemanticAnalyzerTest::testObjectDecl()
@@ -306,10 +84,10 @@ void SemanticAnalyzerTest::testObjectDecl()
     auto& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
     analyzer.reset();
 
-    QVERIFY2(programTree.size() == 1,
+    REQUIRE_MESSAGE(programTree.size() == 1,
              ("Expected program tree to contain exactly 1 statement, but found "
               + std::to_string(programTree.size())).c_str());
-    QVERIFY2(programTree[0].first == OBJECT_DECL,
+    REQUIRE_MESSAGE(programTree[0].first == OBJECT_DECL,
             "Expected first element to be an OBJECT_DECL, but it was not");
 
     SEMANTICANALYZER::ObjectDecl resultingObject = std::any_cast<SEMANTICANALYZER::ObjectDecl&>(programTree[0].second);
@@ -318,15 +96,15 @@ void SemanticAnalyzerTest::testObjectDecl()
     {
         analyzer.semanticAnalysis(programTree, 1);
 
-        QVERIFY2(resultingObject.id == inputObject.id, "Object IDs do not match");
-        QVERIFY2(resultingObject.shape == inputObject.shape, "Object shapes do not match");
-        QVERIFY2(resultingObject.properties.size() == inputObject.properties.size(), "Number of properties does not match");
+        REQUIRE_MESSAGE(resultingObject.id == inputObject.id, "Object IDs do not match");
+        REQUIRE_MESSAGE(resultingObject.shape == inputObject.shape, "Object shapes do not match");
+        REQUIRE_MESSAGE(resultingObject.properties.size() == inputObject.properties.size(), "Number of properties does not match");
 
         for (std::size_t i = 0; i < resultingObject.properties.size(); ++i)
         {
-            QVERIFY2(resultingObject.properties[i].key == inputObject.properties[i].key,
+            REQUIRE_MESSAGE(resultingObject.properties[i].key == inputObject.properties[i].key,
                      ("Property key mismatch at index " + std::to_string(i)).c_str());
-            QVERIFY2(resultingObject.properties[i].value == inputObject.properties[i].value,
+            REQUIRE_MESSAGE(resultingObject.properties[i].value == inputObject.properties[i].value,
                      ("Property value mismatch at index " + std::to_string(i)).c_str());
         }
 
@@ -353,7 +131,7 @@ void SemanticAnalyzerTest::testObjectDecl()
     }
     catch (const SEMANTICANALYZER::SemanticError& error)
     {
-        QFAIL(("Unexpected exception: " + std::string(error.what())).c_str());
+        FAIL(("Unexpected exception: " + std::string(error.what())).c_str());
     }
 }
 
@@ -427,10 +205,10 @@ void SemanticAnalyzerTest::testRelation()
     auto& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
     analyzer.reset();
 
-    QVERIFY2(programTree.size() == 1,
+    REQUIRE_MESSAGE(programTree.size() == 1,
              ("Expected program tree to contain exactly 1 statement, but found "
               + std::to_string(programTree.size())).c_str());
-    QVERIFY2(programTree[0].first == RELATION,
+    REQUIRE_MESSAGE(programTree[0].first == RELATION,
             "Expected first element to be a RELATION, but it was not");
 
     SEMANTICANALYZER::Relation resultingRelation = std::any_cast<SEMANTICANALYZER::Relation&>(programTree[0].second);
@@ -439,16 +217,16 @@ void SemanticAnalyzerTest::testRelation()
     {
         analyzer.semanticAnalysis(programTree, 1);
 
-        QVERIFY2(resultingRelation.id1 == inputRelation.id1, "First object IDs do not match");
-        QVERIFY2(resultingRelation.id2 == inputRelation.id2, "Second object IDs do not match");
-        QVERIFY2(resultingRelation.arrow == inputRelation.arrow, "Arrow types do not match");
-        QVERIFY2(resultingRelation.properties.size() == inputRelation.properties.size(), "Number of properties does not match");
+        REQUIRE_MESSAGE(resultingRelation.id1 == inputRelation.id1, "First object IDs do not match");
+        REQUIRE_MESSAGE(resultingRelation.id2 == inputRelation.id2, "Second object IDs do not match");
+        REQUIRE_MESSAGE(resultingRelation.arrow == inputRelation.arrow, "Arrow types do not match");
+        REQUIRE_MESSAGE(resultingRelation.properties.size() == inputRelation.properties.size(), "Number of properties does not match");
 
         for (std::size_t i = 0; i < resultingRelation.properties.size(); ++i)
         {
-            QVERIFY2(resultingRelation.properties[i].key == inputRelation.properties[i].key,
+            REQUIRE_MESSAGE(resultingRelation.properties[i].key == inputRelation.properties[i].key,
                      ("Property key mismatch at index " + std::to_string(i)).c_str());
-            QVERIFY2(resultingRelation.properties[i].value == inputRelation.properties[i].value,
+            REQUIRE_MESSAGE(resultingRelation.properties[i].value == inputRelation.properties[i].value,
                      ("Property value mismatch at index " + std::to_string(i)).c_str());
         }
 
@@ -476,7 +254,7 @@ void SemanticAnalyzerTest::testRelation()
     }
     catch (const SEMANTICANALYZER::SemanticError& error)
     {
-        QFAIL(("Unexpected exception: " + std::string(error.what())).c_str());
+        FAIL(("Unexpected exception: " + std::string(error.what())).c_str());
     }
 }
 
@@ -542,10 +320,10 @@ void SemanticAnalyzerTest::testNote()
     auto& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
     analyzer.reset();
 
-    QVERIFY2(programTree.size() == 1,
+    REQUIRE_MESSAGE(programTree.size() == 1,
              ("Expected program tree to contain exactly 1 statement, but found "
               + std::to_string(programTree.size())).c_str());
-    QVERIFY2(programTree[0].first == NOTE,
+    REQUIRE_MESSAGE(programTree[0].first == NOTE,
             "Expected first element to be a NOTE, but it was not");
 
     SEMANTICANALYZER::Note resultingNote = std::any_cast<SEMANTICANALYZER::Note&>(programTree[0].second);
@@ -554,14 +332,14 @@ void SemanticAnalyzerTest::testNote()
     {
         analyzer.semanticAnalysis(programTree, 1);
 
-        QVERIFY2(resultingNote.id == inputNote.id, "Note IDs do not match");
-        QVERIFY2(resultingNote.properties.size() == inputNote.properties.size(), "Number of properties does not match");
+        REQUIRE_MESSAGE(resultingNote.id == inputNote.id, "Note IDs do not match");
+        REQUIRE_MESSAGE(resultingNote.properties.size() == inputNote.properties.size(), "Number of properties does not match");
 
         for (std::size_t i = 0; i < resultingNote.properties.size(); ++i)
         {
-            QVERIFY2(resultingNote.properties[i].key == inputNote.properties[i].key,
+            REQUIRE_MESSAGE(resultingNote.properties[i].key == inputNote.properties[i].key,
                      ("Property key mismatch at index " + std::to_string(i)).c_str());
-            QVERIFY2(resultingNote.properties[i].value == inputNote.properties[i].value,
+            REQUIRE_MESSAGE(resultingNote.properties[i].value == inputNote.properties[i].value,
                      ("Property value mismatch at index " + std::to_string(i)).c_str());
         }
 
@@ -587,13 +365,12 @@ void SemanticAnalyzerTest::testNote()
     }
     catch (const SEMANTICANALYZER::SemanticError& error)
     {
-        QFAIL(("Unexpected exception: " + std::string(error.what())).c_str());
+        FAIL(("Unexpected exception: " + std::string(error.what())).c_str());
     }
 }
 */
 
-
-void SemanticAnalyzerTest::testGraph()
+TEST_CASE("test graph semantic", "[SemanticAnalyzer]")
 {
     AST::ASTTree ast(new AST::Node(PROGRAM));
     auto programIt = ast.begin();
@@ -733,10 +510,10 @@ void SemanticAnalyzerTest::testGraph()
     auto& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
     analyzer.reset();
 
-    QVERIFY2(programTree.size() == 1,
+    REQUIRE_MESSAGE(programTree.size() == 1,
              ("Expected program tree to contain exactly 1 statement, but found "
               + std::to_string(programTree.size())).c_str());
-    QVERIFY2(programTree[0].first == GRAPH,
+    REQUIRE_MESSAGE(programTree[0].first == GRAPH,
             "Expected first element to be a GRAPH, but it was not");
 
     SEMANTICANALYZER::Graph resultingGraph = std::any_cast<SEMANTICANALYZER::Graph&>(programTree[0].second);
@@ -745,53 +522,53 @@ void SemanticAnalyzerTest::testGraph()
     {
         analyzer.semanticAnalysis(programTree, 1);
 
-        QVERIFY2(resultingGraph.id == inputGraph.id, "Graph IDs do not match");
-        QVERIFY2(resultingGraph.properties.size() == inputGraph.properties.size(), "Number of graph properties does not match");
+        REQUIRE_MESSAGE(resultingGraph.id == inputGraph.id, "Graph IDs do not match");
+        REQUIRE_MESSAGE(resultingGraph.properties.size() == inputGraph.properties.size(), "Number of graph properties does not match");
 
         for (std::size_t i = 0; i < resultingGraph.properties.size(); ++i)
         {
-            QVERIFY2(resultingGraph.properties[i].key == inputGraph.properties[i].key,
+            REQUIRE_MESSAGE(resultingGraph.properties[i].key == inputGraph.properties[i].key,
                      ("Graph property key mismatch at index " + std::to_string(i)).c_str());
-            QVERIFY2(resultingGraph.properties[i].value == inputGraph.properties[i].value,
+            REQUIRE_MESSAGE(resultingGraph.properties[i].value == inputGraph.properties[i].value,
                      ("Graph property value mismatch at index " + std::to_string(i)).c_str());
         }
 
-        QVERIFY2(resultingGraph.objects.size() == inputGraph.objects.size(), "Number of objects does not match");
+        REQUIRE_MESSAGE(resultingGraph.objects.size() == inputGraph.objects.size(), "Number of objects does not match");
 
         for (std::size_t i = 0; i < resultingGraph.objects.size(); ++i)
         {
-            QVERIFY2(resultingGraph.objects[i].id == inputGraph.objects[i].id,
+            REQUIRE_MESSAGE(resultingGraph.objects[i].id == inputGraph.objects[i].id,
                      ("Object ID mismatch at index " + std::to_string(i)).c_str());
-            QVERIFY2(resultingGraph.objects[i].shape == inputGraph.objects[i].shape,
+            REQUIRE_MESSAGE(resultingGraph.objects[i].shape == inputGraph.objects[i].shape,
                      ("Object shape mismatch at index " + std::to_string(i)).c_str());
-            QVERIFY2(resultingGraph.objects[i].properties.size() == inputGraph.objects[i].properties.size(),
+            REQUIRE_MESSAGE(resultingGraph.objects[i].properties.size() == inputGraph.objects[i].properties.size(),
                      ("Object properties size mismatch at index " + std::to_string(i)).c_str());
             for (std::size_t j = 0; j < resultingGraph.objects[i].properties.size(); ++j)
             {
-                QVERIFY2(resultingGraph.objects[i].properties[j].key == inputGraph.objects[i].properties[j].key,
+                REQUIRE_MESSAGE(resultingGraph.objects[i].properties[j].key == inputGraph.objects[i].properties[j].key,
                          ("Object property key mismatch at object " + std::to_string(i) + ", property " + std::to_string(j)).c_str());
-                QVERIFY2(resultingGraph.objects[i].properties[j].value == inputGraph.objects[i].properties[j].value,
+                REQUIRE_MESSAGE(resultingGraph.objects[i].properties[j].value == inputGraph.objects[i].properties[j].value,
                          ("Object property value mismatch at object " + std::to_string(i) + ", property " + std::to_string(j)).c_str());
             }
         }
 
-        QVERIFY2(resultingGraph.relations.size() == inputGraph.relations.size(), "Number of relations does not match");
+        REQUIRE_MESSAGE(resultingGraph.relations.size() == inputGraph.relations.size(), "Number of relations does not match");
 
         for (std::size_t i = 0; i < resultingGraph.relations.size(); ++i)
         {
-            QVERIFY2(resultingGraph.relations[i].id1 == inputGraph.relations[i].id1,
+            REQUIRE_MESSAGE(resultingGraph.relations[i].id1 == inputGraph.relations[i].id1,
                      ("Relation ID1 mismatch at index " + std::to_string(i)).c_str());
-            QVERIFY2(resultingGraph.relations[i].id2 == inputGraph.relations[i].id2,
+            REQUIRE_MESSAGE(resultingGraph.relations[i].id2 == inputGraph.relations[i].id2,
                      ("Relation ID2 mismatch at index " + std::to_string(i)).c_str());
-            QVERIFY2(resultingGraph.relations[i].arrow == inputGraph.relations[i].arrow,
+            REQUIRE_MESSAGE(resultingGraph.relations[i].arrow == inputGraph.relations[i].arrow,
                      ("Relation arrow mismatch at index " + std::to_string(i)).c_str());
-            QVERIFY2(resultingGraph.relations[i].properties.size() == inputGraph.relations[i].properties.size(),
+            REQUIRE_MESSAGE(resultingGraph.relations[i].properties.size() == inputGraph.relations[i].properties.size(),
                      ("Relation properties size mismatch at index " + std::to_string(i)).c_str());
             for (std::size_t j = 0; j < resultingGraph.relations[i].properties.size(); ++j)
             {
-                QVERIFY2(resultingGraph.relations[i].properties[j].key == inputGraph.relations[i].properties[j].key,
+                REQUIRE_MESSAGE(resultingGraph.relations[i].properties[j].key == inputGraph.relations[i].properties[j].key,
                          ("Relation property key mismatch at relation " + std::to_string(i) + ", property " + std::to_string(j)).c_str());
-                QVERIFY2(resultingGraph.relations[i].properties[j].value == inputGraph.relations[i].properties[j].value,
+                REQUIRE_MESSAGE(resultingGraph.relations[i].properties[j].value == inputGraph.relations[i].properties[j].value,
                          ("Relation property value mismatch at relation " + std::to_string(i) + ", property " + std::to_string(j)).c_str());
             }
         }
@@ -875,12 +652,11 @@ void SemanticAnalyzerTest::testGraph()
     }
     catch (const SEMANTICANALYZER::SemanticError& error)
     {
-        QFAIL(("Unexpected exception: " + std::string(error.what())).c_str());
+        FAIL(("Unexpected exception: " + std::string(error.what())).c_str());
     }
 }
 
-
-void SemanticAnalyzerTest::testDotCloud()
+TEST_CASE("test dot_cloud semantic", "[SemanticAnalyzer]")
 {
     AST::ASTTree ast(new AST::Node(PROGRAM));
     auto programIt = ast.begin();
@@ -974,10 +750,10 @@ void SemanticAnalyzerTest::testDotCloud()
     auto& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
     analyzer.reset();
 
-    QVERIFY2(programTree.size() == 1,
+    REQUIRE_MESSAGE(programTree.size() == 1,
              ("Expected program tree to contain exactly 1 statement, but found "
               + std::to_string(programTree.size())).c_str());
-    QVERIFY2(programTree[0].first == DOT_CLOUD,
+    REQUIRE_MESSAGE(programTree[0].first == DOT_CLOUD,
             "Expected first element to be a DOT_CLOUD, but it was not");
 
     SEMANTICANALYZER::DotCloud resultingDotCloud = std::any_cast<SEMANTICANALYZER::DotCloud&>(programTree[0].second);
@@ -986,29 +762,29 @@ void SemanticAnalyzerTest::testDotCloud()
     {
         analyzer.semanticAnalysis(programTree, 1);
 
-        QVERIFY2(resultingDotCloud.id == inputDotCloud.id, "Dot cloud IDs do not match");
-        QVERIFY2(resultingDotCloud.externalProperties.size() == inputDotCloud.externalProperties.size(),
+        REQUIRE_MESSAGE(resultingDotCloud.id == inputDotCloud.id, "Dot cloud IDs do not match");
+        REQUIRE_MESSAGE(resultingDotCloud.externalProperties.size() == inputDotCloud.externalProperties.size(),
                  "Number of external properties does not match");
 
         for (std::size_t i = 0; i < resultingDotCloud.externalProperties.size(); ++i)
         {
-            QVERIFY2(resultingDotCloud.externalProperties[i].key == inputDotCloud.externalProperties[i].key,
+            REQUIRE_MESSAGE(resultingDotCloud.externalProperties[i].key == inputDotCloud.externalProperties[i].key,
                      ("External property key mismatch at index " + std::to_string(i)).c_str());
-            QVERIFY2(resultingDotCloud.externalProperties[i].value == inputDotCloud.externalProperties[i].value,
+            REQUIRE_MESSAGE(resultingDotCloud.externalProperties[i].value == inputDotCloud.externalProperties[i].value,
                      ("External property value mismatch at index " + std::to_string(i)).c_str());
         }
 
-        QVERIFY2(resultingDotCloud.dots.size() == inputDotCloud.dots.size(), "Number of dots does not match");
+        REQUIRE_MESSAGE(resultingDotCloud.dots.size() == inputDotCloud.dots.size(), "Number of dots does not match");
 
         for (std::size_t i = 0; i < resultingDotCloud.dots.size(); ++i)
         {
-            QVERIFY2(resultingDotCloud.dots[i].internalProperties.size() == inputDotCloud.dots[i].internalProperties.size(),
+            REQUIRE_MESSAGE(resultingDotCloud.dots[i].internalProperties.size() == inputDotCloud.dots[i].internalProperties.size(),
                      ("Internal properties size mismatch at dot index " + std::to_string(i)).c_str());
             for (std::size_t j = 0; j < resultingDotCloud.dots[i].internalProperties.size(); ++j)
             {
-                QVERIFY2(resultingDotCloud.dots[i].internalProperties[j].key == inputDotCloud.dots[i].internalProperties[j].key,
+                REQUIRE_MESSAGE(resultingDotCloud.dots[i].internalProperties[j].key == inputDotCloud.dots[i].internalProperties[j].key,
                          ("Internal property key mismatch at dot " + std::to_string(i) + ", property " + std::to_string(j)).c_str());
-                QVERIFY2(resultingDotCloud.dots[i].internalProperties[j].value == inputDotCloud.dots[i].internalProperties[j].value,
+                REQUIRE_MESSAGE(resultingDotCloud.dots[i].internalProperties[j].value == inputDotCloud.dots[i].internalProperties[j].value,
                          ("Internal property value mismatch at dot " + std::to_string(i) + ", property " + std::to_string(j)).c_str());
             }
         }
@@ -1061,11 +837,206 @@ void SemanticAnalyzerTest::testDotCloud()
     }
     catch (const SEMANTICANALYZER::SemanticError& error)
     {
-        QFAIL(("Unexpected exception: " + std::string(error.what())).c_str());
+        FAIL("Unexpected exception: " + std::string(error.what()));
     }
 }
 
+AST::Node* createObjectDeclAST(SEMANTICANALYZER::ObjectDecl const& objectDecl)
+{
+    AST::Node* statement = new AST::Node(STATEMENT);
+    {
+        AST::Node* object_decl = new AST::Node(OBJECT_DECL);
+        {
+            object_decl->addChild(new AST::Node(SHAPE));
+            {
+                object_decl->childNodes.back()->addChild(new AST::Node(objectDecl.shape));
+            }
 
-QTEST_APPLESS_MAIN(SemanticAnalyzerTest)
+            object_decl->addChild(new AST::Node(ID));
+            {
+                object_decl->childNodes.back()->addChild(new AST::Node(objectDecl.id));
+            }
 
-#include "SemanticAnalyzerTest.moc"
+            object_decl->addChild(new AST::Node(START_INTERNAL_BLOCK));
+
+            for(auto& prop : objectDecl.properties)
+            {
+                object_decl->addChild(createPropertyAST(prop));
+            }
+
+            object_decl->addChild(new AST::Node(END_INTERNAL_BLOCK));
+        }
+        statement->addChild(object_decl);
+    }
+
+    return statement;
+}
+
+
+AST::Node* createRelationAST(SEMANTICANALYZER::Relation const& rel)
+{
+    AST::Node* statement = new AST::Node(STATEMENT);
+    {
+        AST::Node* relation = new AST::Node(RELATION);
+        {
+            relation->addChild(new AST::Node(ID));
+            {
+                relation->childNodes.back()->addChild(new AST::Node(rel.id1));
+            }
+
+            relation->addChild(new AST::Node(ARROW));
+            {
+                relation->childNodes.back()->addChild(new AST::Node(rel.arrow));
+            }
+
+            relation->addChild(new AST::Node(ID));
+            {
+                relation->childNodes.back()->addChild(new AST::Node(rel.id2));
+            }
+
+            relation->addChild(new AST::Node(START_INTERNAL_BLOCK));
+
+            for(auto& prop : rel.properties)
+            {
+                relation->addChild(createPropertyAST(prop));
+            }
+
+            relation->addChild(new AST::Node(END_INTERNAL_BLOCK));
+        }
+        statement->addChild(relation);
+    }
+
+    return statement;
+}
+
+
+AST::Node* createNoteAST(SEMANTICANALYZER::Note const& strNote)
+{
+    AST::Node* statement = new AST::Node(STATEMENT);
+    {
+        AST::Node* note = new AST::Node(NOTE);
+        {
+            note->addChild(new AST::Node(ID));
+            note->childNodes.back()->addChild(new AST::Node(strNote.id));
+
+            note->addChild(new AST::Node(START_INTERNAL_BLOCK));
+
+            for(auto& prop : strNote.properties)
+            {
+                note->addChild(createPropertyAST(prop));
+            }
+
+            note->addChild(new AST::Node(END_INTERNAL_BLOCK));
+        }
+        statement->addChild(note);
+    }
+
+    return statement;
+}
+
+
+AST::Node* createGraphAST(SEMANTICANALYZER::Graph const& strGraph)
+{
+    AST::Node* statement = new AST::Node(STATEMENT);
+    {
+        AST::Node* graph = new AST::Node(GRAPH);
+        {
+            graph->addChild(new AST::Node(ID));
+            graph->childNodes.back()->addChild(new AST::Node(strGraph.id));
+
+            graph->addChild(new AST::Node(START_INTERNAL_BLOCK));
+
+            for(auto& objectDecl : strGraph.objects)
+            {
+                AST::Node* object_decl = createObjectDeclAST(objectDecl);
+                graph->addChild(object_decl->childNodes.front());
+                object_decl->destroy();
+            }
+
+            for(auto& relation : strGraph.relations)
+            {
+                AST::Node* rel = createRelationAST(relation);
+                graph->addChild(rel->childNodes.front());
+                rel->destroy();
+            }
+
+            graph->addChild(new AST::Node(END_INTERNAL_BLOCK));
+        }
+        statement->addChild(graph);
+    }
+
+    return statement;
+}
+
+
+AST::Node* createDotCloudAST(SEMANTICANALYZER::DotCloud const& dotCloud)
+{
+    AST::Node* statement = new AST::Node(STATEMENT);
+    {
+        AST::Node* dot_cloud = new AST::Node(DOT_CLOUD);
+        {
+            dot_cloud->addChild(new AST::Node(ID));
+            dot_cloud->childNodes.back()->addChild(new AST::Node(dotCloud.id));
+
+            dot_cloud->addChild(new AST::Node(START_INTERNAL_BLOCK));
+
+            for(auto& dot : dotCloud.dots)
+            {
+                AST::Node* _dot = createDotAST(dot);
+
+                for(auto& child : _dot->childNodes)
+                {
+                    dot_cloud->addChild(child);
+                }
+
+                _dot->destroy();
+            }
+
+            dot_cloud->addChild(new AST::Node(END_INTERNAL_BLOCK));
+        }
+        statement->addChild(dot_cloud);
+    }
+
+    return statement;
+}
+
+
+AST::Node* createPropertyAST(SEMANTICANALYZER::Property const& prop)
+{
+    AST::Node* property = new AST::Node(PROPERTY);
+    {
+        property->addChild(new AST::Node(PROPERTY_KEY));
+        {
+            property->childNodes.back()->addChild(new AST::Node(prop.key));
+        }
+
+        property->addChild(new AST::Node("="));
+
+        property->addChild(new AST::Node(TEXT));
+        {
+            property->childNodes.back()->addChild(new AST::Node(prop.value));
+        }
+
+        property->addChild(new AST::Node(";"));
+    }
+
+    return property;
+}
+
+
+AST::Node* createDotAST(SEMANTICANALYZER::Dot const& strDot)
+{
+    AST::Node* dot = new AST::Node(DOT);
+    {
+        dot->addChild(new AST::Node(START_INTERNAL_BLOCK));
+
+        for(auto& property : strDot.internalProperties)
+        {
+            dot->addChild(createPropertyAST(property));
+        }
+
+        dot->addChild(new AST::Node(END_INTERNAL_BLOCK));
+    }
+
+    return dot;
+}

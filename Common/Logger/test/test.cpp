@@ -1,79 +1,51 @@
+#include <catch2/catch_test_macros.hpp>
+
 #include "Logger.hpp"
 
-#include <QtTest/QtTest>
-#include <QFile>
-#include <QTextStream>
-#include <QVector>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <chrono>
+#include <ctime>
 
-class TestLogger : public QObject
+static std::vector<std::string> const LOGS = {"Info log", "Warn log", "Error log"};
+static std::string const LOG_FORMAT_STR = "[%s][%s] %s"; // C-style format string
+
+std::string readLastLogLine()
 {
-    Q_OBJECT
-
-private slots:
-    void initTestCase();
-    void testLoggingToFile();
-    void cleanupTestCase();
-
-private:
-    QString readLastLogLine();
-};
-
-static QVector<QString> const LOGS = {"Info log", "Warn log", "Error log"};
-static QString const LOG_FORMAT_STR = "[%1][%2] %3";
-
-void TestLogger::initTestCase()
-{
-    QFile file(LOG_FILE_PATH);
-    if (file.exists())
+    std::ifstream file(LOG_FILE_PATH);
+    std::string lastLine;
+    std::string currentLine;
+    if (file.is_open())
     {
-        file.remove();
+        while (std::getline(file, currentLine))
+        {
+            lastLine = currentLine;
+        }
+        file.close();
     }
-}
-
-void TestLogger::testLoggingToFile()
-{
-    {
-        LOG_INFO(FRONTEND_LOG, LOGS[0]);
-        QString const lastLog = readLastLogLine();
-        QVERIFY(lastLog.contains(LOG_FORMAT_STR.arg("INFO").arg(FRONTEND_LOG).arg(LOGS[0])));
-    }
-
-    {
-        LOG_WARN(BACKEND_LOG, LOGS[1]);
-        QString const lastLog = readLastLogLine();
-        QVERIFY(lastLog.contains(LOG_FORMAT_STR.arg("WARN").arg(BACKEND_LOG).arg(LOGS[1])));
-    }
-
-    {
-        LOG_ERROR(TRANSLATOR_LOG, LOGS[2]);
-        QString const lastLog = readLastLogLine();
-        QVERIFY(lastLog.contains(LOG_FORMAT_STR.arg("ERROR").arg(TRANSLATOR_LOG).arg(LOGS[2])));
-    }
-}
-
-void TestLogger::cleanupTestCase()
-{
-    QFile::remove(LOG_FILE_PATH);
-}
-
-QString TestLogger::readLastLogLine()
-{
-    QFile file(LOG_FILE_PATH);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        return QString();
-    }
-
-    QTextStream in(&file);
-    QString lastLine;
-    while (!in.atEnd())
-    {
-        lastLine = in.readLine();
-    }
-    
-    file.close();
     return lastLine;
 }
 
-QTEST_MAIN(TestLogger)
-#include "test.moc"
+TEST_CASE("Logging to file", "[Logger]")
+{
+    std::ofstream outfile(LOG_FILE_PATH, std::ofstream::trunc); // Clear the file
+    outfile.close();
+
+    LOG_INFO(FILE_MANAGER_LOG, LOGS[0]);
+    std::string const lastLogInfo = readLastLogLine();
+    std::string const expectedStringInfo = "[INFO][" + std::string(FILE_MANAGER_LOG) + "] " + LOGS[0];
+    REQUIRE(lastLogInfo.find(expectedStringInfo) != std::string::npos);
+
+    LOG_WARN(BACKEND_LOG, LOGS[1]);
+    std::string const lastLogWarn = readLastLogLine();
+    std::string const expectedStringWarn = "[WARN][" + std::string(BACKEND_LOG) + "] " + LOGS[1];
+    REQUIRE(lastLogWarn.find(expectedStringWarn) != std::string::npos);
+
+    LOG_ERROR(TRANSLATOR_LOG, LOGS[2]);
+    std::string const lastLogError = readLastLogLine();
+    std::string const expectedStringError = "[ERROR][" + std::string(TRANSLATOR_LOG) + "] " + LOGS[2];
+    REQUIRE(lastLogError.find(expectedStringError) != std::string::npos);
+
+    std::remove(LOG_FILE_PATH); // Cleanup
+}

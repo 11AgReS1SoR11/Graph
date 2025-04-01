@@ -1,4 +1,4 @@
-#include "SemanticAnalyzer.h"
+#include "SemanticAnalyzer.hpp"
 
 
 void SEMANTICANALYZER::SemanticAnalyzer::semanticAnalysis(const std::vector<std::pair<std::string, std::any>> &programTree, int statementNumber)
