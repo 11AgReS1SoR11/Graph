@@ -53,16 +53,6 @@ void Logger::log(Level level, std::string const& entity, std::string const& mess
     }
 }
 
-void Logger::log(Level level, const char* entity, const char* message)
-{
-    log(level, std::string(entity), std::string(message));
-}
-
-void Logger::log(Level level, QString const& entity, QString const& message)
-{
-    log(level, entity.toStdString(), message.toStdString());
-}
-
 Logger::Logger()
 {
     m_logFile.open(LOG_FILE_PATH, std::ios::app);
