@@ -6,8 +6,8 @@ std::string Diamond::toJson() const
            "\"type\": \"Diamond\","
            + Shape::toJson() + ","
            "\"property\": {"
-               "\"sizeA\": " + std::to_string(sizeA) + ","
-               "\"sizeB\": " + std::to_string(sizeB) + ","
+               "\"size_A\": " + std::to_string(sizeA) + ","
+               "\"size_B\": " + std::to_string(sizeB) + ","
                "\"angle\": " + std::to_string(angle) +
            "}"
            "}";

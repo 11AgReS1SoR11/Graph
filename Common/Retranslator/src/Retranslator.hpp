@@ -7,7 +7,7 @@
 #include "Line.hpp"
 #include "Circle.hpp"
 #include "Diamond.hpp"
-#include "Reactangle.hpp"
+#include "Rectangle.hpp"
 #include "Style.hpp"
 #include "Graph.hpp"
 #include "DotCloud.hpp"

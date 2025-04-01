@@ -65,7 +65,7 @@
 #define TYPE_BOOLEAN    "bool"
 
 #define SHAPE_CIRCLE    "circle"
-#define SHAPE_RECTANGLE "reactangle"
+#define SHAPE_RECTANGLE "rectangle"
 #define SHAPE_DIAMOND   "diamond"
 
 #define RED             "red"

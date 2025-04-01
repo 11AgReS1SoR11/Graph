@@ -36,14 +36,14 @@ void TestClass::test_objectDecl()
     Shape* diamond_ptr = &diamond;
     vec.push_back(diamond_ptr);
 
-    Reactangle reactangle;
-    reactangle.text = "reactangleTEXT";
-    reactangle.id = "reactangleID";
-    reactangle.x = 3;
-    reactangle.y = 3;
+    Rectangle rectangle;
+    rectangle.text = "rectangleTEXT";
+    rectangle.id = "rectangleID";
+    rectangle.x = 3;
+    rectangle.y = 3;
 
-    Shape* reactangle_ptr = &reactangle;
-    vec.push_back(reactangle_ptr);
+    Shape* rectangle_ptr = &rectangle;
+    vec.push_back(rectangle_ptr);
 
     Line line;
     line.text = "lineTEXT";
@@ -51,7 +51,7 @@ void TestClass::test_objectDecl()
     line.x = 4;
     line.y = 4;
     line.idFrom = "diamondID";
-    line.idTo = "reactangleID";
+    line.idTo = "rectangleID";
 
     Shape* line_ptr = &line;
     vec.push_back(line_ptr);
@@ -352,7 +352,7 @@ void TestClass::test_objectDecl()
 
     ///diamond end ----------------------------
 
-    ///reactangle -----------------------------
+    ///rectangle -----------------------------
     
     QVERIFY(it->getValue() == "STATEMENT");
     ++it;
@@ -361,12 +361,12 @@ void TestClass::test_objectDecl()
     QVERIFY(it->getValue() == "SHAPE");
     ++it;
     
-    QVERIFY(it->getValue() == "reactangle");
+    QVERIFY(it->getValue() == "rectangle");
     ++it;
     
     QVERIFY(it->getValue() == "ID");
     ++it;
-    QVERIFY(it->getValue() == "reactangleID");
+    QVERIFY(it->getValue() == "rectangleID");
     ++it;
     QVERIFY(it->getValue() == "{");
 
@@ -382,7 +382,7 @@ void TestClass::test_objectDecl()
     QVERIFY(it->getValue() == "TEXT");
     ++it;
     
-    QVERIFY(it->getValue() == "reactangleTEXT");
+    QVERIFY(it->getValue() == "rectangleTEXT");
     ++it;
     QVERIFY(it->getValue() == ";");
 
@@ -496,7 +496,7 @@ void TestClass::test_objectDecl()
     QVERIFY(it->getValue() == "}");
 
 
-    ///reactangle end ---------------------------------
+    ///rectangle end ---------------------------------
 
     ///line -----------------------------------------
     ++it;
@@ -519,7 +519,7 @@ void TestClass::test_objectDecl()
 
     QVERIFY(it->getValue() == "ID");
     ++it;
-    QVERIFY(it->getValue() == "reactangleID");
+    QVERIFY(it->getValue() == "rectangleID");
     ++it;
 
     QVERIFY(it->getValue() == "{");
@@ -648,13 +648,13 @@ void TestClass::test_graph()
 
     Shape* diamond_ptr = &diamond;
 
-    Reactangle reactangle;
-    reactangle.text = "reactangleTEXT";
-    reactangle.id = "reactangleID";
-    reactangle.x = 3;
-    reactangle.y = 3;
+    Rectangle rectangle;
+    rectangle.text = "rectangleTEXT";
+    rectangle.id = "rectangleID";
+    rectangle.x = 3;
+    rectangle.y = 3;
 
-    Shape* reactangle_ptr = &reactangle;
+    Shape* rectangle_ptr = &rectangle;
 
     Line line;
     line.text = "lineTEXT";
@@ -662,7 +662,7 @@ void TestClass::test_graph()
     line.x = 4;
     line.y = 4;
     line.idFrom = "diamondID";
-    line.idTo = "reactangleID";
+    line.idTo = "rectangleID";
 
     Shape* line_ptr = &line;
 
@@ -674,7 +674,7 @@ void TestClass::test_graph()
 
     graph.nodes.push_back(circle_ptr);
     graph.nodes.push_back(diamond_ptr);
-    graph.nodes.push_back(reactangle_ptr);
+    graph.nodes.push_back(rectangle_ptr);
     graph.nodes.push_back(line_ptr);
 
     Shape* graph_ptr = &graph;
@@ -1087,19 +1087,19 @@ void TestClass::test_graph()
     ///diamond end-------------------------------------------
 
 
-    ///reactangle---------------------------------------
+    ///rectangle---------------------------------------
 
     QVERIFY(it->getValue() == "object_decl");
     ++it;
     QVERIFY(it->getValue() == "SHAPE");
     ++it;
     
-    QVERIFY(it->getValue() == "reactangle");
+    QVERIFY(it->getValue() == "rectangle");
     ++it;
     
     QVERIFY(it->getValue() == "ID");
     ++it;
-    QVERIFY(it->getValue() == "reactangleID");
+    QVERIFY(it->getValue() == "rectangleID");
     ++it;
     QVERIFY(it->getValue() == "{");
 
@@ -1115,7 +1115,7 @@ void TestClass::test_graph()
     QVERIFY(it->getValue() == "TEXT");
     ++it;
     
-    QVERIFY(it->getValue() == "reactangleTEXT");
+    QVERIFY(it->getValue() == "rectangleTEXT");
     ++it;
     QVERIFY(it->getValue() == ";");
 
@@ -1229,7 +1229,7 @@ void TestClass::test_graph()
     QVERIFY(it->getValue() == "}");
     ++it;
 
-    ///reactangle end-----------------------------------
+    ///rectangle end-----------------------------------
 
     ///line------------------------------------------
 
@@ -1250,7 +1250,7 @@ void TestClass::test_graph()
 
     QVERIFY(it->getValue() == "ID");
     ++it;
-    QVERIFY(it->getValue() == "reactangleID");
+    QVERIFY(it->getValue() == "rectangleID");
     ++it;
 
     QVERIFY(it->getValue() == "{");

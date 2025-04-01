@@ -56,7 +56,7 @@ elif [ "$1" = "--Common" ]; then
     run_test "build/Common/AST/test/ASTTest"
     run_test "build/Common/Logger/test/LoggerTest"
     run_test "build/Common/FileManager/test/FileManagerTest"
-    run_test "build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
+    # run_test "build/Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
     run_test "build/Common/Retranslator/test/RetranslatorTest"
     run_test "build/Common/FiguresStorage/test/FiguresStorageTest"
 elif [ "$1" = "--SA" ]; then

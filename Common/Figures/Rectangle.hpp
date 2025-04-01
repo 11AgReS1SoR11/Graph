@@ -2,7 +2,7 @@
 
 #include "Shape.hpp"
 
-struct Reactangle : Shape
+struct Rectangle : Shape
 {
     std::string toJson() const override;
 

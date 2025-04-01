@@ -80,7 +80,7 @@ Node* Retranslator::makeObject(const Shape* const shape) const
         node->childNodes[0]->addChild(new Node("circle"));
     else if (dynamic_cast<const Diamond* const>(shape))
         node->childNodes[0]->addChild(new Node("diamond"));
-    else if (dynamic_cast<const Reactangle* const>(shape))
+    else if (dynamic_cast<const Rectangle* const>(shape))
         node->childNodes[0]->addChild(new Node("rectangle"));
 
     node->addChild(new Node("ID"));
@@ -102,10 +102,10 @@ Node* Retranslator::makeObject(const Shape* const shape) const
         addProperty(node, "angle", std::to_string(diamond->angle));
     }
 
-    else if (const Reactangle* const reactangle = dynamic_cast<const Reactangle* const>(shape))
+    else if (const Rectangle* const rectangle = dynamic_cast<const Rectangle* const>(shape))
     {
-        addProperty(node, "size_A", std::to_string(reactangle->sizeA));
-        addProperty(node, "size_B", std::to_string(reactangle->sizeB));
+        addProperty(node, "size_A", std::to_string(rectangle->sizeA));
+        addProperty(node, "size_B", std::to_string(rectangle->sizeB));
     }
 
     node->addChild(new Node("}"));

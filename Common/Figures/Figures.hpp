@@ -6,4 +6,4 @@
 #include "Graph.hpp"
 #include "Line.hpp"
 #include "Note.hpp"
-#include "Reactangle.hpp"
+#include "Rectangle.hpp"
