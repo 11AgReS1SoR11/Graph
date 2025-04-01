@@ -8,94 +8,55 @@ on:
     branches:
       - master
 
-env:
-  QT_VERSION: 5.15.2
-
 jobs:
-  install_packages:
-    runs-on: ubuntu-latest
-    steps:
-      - name: clone repository
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: ${{ env.QT_VERSION }}
-          host: linux
-          target: desktop
-          arch: gcc_64
-          dir: .
-          install-deps: true
-          setup-python: false
-
   build:
-    needs: install_packages
     runs-on: ubuntu-latest
 
     steps:
-      - name: clone repository
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: ${{ env.QT_VERSION }}
-          host: linux
-          target: desktop
-          arch: gcc_64
-          dir: .
-          install-deps: true
-          setup-python: false
-
-      - name: Set up PATH for qmake
+      - name: Install dependencies
         run: |
-          echo "Adding Qt bin directory to PATH"
-          echo "PATH=$(pwd)/Qt/5.15.2/gcc_64/bin:$PATH" >> $GITHUB_ENV
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake  # Ensure you have cmake and other essentials
 
-      - name: Build
+      - name: Build project
         run: |
           chmod +x Build
           ./Build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: build
 
   tests:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-
-      - name: clone repository
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: ${{ env.QT_VERSION }}
-          host: linux
-          target: desktop
-          arch: gcc_64
-          dir: .
-          install-deps: true
-          setup-python: false
-      
-      - name: Set up PATH for qmake
+      - name: Install dependencies
         run: |
-          echo "Adding Qt bin directory to PATH"
-          echo "PATH=$(pwd)/Qt/5.15.2/gcc_64/bin:$PATH" >> $GITHUB_ENV
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake # Ensure you have cmake and other essentials
 
-      - name: Build
-        run: |
-          chmod +x Build
-          ./Build
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: build
 
       - name: Run tests
         run: |
           chmod +x runTest
-          ./runTest
- 
+          find . -type f -name "*Test" -print0 | xargs -0 chmod +x
+          ./runTest --all
