@@ -16,6 +16,12 @@ target_link_libraries(Retranslator PUBLIC
     Figures
 )
 
-# Установка библиотеки (опционально)
+# Копирование библиотеки в bin
+set_target_properties(Retranslator PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+# Установка библиотеки
 install(TARGETS Retranslator DESTINATION lib)
 install(FILES Retranslator.hpp DESTINATION include)

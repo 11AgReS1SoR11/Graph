@@ -12,6 +12,12 @@ target_link_libraries(FileManager PUBLIC
     Logger
 )
 
+# Копирование библиотеки в bin
+set_target_properties(FileManager PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
 # Установка библиотеки (опционально)
 install(TARGETS FileManager DESTINATION lib)
 install(FILES FileManager.hpp DESTINATION include)

@@ -7,6 +7,12 @@ target_include_directories(Logger PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
-# Установка библиотеки (опционально)
+# Копирование библиотеки в bin
+set_target_properties(Logger PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+# Установка библиотеки
 install(TARGETS Logger DESTINATION lib)
 install(FILES Logger.hpp DESTINATION include)

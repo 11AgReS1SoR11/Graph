@@ -19,5 +19,9 @@ target_link_libraries(Graph PUBLIC
     Backend
 )
 
+set_target_properties(Graph PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
 # install application
 install(TARGETS Graph DESTINATION bin)
