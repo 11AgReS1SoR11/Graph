@@ -35,11 +35,11 @@ bool TestClass::compareShape(Shape const& first, Shape const& second)
 void TestClass::test_createFromJsonWithSimpleFigures()
 {
     Circle circle;
-    Reactangle reactangle;
+    Rectangle rectangle;
     Diamond diamond;
     Line line;
 
-    std::string const json = getJsonFromFigures({&circle, &reactangle, &diamond, &line});
+    std::string const json = getJsonFromFigures({&circle, &rectangle, &diamond, &line});
 
     FiguresStorage figures = FiguresStorage::createFigures(json);
     QVERIFY(figures.size() == 4);
@@ -50,12 +50,12 @@ void TestClass::test_createFromJsonWithSimpleFigures()
     QVERIFY(compareShape(*circleFromJson, circle));
     QVERIFY(circleFromJson->radius == circle.radius);
 
-    // check Reactangle
-    Reactangle* reactangleFromJson = dynamic_cast<Reactangle*>(figures[1]);
-    QVERIFY(reactangleFromJson);
-    QVERIFY(compareShape(*reactangleFromJson, reactangle));
-    QVERIFY(reactangleFromJson->sizeA == reactangle.sizeA);
-    QVERIFY(reactangleFromJson->sizeB == reactangle.sizeB);
+    // check Rectangle
+    Rectangle* rectangleFromJson = dynamic_cast<Rectangle*>(figures[1]);
+    QVERIFY(rectangleFromJson);
+    QVERIFY(compareShape(*rectangleFromJson, rectangle));
+    QVERIFY(rectangleFromJson->sizeA == rectangle.sizeA);
+    QVERIFY(rectangleFromJson->sizeB == rectangle.sizeB);
 
     // check Diamond
     Diamond* diamondFromJson = dynamic_cast<Diamond*>(figures[2]);

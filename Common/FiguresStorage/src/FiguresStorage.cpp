@@ -164,7 +164,7 @@ Shape* createShapeFromJson(const std::string& json)
     }
     else if (type == "Rectangle")
     {
-        Reactangle* rectangle = new Reactangle();
+        Rectangle* rectangle = new Rectangle();
         rectangle->id = extractString(json, "id");
         rectangle->text = extractString(json, "text");
         rectangle->x = extractDouble(json, "x");

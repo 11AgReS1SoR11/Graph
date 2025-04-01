@@ -18,7 +18,7 @@ SOURCES += Diamond.cpp \
            DotCloud.cpp \
            Graph.cpp \
            Line.cpp \
-           Reactangle.cpp \
+           Rectangle.cpp \
            Style.cpp \
            Shape.cpp
 
@@ -27,6 +27,6 @@ HEADERS += Diamond.hpp \
            DotCloud.hpp \
            Graph.hpp \
            Line.hpp \
-           Reactangle.hpp \
+           Rectangle.hpp \
            Style.hpp \
            Shape.hpp
