@@ -15,6 +15,12 @@ target_link_libraries(FiguresStorage PUBLIC
     Logger
 )
 
-# Установка библиотеки (опционально)
+# Копирование библиотеки в bin
+set_target_properties(FiguresStorage PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+# Установка библиотеки
 install(TARGETS FiguresStorage DESTINATION lib)
 install(FILES FiguresStorage.hpp DESTINATION include)

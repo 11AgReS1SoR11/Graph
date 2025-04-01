@@ -7,6 +7,12 @@ target_include_directories(AST PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
-# Установка библиотеки (опционально)
+# Копирование библиотеки в bin
+set_target_properties(AST PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+# Установка библиотеки
 install(TARGETS AST DESTINATION lib)
 install(FILES AST.hpp Node.hpp DESTINATION include)

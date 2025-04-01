@@ -22,6 +22,12 @@ target_link_libraries(SemanticAnalyzer PUBLIC
     AST
 )
 
-# Установка библиотеки (опционально)
+# Копирование библиотеки в bin
+set_target_properties(SemanticAnalyzer PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+# Установка библиотеки
 install(TARGETS SemanticAnalyzer DESTINATION lib)
 install(FILES ${HEADERS_SEMANTIC_ANALYSER} DESTINATION include)
