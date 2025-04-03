@@ -4,7 +4,7 @@ The applications for convenient graph manipulation
 
 ## Installation
 
-C++20, Qt5 and CMake are required
+C++20 and CMake are required
 
 ## Developers
 
@@ -20,20 +20,12 @@ Korpusova Sofia
 To build the project, run the following command in the terminal:
 
 ```bash
-bash Build
+bash Build.sh
 ```
 
 To run tests:
 ```bash
 bash runTest
-```
-To run only Frontend's tests:
-```bash
-bash runTest --Frontend
-```
-To run only Backend's tests:
-```bash
-bash runTest --Backend
 ```
 
 To run the Application, use the following command:

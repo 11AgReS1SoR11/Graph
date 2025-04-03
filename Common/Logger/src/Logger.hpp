@@ -15,8 +15,6 @@ inline constexpr auto PARSER_LOG = "PARSER";
 inline constexpr auto FILE_MANAGER_LOG = "FILE_MANAGER";
 inline constexpr auto FIGURES_STORAGE_LOG = "FIGURES_STORAGE";
 
-inline constexpr auto LOG_FILE_PATH = "build/log.log";
-
 class Logger
 {
 public:
@@ -26,12 +24,15 @@ public:
 
     void log(Level level, std::string const& entity, std::string const& message);
 
+    void updLogOutput(std::string const& filePath);
+
 private:
     Logger();
     ~Logger();
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;
 
+    std::string m_logFilePath = "build/log.log";
     std::ofstream m_logFile;
     std::mutex m_mutex;
 };

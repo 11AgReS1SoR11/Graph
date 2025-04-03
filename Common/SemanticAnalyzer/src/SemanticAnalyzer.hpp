@@ -1,16 +1,6 @@
 #ifndef SEMANTICANALYZER_H
 #define SEMANTICANALYZER_H
 
-#ifdef _WIN32
-#ifdef SEMANTICANALYZER_EXPORTS
-#define SEMANTICANALYZER_API __declspec(dllexport)
-#else
-#define SEMANTICANALYZER_API __declspec(dllimport)
-#endif
-#else
-#define SEMANTICANALYZER_API
-#endif
-
 
 #include <string>
 #include <set>
@@ -183,7 +173,7 @@ public:
 };
 
 
-class SEMANTICANALYZER_API SemanticAnalyzer
+class SemanticAnalyzer
 {
 public:
 

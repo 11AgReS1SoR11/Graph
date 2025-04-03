@@ -1,18 +1,17 @@
 #!/bin/bash
 
-error()
-{
-    echo "Error: $1" >&2
-    exit 1
-}
-
 OS=$(uname -s)
 
-if [[ "$OS" == "Windows_NT" ]]; then
+# Определяем расширение исполняемого файла и преобразуем путь, если это Windows
+if [[ "$OS" == "MINGW"* || "$OS" == "Windows_NT"* ]]; then
     EXE_EXT=".exe"
 else
     EXE_EXT=""
 fi
 
-./build/App/Graph --retranslate --figuresJsonPath build/figures.json || error "Ошибка при запуске приложения"
+APP_PATH="./build/bin/Graph${EXE_EXT}"
+
+# Запускаем приложение
+$APP_PATH --retranslate --figuresJsonPath build/figures.json
+
 echo "Приложение успешно завершено!"
