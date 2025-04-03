@@ -22,21 +22,39 @@ if ! which cmake > /dev/null; then
   exit 1
 fi
 
-# Создаем директорию build (если она не существует)
-mkdir -p build
+# Определяем режим сборки (По умолчанию Debug)
+BUILD_TYPE="Debug"
+BUILD_DIR="build"
+BUILD_TESTS_FLAG="-DBUILD_TESTS=ON"
 
-# Переходим в директорию build
-cd build
+# Обрабатываем аргументы командной строки
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --Release)
+      BUILD_TYPE="Release"
+      BUILD_DIR="build_release"
+      shift
+      ;;
+    --noTest)
+      BUILD_TESTS_FLAG="-DBUILD_TESTS=OFF"
+      shift
+      ;;
+    *)
+      echo "Неизвестный параметр: $1"
+      exit 1
+      ;;
+  esac
+done
 
-if [[ "$1" == "--noTest" ]]; then
-  BUILD_TESTS_FLAG="-DBUILD_TESTS=OFF"
-else
-  BUILD_TESTS_FLAG="-DBUILD_TESTS=ON"
-fi
+# Создаем директорию сборки (если она не существует)
+mkdir -p "$BUILD_DIR"
+
+# Переходим в директорию сборки
+cd "$BUILD_DIR"
 
 # Конфигурируем проект с помощью CMake
-cmake -G "$CMAKE_GENERATOR" $BUILD_TESTS_FLAG .. || error "Ошибка при конфигурировании CMake"
+cmake -G "$CMAKE_GENERATOR" -DCMAKE_BUILD_TYPE="$BUILD_TYPE" $BUILD_TESTS_FLAG .. || error "Ошибка при конфигурировании CMake"
 
-cmake --build . -- -j36
+cmake --build . --config "$BUILD_TYPE" -- -j36 || error "Ошибка при сборке проекта"
 
-echo "Сборка успешно завершена!"
+echo "Сборка в режиме $BUILD_TYPE успешно завершена!"

@@ -5,9 +5,18 @@ if [[ "$OS" == "MINGW"* || "$OS" == "Windows_NT"* ]]; then
     exit 1
 fi
 
-cd build
-
+BUILD_DIR="build"
 test_arg="$1"
+
+# Если первым аргументом --Debug или --Relase, то далее смотрим на второй
+if [[  "$test_arg" == "--Debug" ]]; then
+    test_arg="$2"
+elif [[ "$test_arg" == "--Release" ]]; then
+    BUILD_DIR="build_release"
+    test_arg="$2"
+fi
+
+cd $BUILD_DIR
 
 if [[ -z "$test_arg" || "$test_arg" == "--all" ]]; then
     ctest . --output-on-failure

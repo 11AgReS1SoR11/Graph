@@ -1,7 +1,6 @@
 #include "Backend.hpp"
 #include "Logger.hpp"
 
-#include <iostream>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -17,18 +16,18 @@ std::string getArgValue(const std::vector<std::string>& args, const std::string&
     return ""; // Argument not found or no value provided
 }
 
-int main(int argc, char* argv[]) {
-
+int main(int argc, char* argv[])
+{
     std::vector<std::string> const args(argv + 1, argv + argc);
 
-    std::string const logFilePathDefault = "build/log.log";  // Default log file path
+    std::string const logFilePath = getArgValue(args, "--logFilePath");
+    if (logFilePath.empty()) { Logger::getInstance().updLogOutput(logFilePath); }
 
     backend::Backend backend;
 
     if (std::find(args.begin(), args.end(), "--retranslate") != args.end())
     {
         std::string const figuresJsonPath = getArgValue(args, "--figuresJsonPath");
-        std::string logFilePath = getArgValue(args, "--logFilePath");
 
         if (figuresJsonPath.empty())
         {
@@ -36,27 +35,18 @@ int main(int argc, char* argv[]) {
             return 1;
         }
 
-        if (logFilePath.empty()) { logFilePath = logFilePathDefault; }
-
-        Logger::getInstance().updLogOutput(logFilePath);
-        
         std::string const code = backend.retranslate(figuresJsonPath);
         LOG_INFO(BACKEND_LOG, code);
     }
     else if (std::find(args.begin(), args.end(), "--translate") != args.end())
     {
         std::string const codeFilePath = getArgValue(args, "--codeFilePath");
-        std::string logFilePath = getArgValue(args, "--logFilePath");
 
         if (codeFilePath.empty())
         {
             LOG_ERROR(BACKEND_LOG, "Error: --codeFilePath argument is required for --translate");
             return 1;
         }
-
-        if (logFilePath.empty()) { logFilePath = logFilePathDefault; }
-
-        Logger::getInstance().updLogOutput(logFilePath);
 
         backend.translate(codeFilePath);
     }
