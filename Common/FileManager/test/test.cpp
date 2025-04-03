@@ -7,7 +7,7 @@
 
 namespace fs = std::filesystem;
 
-static std::string const FILE_PATH = "build/test_file.txt";
+static std::string const FILE_PATH = "test_file.txt";
 
 TEST_CASE("Write to file", "[FileManager]")
 {
@@ -27,7 +27,7 @@ TEST_CASE("Read from file", "[FileManager]")
 
 TEST_CASE("Check file exists after write", "[FileManager]")
 {
-    REQUIRE(FileManager::writeToFile("build/Such_file_non_exist", "Checking existence"));
+    REQUIRE(FileManager::writeToFile("Such_file_non_exist", "Checking existence"));
 
     REQUIRE(fs::exists(FILE_PATH));
 }

@@ -53,13 +53,19 @@ void Logger::log(Level level, std::string const& entity, std::string const& mess
     }
 }
 
-Logger::Logger()
+void Logger::updLogOutput(std::string const& filePath)
 {
-    m_logFile.open(LOG_FILE_PATH, std::ios::app);
+    m_logFilePath = filePath;
+    m_logFile.open(m_logFilePath, std::ios::app);
     if (!m_logFile)
     {
         std::cerr << "Failed to open log file" << std::endl;
     }
+}
+
+Logger::Logger()
+{
+    updLogOutput(m_logFilePath);
 }
 
 Logger::~Logger()

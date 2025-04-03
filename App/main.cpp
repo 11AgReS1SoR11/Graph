@@ -37,6 +37,8 @@ int main(int argc, char* argv[]) {
         }
 
         if (logFilePath.empty()) { logFilePath = logFilePathDefault; }
+
+        Logger::getInstance().updLogOutput(logFilePath);
         
         std::string const code = backend.retranslate(figuresJsonPath);
         LOG_INFO(BACKEND_LOG, code);
@@ -53,6 +55,8 @@ int main(int argc, char* argv[]) {
         }
 
         if (logFilePath.empty()) { logFilePath = logFilePathDefault; }
+
+        Logger::getInstance().updLogOutput(logFilePath);
 
         backend.translate(codeFilePath);
     }
