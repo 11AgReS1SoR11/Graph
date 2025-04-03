@@ -1,65 +1,34 @@
 #!/bin/bash
 
-error()
-{
-    echo "Error: $1" >&2
-    exit 1
-}
-
-OS=$(uname -s)
-
-if [[ "$OS" == "Windows_NT" ]]; then
-    EXE_EXT=".exe"
-else
-    EXE_EXT=""
+if [[ "$OS" == "MINGW"* || "$OS" == "Windows_NT"* ]]; then
+    PATH="$PWD/build/bin/:$PATH"
+    export PATH
 fi
 
-run_test() {
-    local test_path="$1"
-    local full_path="build/$test_path$EXE_EXT"
-
-    if [ -f "$full_path" ]; then
-        echo "Запуск $full_path..."
-        "./$full_path" || error "Ошибка при запуске $full_path"
-    else
-        echo "Тест $full_path не найден" >&2
-        exit 1
-    fi
-}
+cd build
 
 test_arg="$1"
 
 if [[ -z "$test_arg" || "$test_arg" == "--all" ]]; then
-    run_test "Backend/test/BackendTest"
-    run_test "Common/AST/test/ASTTest"
-    run_test "Common/Logger/test/LoggerTest"
-    run_test "Common/FileManager/test/FileManagerTest"
-    run_test "Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
-    run_test "Common/Retranslator/test/RetranslatorTest"
-    run_test "Common/FiguresStorage/test/FiguresStorageTest"
+    ctest .
 elif [[ "$test_arg" == "--Common" ]]; then
-    run_test "Common/AST/test/ASTTest"
-    run_test "Common/Logger/test/LoggerTest"
-    run_test "Common/FileManager/test/FileManagerTest"
-    run_test "Common/Retranslator/test/RetranslatorTest"
-    run_test "Common/FiguresStorage/test/FiguresStorageTest"
-    run_test "Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
+    ctest -R "(ASTTest|LoggerTest|FileManagerTest|SemanticAnalyzerTest|RetranslatorTest|FiguresStorageTest)" .
 elif [[ "$test_arg" == "--Backend" ]]; then
-    run_test "Backend/test/BackendTest"
+    ctest -R BackendTest
 elif [[ "$test_arg" == "--AST" ]]; then
-    run_test "Common/AST/test/ASTTest"
+    ctest -R ASTTest
 elif [[ "$test_arg" == "--Logger" ]]; then
-    run_test "Common/Logger/test/LoggerTest"
+    ctest -R LoggerTest
 elif [[ "$test_arg" == "--FileManager" ]]; then
-    run_test "Common/FileManager/test/FileManagerTest"
+    ctest -R FileManagerTest
 elif [[ "$test_arg" == "--SA" ]]; then
-    run_test "Common/SemanticAnalyzer/test/SemanticAnalyzerTest"
+    ctest -R SemanticAnalyzerTest
 elif [[ "$test_arg" == "--Retranslator" ]]; then
-    run_test "Common/Retranslator/test/RetranslatorTest"
+    ctest -R RetranslatorTest
 elif [[ "$test_arg" == "--FiguresStorage" ]]; then
-    run_test "Common/FiguresStorage/test/FiguresStorageTest"
+    ctest -R FiguresStorageTest
 else
-    echo "Usage: $0 [--all | | --Common | --Backend | --AST | --Logger | --FileManager | --SA | --Retranslator | --FiguresStorage]" >&2
+    echo "Usage: $0 [--all | --Common | --Backend | --AST | --Logger | --FileManager | --SA | --Retranslator | --FiguresStorage]" >&2
     exit 1
 fi
 

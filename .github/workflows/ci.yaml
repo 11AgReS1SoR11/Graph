@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,21 +21,65 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake  # Ensure you have cmake and other essentials
+          sudo apt-get install -y build-essential cmake
 
-      - name: Build project
+      - name: Build project (Linux)
         run: |
-          chmod +x Build
-          ./Build
+          chmod +x Build.sh
+          ./Build.sh
 
-      - name: Upload build artifacts
+      - name: Upload build artifacts (Linux)
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
+          name: build-artifacts-linux
           path: build
 
-  tests:
-    needs: build
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build project (Windows)
+        shell: bash
+        run: |
+          chmod +x Build.sh
+          ./Build.sh --noTest
+
+      - name: Upload build artifacts (Windows)
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-windows
+          path: build
+
+  run-app-windows:
+    needs: build-windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Download build artifacts (Windows)
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-windows
+          path: build
+
+      - name: Run App (Windows)
+        shell: bash
+        run: |
+          chmod +x runApp
+          ./runApp
+
+
+  tests-linux:
+    needs: build-linux
     runs-on: ubuntu-latest
 
     steps:
@@ -49,10 +93,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential cmake # Ensure you have cmake and other essentials
 
-      - name: Download build artifacts
+      - name: Download build artifacts (Linux)
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts
+          name: build-artifacts-linux
           path: build
 
       - name: Run tests
