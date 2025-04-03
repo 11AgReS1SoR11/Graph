@@ -10,23 +10,23 @@ cd build
 test_arg="$1"
 
 if [[ -z "$test_arg" || "$test_arg" == "--all" ]]; then
-    ctest .
+    ctest . --output-on-failure
 elif [[ "$test_arg" == "--Common" ]]; then
-    ctest -R "(ASTTest|LoggerTest|FileManagerTest|SemanticAnalyzerTest|RetranslatorTest|FiguresStorageTest)" .
+    ctest -R "(ASTTest|LoggerTest|FileManagerTest|SemanticAnalyzerTest|RetranslatorTest|FiguresStorageTest)" . --output-on-failure
 elif [[ "$test_arg" == "--Backend" ]]; then
-    ctest -R BackendTest
+    ctest -R BackendTest --output-on-failure
 elif [[ "$test_arg" == "--AST" ]]; then
-    ctest -R ASTTest
+    ctest -R ASTTest --output-on-failure
 elif [[ "$test_arg" == "--Logger" ]]; then
-    ctest -R LoggerTest
+    ctest -R LoggerTest --output-on-failure
 elif [[ "$test_arg" == "--FileManager" ]]; then
-    ctest -R FileManagerTest
+    ctest -R FileManagerTest --output-on-failure
 elif [[ "$test_arg" == "--SA" ]]; then
-    ctest -R SemanticAnalyzerTest
+    ctest -R SemanticAnalyzerTest --output-on-failure
 elif [[ "$test_arg" == "--Retranslator" ]]; then
-    ctest -R RetranslatorTest
+    ctest -R RetranslatorTest --output-on-failure
 elif [[ "$test_arg" == "--FiguresStorage" ]]; then
-    ctest -R FiguresStorageTest
+    ctest -R FiguresStorageTest --output-on-failure
 else
     echo "Usage: $0 [--all | --Common | --Backend | --AST | --Logger | --FileManager | --SA | --Retranslator | --FiguresStorage]" >&2
     exit 1
