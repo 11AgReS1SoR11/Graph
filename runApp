@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Функция для вывода сообщений об ошибках и выхода
+error()
+{
+  echo "Error: $1" >&2
+  exit 1
+}
+
 OS=$(uname -s)
 
 # Определяем расширение исполняемого файла и преобразуем путь, если это Windows
@@ -9,9 +16,20 @@ else
     EXE_EXT=""
 fi
 
-APP_PATH="./build/bin/Graph${EXE_EXT}"
+test_arg="$1"
+
+if [[ -z "$test_arg" || "$test_arg" == "--Debug" ]]; then
+    BUILD_DIR="build"
+elif [[ "$test_arg" == "--Release" ]]; then
+    BUILD_DIR="build_release"
+else
+    echo "Usage: $0 [--Debug | --Release]" >&2
+    exit 1
+fi
+
+APP_PATH="./${BUILD_DIR}/bin/Graph${EXE_EXT}"
 
 # Запускаем приложение
-$APP_PATH --retranslate --figuresJsonPath build/figures.json
+$APP_PATH --retranslate --figuresJsonPath ${BUILD_DIR}/figures.json --logFilePath ${BUILD_DIR}/log.log || error "Ошибка выполнения приложения"
 
 echo "Приложение успешно завершено!"

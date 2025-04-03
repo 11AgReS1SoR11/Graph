@@ -11,6 +11,16 @@ on:
 jobs:
   build-linux:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+        include:
+          - build_type: Debug
+            build_dir: build
+            build_arg: ""
+          - build_type: Release
+            build_dir: build_release
+            build_arg: "--Release"
 
     steps:
       - name: Checkout code
@@ -23,19 +33,29 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential cmake
 
-      - name: Build project (Linux)
+      - name: Build project (Linux - ${{ matrix.build_type }})
         run: |
           chmod +x Build.sh
-          ./Build.sh
+          ./Build.sh ${{ matrix.build_arg }}
 
-      - name: Upload build artifacts (Linux)
+      - name: Upload build artifacts (Linux - ${{ matrix.build_type }})
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts-linux
-          path: build
+          name: build-artifacts-linux-${{ matrix.build_type }}
+          path: ${{ matrix.build_dir }}
 
   build-windows:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+        include:
+          - build_type: Debug
+            build_dir: build
+            build_arg: "--noTest"
+          - build_type: Release
+            build_dir: build_release
+            build_arg: "--Release --noTest"
 
     steps:
       - name: Checkout code
@@ -43,19 +63,19 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Build project (Windows)
+      - name: Build project (Windows - ${{ matrix.build_type }})
         shell: bash
         run: |
           chmod +x Build.sh
-          ./Build.sh --noTest
+          ./Build.sh ${{ matrix.build_arg }}
 
-      - name: Upload build artifacts (Windows)
+      - name: Upload build artifacts (Windows - ${{ matrix.build_type }})
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts-windows
-          path: build
+          name: build-artifacts-windows-${{ matrix.build_type }}
+          path: ${{ matrix.build_dir }}
 
-  run-app-windows:
+  run-app-windows-debug:
     needs: build-windows
     runs-on: windows-latest
 
@@ -65,20 +85,41 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Download build artifacts (Windows)
+      - name: Download build artifacts (Windows Debug)
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts-windows
+          name: build-artifacts-windows-Debug
           path: build
 
-      - name: Run App (Windows)
+      - name: Run App (Windows Debug)
         shell: bash
         run: |
           chmod +x runApp
           ./runApp
 
+  run-app-windows-release:
+    needs: build-windows
+    runs-on: windows-latest
 
-  tests-linux:
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Download build artifacts (Windows Release)
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-windows-Release
+          path: build_release
+
+      - name: Run App (Windows Release)
+        shell: bash
+        run: |
+          chmod +x runApp
+          ./runApp --Release
+
+  tests-linux-debug:
     needs: build-linux
     runs-on: ubuntu-latest
 
@@ -93,10 +134,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential cmake # Ensure you have cmake and other essentials
 
-      - name: Download build artifacts (Linux)
+      - name: Download build artifacts (Linux Debug)
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts-linux
+          name: build-artifacts-linux-Debug
           path: build
 
       - name: Run tests
@@ -104,3 +145,30 @@ jobs:
           chmod +x runTest
           find . -type f -name "*Test" -print0 | xargs -0 chmod +x
           ./runTest --all
+
+  tests-linux-release:
+    needs: build-linux
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake
+
+      - name: Download build artifacts (Linux Release)
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-linux-Release
+          path: build_release
+
+      - name: Run tests
+        run: |
+          chmod +x runTest
+          find . -type f -name "*Test" -print0 | xargs -0 chmod +x
+          ./runTest --Release --all
