@@ -1,17 +1,111 @@
 #!/bin/bash
 
+# Функция для вывода сообщений об ошибках и выхода
+error()
+{
+  echo "Error: $1" >&2
+  exit 1
+}
+
 OS=$(uname -s)
 
 # Определяем расширение исполняемого файла и преобразуем путь, если это Windows
 if [[ "$OS" == "MINGW"* || "$OS" == "Windows_NT"* ]]; then
-    EXE_EXT=".exe"
+  EXE_EXT=".exe"
 else
-    EXE_EXT=""
+  EXE_EXT=""
 fi
 
-APP_PATH="./build/bin/Graph${EXE_EXT}"
+# Значения по умолчанию
+BUILD_DIR="build" # Default to Debug build
+RETRANSLATE=false
+TRANSLATE=false
+FILE_PATH_ARG=""
+FILE_PATH=""
+LOG_FILE_PATH=""
 
-# Запускаем приложение
-$APP_PATH --retranslate --figuresJsonPath build/figures.json
+# Обрабатываем аргументы командной строки
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --Debug)
+      BUILD_DIR="build"
+      shift
+      ;;
+    --Release)
+      BUILD_DIR="build_release"
+      shift
+      ;;
+    --retranslate)
+      RETRANSLATE=true
+      shift
+      ;;
+    --translate)
+      TRANSLATE=true
+      shift
+      ;;
+    --figuresJsonPath)
+      if [[ -n "$2" ]]; then
+        FILE_PATH_ARG="--figuresJsonPath"
+        FILE_PATH="$2"
+        shift 2 # Shift past the flag and its value
+      else
+        echo "Error: --figuresJsonPath requires a value" >&2
+        exit 1
+      fi
+      ;;
+    --codeFilePath)
+      if [[ -n "$2" ]]; then
+        FILE_PATH_ARG="--codeFilePath"
+        FILE_PATH="$2"
+        shift 2 # Shift past the flag and its value
+      else
+        echo "Error: --codeFilePath requires a value" >&2
+        exit 1
+      fi
+      ;;
+    --logFile)
+      if [[ -n "$2" ]]; then
+        LOG_FILE_PATH="$2"
+        shift 2 # Shift past the flag and its value
+      else
+        echo "Error: --logFile requires a value" >&2
+        exit 1
+      fi
+      ;;
+    *)
+      echo "Error: Неизвестный параметр: $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+APP_PATH="./${BUILD_DIR}/bin/Graph${EXE_EXT}"
+
+# Проверяем, что приложение существует
+if [ ! -f "$APP_PATH" ]; then
+  error "Ошибка: Исполняемый файл '$APP_PATH' не найден. Проверьте, что сборка выполнена в режиме '${BUILD_DIR}'."
+fi
+
+# Формируем команду для запуска приложения
+APP_COMMAND="$APP_PATH"
+
+if $RETRANSLATE; then
+  APP_COMMAND="$APP_COMMAND --retranslate"
+fi
+
+if $TRANSLATE; then
+  APP_COMMAND="$APP_COMMAND --translate"
+fi
+
+APP_COMMAND="$APP_COMMAND $FILE_PATH_ARG \"$FILE_PATH\""
+
+if [[ -n "$LOG_FILE_PATH" ]]; then
+  APP_COMMAND="$APP_COMMAND --logFile \"$LOG_FILE_PATH\""
+else
+  APP_COMMAND="$APP_COMMAND --logFile \"${BUILD_DIR}/log.log\"" # Default path
+fi
+
+echo "Запускаем приложение с командой: $APP_COMMAND"
+eval "$APP_COMMAND" || error "Ошибка выполнения приложения"
 
 echo "Приложение успешно завершено!"
