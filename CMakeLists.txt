@@ -10,15 +10,16 @@ macro(include_catch2)
   FetchContent_MakeAvailable(Catch2)
 endmacro()
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.25)
 project(GRAPH)
 
 # Опция для включения/выключения сборки тестов
 option(BUILD_TESTS "Enable building tests" ON)
 
 if(BUILD_TESTS)
-    include_catch2()
-    include(CTest)
+  include_catch2()
+  enable_testing()
+  include(CTest)
 endif()
 
 # Переменные для директорий

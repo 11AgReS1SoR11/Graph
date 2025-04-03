@@ -9,11 +9,11 @@
 #include <ctime>
 
 static std::vector<std::string> const LOGS = {"Info log", "Warn log", "Error log"};
-static std::string const LOG_FORMAT_STR = "[%s][%s] %s"; // C-style format string
+static constexpr auto LOG_FILE_PATH_TEST = "log.log";
 
 std::string readLastLogLine()
 {
-    std::ifstream file(LOG_FILE_PATH);
+    std::ifstream file(LOG_FILE_PATH_TEST);
     std::string lastLine;
     std::string currentLine;
     if (file.is_open())
@@ -29,7 +29,9 @@ std::string readLastLogLine()
 
 TEST_CASE("Logging to file", "[Logger]")
 {
-    std::ofstream outfile(LOG_FILE_PATH, std::ofstream::trunc); // Clear the file
+    Logger::getInstance().updLogOutput(LOG_FILE_PATH_TEST);
+
+    std::ofstream outfile(LOG_FILE_PATH_TEST, std::ofstream::trunc); // Clear the file
     outfile.close();
 
     LOG_INFO(FILE_MANAGER_LOG, LOGS[0]);
@@ -47,5 +49,5 @@ TEST_CASE("Logging to file", "[Logger]")
     std::string const expectedStringError = "[ERROR][" + std::string(TRANSLATOR_LOG) + "] " + LOGS[2];
     REQUIRE(lastLogError.find(expectedStringError) != std::string::npos);
 
-    std::remove(LOG_FILE_PATH); // Cleanup
+    std::remove(LOG_FILE_PATH_TEST); // Cleanup
 }

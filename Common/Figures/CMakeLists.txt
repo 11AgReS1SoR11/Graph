@@ -27,6 +27,12 @@ target_include_directories(Figures PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
+# Копирование библиотеки в bin
+set_target_properties(Figures PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
 # Установка библиотеки (опционально)
 install(TARGETS Figures DESTINATION lib)
 install(FILES ${HEADERS_FIGURES} DESTINATION include)
