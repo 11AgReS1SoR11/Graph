@@ -17,9 +17,6 @@ FUNCTION layout_graph(graph, canvas_width, canvas_height):
     # 4. Применяем вычисленные позиции к объектам графа
     apply_positions(graph, positions)
     
-    # 5. Генерируем пути для связей
-    generate_relation_paths(graph)
-    
     RETURN graph
 
 # Функция извлечения элементов графа
