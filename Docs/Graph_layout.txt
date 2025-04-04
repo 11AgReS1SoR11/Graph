@@ -1,0 +1,166 @@
+# Константы для алгоритма
+DECLARE FORCE_LAYOUT_ITERATIONS = 100
+DECLARE COOLING_FACTOR = 0.95
+DECLARE INITIAL_TEMPERATURE_FACTOR = 0.1
+
+# Основная функция для размещения графа
+FUNCTION layout_graph(graph, canvas_width, canvas_height):
+    # 1. Извлекаем вершины и рёбра из структуры графа
+    DECLARE vertices, edges = extract_graph_elements(graph)
+    
+    # 2. Инициализируем позиции вершин
+    DECLARE positions = initialize_positions(vertices, canvas_width, canvas_height)
+    
+    # 3. Оптимизируем расположение силовым методом
+    positions = force_directed_layout(vertices, edges, positions, canvas_width, canvas_height)
+    
+    # 4. Применяем вычисленные позиции к объектам графа
+    apply_positions(graph, positions)
+    
+    # 5. Генерируем пути для связей
+    generate_relation_paths(graph)
+    
+    RETURN graph
+
+# Функция извлечения элементов графа
+FUNCTION extract_graph_elements(graph):
+    DECLARE vertices AS LIST
+    DECLARE edges AS LIST
+    
+    # Обрабатываем все statement внутри графа
+    FOR statement IN graph.statements:
+        IF statement IS object_decl:
+            ADD statement TO vertices
+        ELIF statement IS relation:
+            ADD statement TO edges
+    
+    RETURN vertices, edges
+
+# Инициализация позиций (круговое размещение)
+FUNCTION initialize_positions(vertices, width, height):
+    DECLARE positions AS MAP OF ID TO (x, y)
+    DECLARE center_x = width / 2
+    DECLARE center_y = height / 2
+    DECLARE radius = MIN(width, height) * 0.5
+    
+    FOR i FROM 0 TO LENGTH(vertices) - 1:
+        DECLARE angle = 2 * PI * i / LENGTH(vertices)
+        positions[vertices[i].id] = (
+            center_x + radius * COS(angle),
+            center_y + radius * SIN(angle)
+        )
+    
+    RETURN positions
+
+# Силовой алгоритм размещения
+FUNCTION force_directed_layout(vertices, edges, positions, width, height):
+    DECLARE k = SQRT(width * height / LENGTH(vertices))  # Оптимальное расстояние
+    DECLARE temperature = width * INITIAL_TEMPERATURE_FACTOR
+    
+    FOR iter FROM 1 TO FORCE_LAYOUT_ITERATIONS:
+        DECLARE forces AS MAP OF ID TO (dx, dy)
+        
+        # Отталкивающие силы между всеми парами вершин 
+        FOR v1 IN vertices:
+            FOR v2 IN vertices:
+                IF v1.id != v2.id:
+                    DECLARE dx = positions[v1.id].x - positions[v2.id].x
+                    DECLARE dy = positions[v1.id].y - positions[v2.id].y
+                    DECLARE dist = MAX(SQRT(dx*dx + dy*dy), 0.1)
+                    DECLARE force = k*k / dist
+                    forces[v1.id] = (
+                        forces[v1.id].x + force * dx / dist,
+                        forces[v1.id].y + force * dy / dist
+                    )
+        
+        # Притягивающие силы для рёбер
+        FOR edge IN edges:
+            DECLARE v1 = edge.id1
+            DECLARE v2 = edge.id2
+            DECLARE dx = positions[v1].x - positions[v2].x
+            DECLARE dy = positions[v1].y - positions[v2].y
+            DECLARE dist = MAX(SQRT(dx*dx + dy*dy), 0.1)
+            DECLARE force = dist * dist / k
+            
+            IF v1 IN forces:
+                forces[v1] = (
+                    forces[v1].x - force * dx / dist,
+                    forces[v1].y - force * dy / dist
+                )
+            ELSE:
+                forces[v1] = (
+                    -force * dx / dist,
+                    -force * dy / dist
+                )
+            
+            IF v2 IN forces:
+                forces[v2] = (
+                    forces[v2].x + force * dx / dist,
+                    forces[v2].y + force * dy / dist
+                )
+            ELSE:
+                forces[v2] = (
+                    force * dx / dist,
+                    force * dy / dist
+                )
+        
+        # Применяем силы с ограничением температуры
+        FOR vertex IN vertices:
+            IF vertex.id IN forces:
+                DECLARE fx = forces[vertex.id].x
+                DECLARE fy = forces[vertex.id].y
+                DECLARE force_mag = SQRT(fx*fx + fy*fy)
+                
+                IF force_mag > 0:
+                    DECLARE limited_force = MIN(temperature, force_mag)
+                    positions[vertex.id] = (
+                        positions[vertex.id].x + limited_force * fx / force_mag,
+                        positions[vertex.id].y + limited_force * fy / force_mag
+                    )
+        
+        # Охлаждение системы
+        temperature *= COOLING_FACTOR
+    
+    # Нормализация позиций
+    DECLARE min_x, min_y, max_x, max_y
+    calculate_bounding_box(positions, min_x, min_y, max_x, max_y)
+    
+    # Масштабирование под холст
+    DECLARE scale_x = width / (max_x - min_x)
+    DECLARE scale_y = height / (max_y - min_y)
+    DECLARE scale = MIN(scale_x, scale_y) * 0.9  #отступ
+    
+    FOR vertex IN vertices:
+        positions[vertex.id] = (
+            (positions[vertex.id].x - min_x) * scale,
+            (positions[vertex.id].y - min_y) * scale
+        )
+    
+    RETURN positions
+
+# Функция вычисления ограничивающего прямоугольника
+# OUT значит, что min_x, min_y, max_x, max_y будут заполнены внутри функции, а не переданы с готовыми значениями
+FUNCTION calculate_bounding_box(positions, OUT min_x, OUT min_y, OUT max_x, OUT max_y):
+    min_x = INFINITY
+    min_y = INFINITY
+    max_x = -INFINITY
+    max_y = -INFINITY
+    
+    FOR id, pos IN positions:
+        min_x = MIN(min_x, pos.x)
+        min_y = MIN(min_y, pos.y)
+        max_x = MAX(max_x, pos.x)
+        max_y = MAX(max_y, pos.y)
+    
+    # Добавляем небольшие отступы
+    min_x -= 10
+    min_y -= 10
+    max_x += 10
+    max_y += 10
+
+# Применение позиций к объектам графа
+FUNCTION apply_positions(graph, positions):
+    FOR statement IN graph.statements:
+        IF statement IS object_decl AND statement.id IN positions:
+            statement.x = positions[statement.id].x
+            statement.y = positions[statement.id].y
