@@ -1,0 +1,7 @@
+@startgraph
+diamond gem {
+    color = blue;
+    x = 10;
+    y = 20;
+}
+@endgraph

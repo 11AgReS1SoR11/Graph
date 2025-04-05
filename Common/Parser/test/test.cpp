@@ -8,13 +8,15 @@
 
 TEST_CASE("test object_decl ", "[Parser]")
 {
-    Parser parser("lsl");
+    Parser parser("test1");
     AST::ASTTree* astTree = parser.parse();
 
     AST::ASTTree::DSFIterator astIter;
 
+#ifdef DEBUG
     for(astIter = (*astTree).begin(); astIter != (*astTree).end(); ++astIter)
     {
         std::cout << astIter.get()->value << std::endl;
     }
+#endif
 }
