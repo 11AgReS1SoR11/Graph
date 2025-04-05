@@ -36,3 +36,19 @@ TEST_CASE("test2 object_decl ", "[Parser]")
     }
 #endif
 }
+
+
+TEST_CASE("test3 relation ", "[Parser]")
+{
+    Parser parser("tests/test3");
+    AST::ASTTree* astTree = parser.parse();
+
+    AST::ASTTree::DSFIterator astIter;
+
+#ifdef DEBUG
+    for(astIter = (*astTree).begin(); astIter != (*astTree).end(); ++astIter)
+    {
+        std::cout << astIter.get()->value << std::endl;
+    }
+#endif
+}

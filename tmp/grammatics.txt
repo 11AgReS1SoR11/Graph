@@ -3,20 +3,25 @@
 
 program: '@startgraph ' statement* '@endgraph';
 
-statement: object_decl;
+statement: object_decl | relation;
 
 object_decl: SHAPE ID ('{' (property ';')* '}')?;
 
 SHAPE: 'circle' | 'rectangle' | 'diamond';
 
+relation: ID ARROW ID ('{' (property ';')* '}')?;
+
 property: PROPERTY_KEY '=' (TEXT | NUMBER);
 
 PROPERTY_KEY: 'color' | 'text' | 'border' | 'x' | 'y' | 'size_text' | 'size_A' | 'size_B'; 'angle'; 'radius'; 'grid';
+
+ARROW: '->' | '-->' | '<->' | '<-->' | '--' | '-';
 
 ID: [a-zA-Z][a-zA-Z0-9_]*;
 TEXT: [a-zA-Z0-9,.!? -]+;
 NUMBER: [0-9]+;
 WS: [ \t\r\n]+ -> skip;
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 

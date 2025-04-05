@@ -27,8 +27,8 @@ extern int yylex(void);
 }
 
 %token <str> START_GRAPH END_GRAPH
-%token <str> SHAPE PROPERTY_KEY ID NUMBER TEXT
-%type <node> program statements statement object_decl properties property
+%token <str> SHAPE PROPERTY_KEY ID NUMBER TEXT ARROW
+%type <node> program statements statement object_decl properties property relation
 
 %%
 
@@ -54,6 +54,10 @@ statements:
 
 statement:
     object_decl {
+        $$ = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
+        $$->addChild($1);
+    }
+    | relation {
         $$ = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
         $$->addChild($1);
     }
@@ -88,6 +92,47 @@ object_decl:
 
         $$->addChild(new AST::Node(GRAMMERCONSTANTS::START_INTERNAL_BLOCK));
         $$->addChild($4);
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
+    }
+;
+
+relation:
+    ID ARROW ID {
+        $$ = new AST::Node(GRAMMERCONSTANTS::RELATION);
+        AST::Node* fromId = new AST::Node(GRAMMERCONSTANTS::ID);
+        fromId->addChild(new AST::Node(*$1));
+        $$->addChild(fromId);
+        delete $1;
+
+        AST::Node* arrow = new AST::Node(GRAMMERCONSTANTS::ARROW);
+        arrow->addChild(new AST::Node(*$2));
+        $$->addChild(arrow);
+        delete $2;
+
+        AST::Node* toId = new AST::Node(GRAMMERCONSTANTS::ID);
+        toId->addChild(new AST::Node(*$3));
+        $$->addChild(toId);
+        delete $3;
+    }
+    | ID ARROW ID '{' properties '}' {
+        $$ = new AST::Node(GRAMMERCONSTANTS::RELATION);
+        AST::Node* fromId = new AST::Node(GRAMMERCONSTANTS::ID);
+        fromId->addChild(new AST::Node(*$1));
+        $$->addChild(fromId);
+        delete $1;
+
+        AST::Node* arrow = new AST::Node(GRAMMERCONSTANTS::ARROW);
+        arrow->addChild(new AST::Node(*$2));
+        $$->addChild(arrow);
+        delete $2;
+
+        AST::Node* toId = new AST::Node(GRAMMERCONSTANTS::ID);
+        toId->addChild(new AST::Node(*$3));
+        $$->addChild(toId);
+        delete $3;
+
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::START_INTERNAL_BLOCK));
+        $$->addChild($5);
         $$->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
 ;
@@ -138,3 +183,7 @@ property:
 ;
 
 %%
+
+
+
+

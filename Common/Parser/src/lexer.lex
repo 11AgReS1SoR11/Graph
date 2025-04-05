@@ -3,7 +3,6 @@
 #include <string>
 #include "parser.h"
 
-bool is_decl = false;
 bool is_prop = false;
 
 %}
@@ -30,12 +29,19 @@ bool is_prop = false;
 }
 
 "circle"|"rectangle"|"diamond" {
-    is_decl = true;
 #ifdef DEBUG
     std::cout << "TOKEN: SHAPE (" << yytext << ")" << std::endl;
 #endif
     yylval.str = new std::string(yytext);
     return SHAPE;
+}
+
+"->"|"-->"|"<->"|"<-->"|"--"|"-"|"<--"|"<"|">" {
+#ifdef DEBUG
+    std::cout << "TOKEN: ARROW (" << yytext << ")" << std::endl;
+#endif
+    yylval.str = new std::string(yytext);
+    return ARROW;
 }
 
 "color"|"text"|"border"|"x"|"y"|"size_text"|"size_A"|"size_B"|"angle"|"radius"|"grid" {
@@ -49,6 +55,7 @@ bool is_prop = false;
 
 [0-9]+ {
 
+    if(is_prop) is_prop = false;
 #ifdef DEBUG
     std::cout << "TOKEN: NUMBER (" << yytext << ")" << std::endl;
 #endif
@@ -57,16 +64,8 @@ bool is_prop = false;
 }
 
 [a-zA-Z][a-zA-Z0-9_]* {
-    if(is_decl)
-    {
-        is_decl = false;
-#ifdef DEBUG
-        std::cout << "TOKEN: ID (" << yytext << ")" << std::endl;
-#endif
-        yylval.str = new std::string(yytext);
-        return ID;
-    }
-    else if(is_prop)
+
+    if(is_prop)
     {
         is_prop = false;
 #ifdef DEBUG
@@ -75,12 +74,21 @@ bool is_prop = false;
         yylval.str = new std::string(yytext);
         return TEXT;
     }
+    else
+    {
+#ifdef DEBUG
+        std::cout << "TOKEN: ID (" << yytext << ")" << std::endl;
+#endif
+        yylval.str = new std::string(yytext);
+        return ID;
+    }
 }
 
 
 \"              { BEGIN(TEXT_MODE); }
 <TEXT_MODE>[a-zA-Z0-9,.!? -]+ {
 
+    if(is_prop) is_prop = false;
 #ifdef DEBUG
     std::cout << "TOKEN: TEXT (" << yytext << ")" << std::endl;
 #endif
