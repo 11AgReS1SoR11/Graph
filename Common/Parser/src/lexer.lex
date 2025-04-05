@@ -1,6 +1,9 @@
 %{
-#include "parser.h"
+#include <iostream>
 #include <string>
+
+#include "parser.h"
+#include "SemanticAnalyzer.hpp"
 %}
 
 %option yylineno

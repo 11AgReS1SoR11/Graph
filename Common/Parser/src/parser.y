@@ -34,17 +34,17 @@ extern int yylex(void);
 
 program:
     START_GRAPH statements END_GRAPH {
-        $$ = new AST::Node("Program");
-        $$->addChild(new AST::Node("@startgraph"));
+        $$ = new AST::Node(GRAMMERCONSTANTS::PROGRAM);
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::START_GRAPH));
         $$->addChild($2);
-        $$->addChild(new AST::Node("@endgraph"));
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::END_GRAPH));
         astTree = new AST::ASTTree($$);
     }
 ;
 
 statements:
     /* empty */ {
-        $$ = new AST::Node("statements");  // Пустой узел
+        $$ = new AST::Node("statements");
     }
     | statements statement {
         $1->addChild($2);
@@ -54,36 +54,57 @@ statements:
 
 statement:
     object_decl {
-        $$ = new AST::Node("statement");
+        $$ = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
         $$->addChild($1);
     }
 ;
 
 object_decl:
     SHAPE ID '{' property '}' {
-        $$ = new AST::Node("object_decl");
-        $$->addChild(new AST::Node("SHAPE"));
+        $$ = new AST::Node(GRAMMERCONSTANTS::OBJECT_DECL);
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::SHAPE));
         $$->addChild(new AST::Node(*$1));
         delete $1;
-        $$->addChild(new AST::Node("ID"));
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::ID));
         $$->addChild(new AST::Node(*$2));
         delete $2;
-        $$->addChild(new AST::Node("{"));
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::START_INTERNAL_BLOCK));
         $$->addChild($4);
-        $$->addChild(new AST::Node("}"));
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
 ;
 
 property:
     PROPERTY_KEY '=' TEXT ';' {
-        $$ = new AST::Node("property");
-        $$->addChild(new AST::Node("PROPERTY_KEY"));
-        $$->addChild(new AST::Node(*$1));
+        $$ = new AST::Node(GRAMMERCONSTANTS::PROPERTY);
+        AST::Node* keyNode = new AST::Node(GRAMMERCONSTANTS::PROPERTY_KEY);
+        keyNode->addChild(new AST::Node(*$1));
+        $$->addChild(keyNode);
         delete $1;
+
         $$->addChild(new AST::Node("="));
-        $$->addChild(new AST::Node("TEXT"));
-        $$->addChild(new AST::Node(*$3));
+
+        AST::Node* valueNode = new AST::Node(GRAMMERCONSTANTS::TEXT);
+        valueNode->addChild(new AST::Node(*$3));
+        $$->addChild(valueNode);
         delete $3;
+
+        $$->addChild(new AST::Node(";"));
+    }
+    | PROPERTY_KEY '=' NUMBER ';' {
+        $$ = new AST::Node(GRAMMERCONSTANTS::PROPERTY);
+        AST::Node* keyNode = new AST::Node(GRAMMERCONSTANTS::PROPERTY_KEY);
+        keyNode->addChild(new AST::Node(*$1));
+        $$->addChild(keyNode);
+        delete $1;
+
+        $$->addChild(new AST::Node("="));
+
+        AST::Node* valueNode = new AST::Node(GRAMMERCONSTANTS::NUMBER);
+        valueNode->addChild(new AST::Node(*$3));
+        $$->addChild(valueNode);
+        delete $3;
+
         $$->addChild(new AST::Node(";"));
     }
 ;
