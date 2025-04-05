@@ -1,82 +1,91 @@
-%code requires {
-#include "AST.hpp"
-}
-
 %{
 #include <cstdio>
 #include <string>
+#include <iostream>
 
+#include "SemanticAnalyzer.hpp"
 #include "AST.hpp"
 
 extern int yylineno;
 extern char *yytext;
-
 AST::ASTTree* astTree = nullptr;
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Syntax error at line %d near '%.10s': %s\n",
-            yylineno, yytext, s);
+    fprintf(stderr, "Syntax error at line %d near '%.10s': %s\n", yylineno, yytext, s);
 }
 
-extern int yylex();
+extern int yylex(void);
 %}
 
+%code requires {
+#include "AST.hpp"
+}
+
 %union {
-    int num;
+    std::string* str;
     AST::Node* node;
 }
 
-%token <num> NUM
-%type <node> EXPR TERM FACTOR
+%token <str> START_GRAPH END_GRAPH
+%token <str> SHAPE PROPERTY_KEY ID NUMBER TEXT
+%type <node> program statements statement object_decl property
 
 %%
 
-input:
-    /* empty */
-    | input line
-;
-
-line:
-    EXPR {
-        astTree = new AST::ASTTree($1);
-        printf("\nParsing successful!\n");
-    }
-    | '\n'
-;
-
-EXPR:
-    TERM { $$ = $1; }
-    | EXPR '+' TERM {
-        $$ = new AST::Node("+");
-        $$->addChild($1);
-        $$->addChild($3);
-    }
-    | EXPR '-' TERM {
-        $$ = new AST::Node("-");
-        $$->addChild($1);
-        $$->addChild($3);
+program:
+    START_GRAPH statements END_GRAPH {
+        $$ = new AST::Node(PROGRAM);
+        $$->addChild(new AST::Node("@startgraph"));
+        $$->addChild($2);
+        $$->addChild(new AST::Node("@endgraph"));
+        astTree = new AST::ASTTree($$);
     }
 ;
 
-TERM:
-    FACTOR { $$ = $1; }
-    | TERM '*' FACTOR {
-        $$ = new AST::Node("*");
-        $$->addChild($1);
-        $$->addChild($3);
+statements:
+    /* empty */ {
+        $$ = new AST::Node("statements");  // Пустой узел
     }
-    | TERM '/' FACTOR {
-        $$ = new AST::Node("/");
-        $$->addChild($1);
-        $$->addChild($3);
+    | statements statement {
+        $1->addChild($2);
+        $$ = $1;
     }
 ;
 
-FACTOR:
-    NUM {
-        $$ = new AST::Node(std::to_string($1));
+statement:
+    object_decl {
+        $$ = new AST::Node("statement");
+        $$->addChild($1);
     }
-    | '(' EXPR ')' { $$ = $2; }
+;
+
+object_decl:
+    SHAPE ID '{' property '}' {
+        $$ = new AST::Node("object_decl");
+        $$->addChild(new AST::Node("SHAPE"));
+        $$->addChild(new AST::Node(*$1));
+        delete $1;
+        $$->addChild(new AST::Node("ID"));
+        $$->addChild(new AST::Node(*$2));
+        delete $2;
+        $$->addChild(new AST::Node("{"));
+        $$->addChild($4);
+        $$->addChild(new AST::Node("}"));
+    }
+;
+
+property:
+    PROPERTY_KEY '=' TEXT ';' {
+        $$ = new AST::Node("property");
+        $$->addChild(new AST::Node("PROPERTY_KEY"));
+        $$->addChild(new AST::Node(*$1));
+        delete $1;
+        $$->addChild(new AST::Node("="));
+        $$->addChild(new AST::Node("TEXT"));
+        $$->addChild(new AST::Node(*$3));
+        delete $3;
+        $$->addChild(new AST::Node(";"));
+    }
 ;
 
 %%

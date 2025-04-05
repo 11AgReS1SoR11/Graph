@@ -6,7 +6,7 @@
 
 #define REQUIRE_MESSAGE(condition, message) {if (!(condition)) {FAIL(message);}}
 
-TEST_CASE("test parser ", "[Parser]")
+TEST_CASE("test object_decl ", "[Parser]")
 {
     Parser parser;
     AST::ASTTree* astTree = parser.parse();
@@ -18,4 +18,3 @@ TEST_CASE("test parser ", "[Parser]")
         std::cout << astIter.get()->value << std::endl;
     }
 }
-

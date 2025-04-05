@@ -17,6 +17,10 @@
 
 #include "Logger.hpp"
 
+
+namespace GRAMMERCONSTANTS
+{
+
 #define PROGRAM                 "Program"
 #define START_GRAPH             "@startgraph"
 #define END_GRAPH               "@endgraph"
@@ -66,6 +70,8 @@ inline std::string const WHITE = "white";
 inline std::string const YELLOW = "yellow";
 inline std::string const PURPLE = "purple";
 
+
+}
 
 
 namespace SEMANTICANALYZER

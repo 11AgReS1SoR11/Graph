@@ -71,6 +71,11 @@ TEST_CASE("test object_decl semantic", "[SemanticAnalyzer]")
     ast.insert(createObjectDeclAST(inputObject), programIt);
     ast.insert(new AST::Node(END_GRAPH), programIt);
 
+    for(auto it = ast.begin(); it != ast.end(); ++it)
+    {
+        std::cout << it.get()->value << std::endl;
+    }
+
 #ifdef DEBUG
     for(auto it = ast.begin(); it != ast.end(); ++it)
     {

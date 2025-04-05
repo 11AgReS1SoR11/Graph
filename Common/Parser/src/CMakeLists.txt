@@ -26,18 +26,20 @@ set(HEADERS_PARSER
     ${BISON_HEADER}
 )
 
-add_library(Parser SHARED ${SOURCE_PARSER} ${HEADERS_PARSER})
+add_library(Parser SHARED ${SOURCE_PARSER})
 
 target_include_directories(Parser PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
     ${CMAKE_SOURCE_DIR}/Common/Logger/src
     ${CMAKE_SOURCE_DIR}/Common/AST/src
+    ${CMAKE_SOURCE_DIR}/Common/SemanticAnalyzer/src
 )
 
 target_link_libraries(Parser PUBLIC
     Logger
     AST
+    SemanticAnalyzer
     ${FLEX_LIBRARIES}
 )
 

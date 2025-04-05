@@ -13,7 +13,8 @@ extern AST::ASTTree* astTree;
 extern int yyparse(void);
 
 
-class Parser {
+class Parser
+{
 public:
     Parser() = default;
     AST::ASTTree* parse();
