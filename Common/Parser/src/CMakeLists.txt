@@ -8,7 +8,8 @@ set(BISON_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/parser.h)
 FLEX_TARGET(Lexer lexer.lex ${FLEX_OUTPUT})
 
 BISON_TARGET(Parser parser.y ${BISON_OUTPUT}
-             DEFINES_FILE ${BISON_HEADER})
+             DEFINES_FILE ${BISON_HEADER}
+             COMPILE_FLAGS "--defines=${BISON_HEADER}")
 
 ADD_FLEX_BISON_DEPENDENCY(Lexer Parser)
 

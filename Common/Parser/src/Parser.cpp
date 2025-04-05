@@ -1,32 +1,14 @@
 #include "Parser.h"
 
-AST::ASTTree *Parser::yyparse()
+AST::ASTTree* Parser::parse()
 {
-    ast_tree = nullptr;
-    int result = ::yyparse();
+    astTree = nullptr;
 
-    if (result == 0) {
-        return ast_tree;
-    }
-
-    if (ast_tree) {
-        delete ast_tree;
+    if (yyparse() == 0) {
+        return astTree;
     }
 
     return nullptr;
-}
-
-int Parser::parse()
-{
-    AST::ASTTree* tree = yyparse();
-
-    if (tree)
-    {
-        printf("Parsing successful!\n");
-        delete tree;
-    }
-
-    return 0;
 }
 
 

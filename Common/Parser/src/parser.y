@@ -1,40 +1,82 @@
-%{
+%code requires {
+#include "AST.hpp"
+}
 
-#include <stdio.h>
+%{
+#include <cstdio>
+#include <string>
+
+#include "AST.hpp"
 
 extern int yylineno;
 extern char *yytext;
 
-void yyerror(const char *s)
-{
-    fprintf(stderr, "Синтаксическая ошибка в строке %d, около '%.10s': %s\n",
+AST::ASTTree* astTree = nullptr;
+
+void yyerror(const char *s) {
+    fprintf(stderr, "Syntax error at line %d near '%.10s': %s\n",
             yylineno, yytext, s);
 }
 
 extern int yylex();
-
 %}
 
+%union {
+    int num;
+    AST::Node* node;
+}
 
-%token NUM
-
+%token <num> NUM
+%type <node> EXPR TERM FACTOR
 
 %%
 
-EVALUATE: EXPR  { printf("\n=%d\n", $1); } ;
-
-EXPR:    TERM
-
-        | EXPR '+' TERM { $$ = $1 + $3; }
-
-        | EXPR '-' TERM { $$ = $1 - $3; }
+input:
+    /* empty */
+    | input line
 ;
 
-TERM:    NUM
+line:
+    EXPR {
+        astTree = new AST::ASTTree($1);
+        printf("\nParsing successful!\n");
+    }
+    | '\n'
+;
 
-        | TERM '*' NUM  { $$ = $1 * $3; }
+EXPR:
+    TERM { $$ = $1; }
+    | EXPR '+' TERM {
+        $$ = new AST::Node("+");
+        $$->addChild($1);
+        $$->addChild($3);
+    }
+    | EXPR '-' TERM {
+        $$ = new AST::Node("-");
+        $$->addChild($1);
+        $$->addChild($3);
+    }
+;
 
-        | TERM '/' NUM  { $$ = $1 / $3; }
+TERM:
+    FACTOR { $$ = $1; }
+    | TERM '*' FACTOR {
+        $$ = new AST::Node("*");
+        $$->addChild($1);
+        $$->addChild($3);
+    }
+    | TERM '/' FACTOR {
+        $$ = new AST::Node("/");
+        $$->addChild($1);
+        $$->addChild($3);
+    }
+;
+
+FACTOR:
+    NUM {
+        $$ = new AST::Node(std::to_string($1));
+    }
+    | '(' EXPR ')' { $$ = $2; }
 ;
 
 %%

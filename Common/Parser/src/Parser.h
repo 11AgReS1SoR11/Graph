@@ -7,22 +7,16 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "Logger.hpp"
 #include "AST.hpp"
 
-extern "C" AST::ASTTree* ast_tree;
-
-// Переопределяем yyparse для возврата AST::ASTTree*
-extern "C" int yyparse(void);
+extern AST::ASTTree* astTree;
+extern int yyparse(void);
 
 
-
-class Parser
-{
+class Parser {
 public:
     Parser() = default;
-    AST::ASTTree* yyparse();
-    int parse();
+    AST::ASTTree* parse();
 };
 
 #endif // PARSER_H

@@ -9,7 +9,7 @@
 %%
 
 [/][/].*\n      ;
-[0-9]+          { yylval = atoi(yytext); return NUM; }
+[0-9]+          { yylval.num = atoi(yytext); return NUM; }
 [ \t\r\n]         ;
 .               { return *yytext; }
 
