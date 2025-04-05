@@ -58,14 +58,14 @@
 #define SHAPE_RECTANGLE "rectangle"
 #define SHAPE_DIAMOND   "diamond"
 
-#define RED             "red"
-#define BLUE            "blue"
-#define GREEN           "green"
-#define BLUE            "blue"
-#define BLACK           "black"
-#define WHITE           "white"
-#define YELLOW          "yellow"
-#define PURPLE          "purple"
+inline std::string const RED = "red";
+inline std::string const BLUE = "blue";
+inline std::string const GREEN = "green";
+inline std::string const BLACK = "black";
+inline std::string const WHITE = "white";
+inline std::string const YELLOW = "yellow";
+inline std::string const PURPLE = "purple";
+
 
 
 namespace SEMANTICANALYZER
