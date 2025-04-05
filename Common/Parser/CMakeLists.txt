@@ -1,4 +1,4 @@
-# SemanticAnalyzer
+# Parser
 add_subdirectory(src)
 
 if(BUILD_TESTS)

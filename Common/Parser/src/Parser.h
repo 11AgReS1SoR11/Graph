@@ -6,10 +6,11 @@
 #include <string>
 #include <sstream>
 #include <stdexcept>
+#include <memory>
 
 #include "AST.hpp"
 
-extern AST::ASTTree* astTree;
+extern std::unique_ptr<AST::ASTTree> astTree;
 extern int yyparse(void);
 extern FILE* yyin;
 
@@ -17,7 +18,7 @@ class Parser
 {
 public:
     explicit Parser(const std::string filepath): filepath(filepath) {}
-    AST::ASTTree* parse();
+    std::unique_ptr<AST::ASTTree> parse();
 
 private:
     const std::string filepath;

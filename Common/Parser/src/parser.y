@@ -2,13 +2,14 @@
 #include <cstdio>
 #include <string>
 #include <iostream>
+#include <memory>
 
 #include "SemanticAnalyzer.hpp"
 #include "AST.hpp"
 
 extern int yylineno;
 extern char *yytext;
-AST::ASTTree* astTree = nullptr;
+std::unique_ptr<AST::ASTTree> astTree = nullptr;
 
 void yyerror(const char *s) {
     fprintf(stderr, "Syntax error at line %d near '%.10s': %s\n", yylineno, yytext, s);
@@ -38,7 +39,7 @@ program:
         $$->addChild(new AST::Node(GRAMMERCONSTANTS::START_GRAPH));
         $$->addChild($2);
         $$->addChild(new AST::Node(GRAMMERCONSTANTS::END_GRAPH));
-        astTree = new AST::ASTTree($$);
+        astTree = std::make_unique<AST::ASTTree>($$);
     }
 ;
 
@@ -213,10 +214,6 @@ property:
 ;
 
 %%
-
-
-
-
 
 
 
