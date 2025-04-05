@@ -29,11 +29,8 @@
 "angle"         { yylval.str = new std::string("angle"); return PROPERTY_KEY; }
 "grid"          { yylval.str = new std::string("grid"); return PROPERTY_KEY; }
 
-"red"|"blue"|"green"|"black"|"white"|"yellow"|"purple" {
-    yylval.str = new std::string(yytext); return TEXT;
-}
-
-[a-zA-Z][a-zA-Z0-9_]* { yylval.str = new std::string(yytext); return ID; }
+{ std::cout << "ID: " << yytext << "\n"; yylval.str = new std::string(yytext); return ID; }
+[a-zA-Z0-9,.!? -]+ { yylval.str = new std::string(yytext); return TEXT; }
 [0-9]+                { yylval.str = new std::string(yytext); return NUMBER; }
 [ \t\r\n]             ;
 [{};=]                { return *yytext; }

@@ -20,54 +20,56 @@
 
 namespace GRAMMERCONSTANTS
 {
-    constexpr const char* PROGRAM = "Program";
-    constexpr const char* START_GRAPH = "@startgraph";
-    constexpr const char* END_GRAPH = "@endgraph";
-    constexpr const char* STATEMENT = "statement";
-    constexpr const char* OBJECT_DECL = "object_decl";
-    constexpr const char* RELATION = "relation";
-    constexpr const char* NOTE = "note";
-    constexpr const char* GRAPH = "graph";
-    constexpr const char* DOT_CLOUD = "dot_cloud";
-    constexpr const char* SHAPE = "SHAPE";
-    constexpr const char* ID = "ID";
-    constexpr const char* PROPERTY = "property";
-    constexpr const char* START_INTERNAL_BLOCK = "{";
-    constexpr const char* END_INTERNAL_BLOCK = "}";
-    constexpr const char* PROPERTY_KEY = "PROPERTY_KEY";
-    constexpr const char* TEXT = "TEXT";
-    constexpr const char* NUMBER = "NUMBER";
-    constexpr const char* ARROW = "ARROW";
-    constexpr const char* START_DOT_BLOCK = "{";
-    constexpr const char* END_DOT_BLOCK = "}";
+constexpr const char* PROGRAM = "Program";
+constexpr const char* START_GRAPH = "@startgraph";
+constexpr const char* END_GRAPH = "@endgraph";
+constexpr const char* STATEMENTS = "statements";
+constexpr const char* STATEMENT = "statement";
+constexpr const char* OBJECT_DECL = "object_decl";
+constexpr const char* RELATION = "relation";
+constexpr const char* NOTE = "note";
+constexpr const char* GRAPH = "graph";
+constexpr const char* DOT_CLOUD = "dot_cloud";
+constexpr const char* SHAPE = "SHAPE";
+constexpr const char* ID = "ID";
+constexpr const char* PROPERTIES = "properties";
+constexpr const char* PROPERTY = "property";
+constexpr const char* START_INTERNAL_BLOCK = "{";
+constexpr const char* END_INTERNAL_BLOCK = "}";
+constexpr const char* PROPERTY_KEY = "PROPERTY_KEY";
+constexpr const char* TEXT = "TEXT";
+constexpr const char* NUMBER = "NUMBER";
+constexpr const char* ARROW = "ARROW";
+constexpr const char* START_DOT_BLOCK = "{";
+constexpr const char* END_DOT_BLOCK = "}";
 
-    constexpr const char* PROP_COLOR = "color";
-    constexpr const char* PROP_TEXT = "text";
-    constexpr const char* PROP_BORDER = "border";
-    constexpr const char* PROP_X = "x";
-    constexpr const char* PROP_Y = "y";
-    constexpr const char* PROP_SIZE_TEXT = "size_text";
-    constexpr const char* PROP_RADIUS = "radius";
-    constexpr const char* PROP_SIZE_A = "size_A";
-    constexpr const char* PROP_SIZE_B = "size_B";
-    constexpr const char* PROP_ANGLE = "angle";
-    constexpr const char* PROP_GRID = "grid";
+constexpr const char* PROP_COLOR = "color";
+constexpr const char* PROP_TEXT = "text";
+constexpr const char* PROP_BORDER = "border";
+constexpr const char* PROP_X = "x";
+constexpr const char* PROP_Y = "y";
+constexpr const char* PROP_SIZE_TEXT = "size_text";
+constexpr const char* PROP_RADIUS = "radius";
+constexpr const char* PROP_SIZE_A = "size_A";
+constexpr const char* PROP_SIZE_B = "size_B";
+constexpr const char* PROP_ANGLE = "angle";
+constexpr const char* PROP_GRID = "grid";
 
-    constexpr const char* TYPE_NUMBER = "number";
-    constexpr const char* TYPE_STRING = "string";
-    constexpr const char* TYPE_BOOLEAN = "bool";
+constexpr const char* TYPE_NUMBER = "number";
+constexpr const char* TYPE_STRING = "string";
+constexpr const char* TYPE_BOOLEAN = "bool";
 
-    constexpr const char* SHAPE_CIRCLE = "circle";
-    constexpr const char* SHAPE_RECTANGLE = "rectangle";
-    constexpr const char* SHAPE_DIAMOND = "diamond";
+constexpr const char* SHAPE_CIRCLE = "circle";
+constexpr const char* SHAPE_RECTANGLE = "rectangle";
+constexpr const char* SHAPE_DIAMOND = "diamond";
 
-    constexpr const char* RED = "red";
-    constexpr const char* BLUE = "blue";
-    constexpr const char* GREEN = "green";
-    constexpr const char* BLACK = "black";
-    constexpr const char* WHITE = "white";
-    constexpr const char* YELLOW = "yellow";
-    constexpr const char* PURPLE = "purple";
+constexpr const char* RED = "red";
+constexpr const char* BLUE = "blue";
+constexpr const char* GREEN = "green";
+constexpr const char* BLACK = "black";
+constexpr const char* WHITE = "white";
+constexpr const char* YELLOW = "yellow";
+constexpr const char* PURPLE = "purple";
 }
 
 
