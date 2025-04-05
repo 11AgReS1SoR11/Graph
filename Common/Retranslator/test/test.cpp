@@ -773,27 +773,27 @@ TEST_CASE("Check objects retranslate", "[Retranslator]")
     REQUIRE(it->getValue() == "@startgraph");
     ++it;
 
-    REQUIRE(it->getValue() == "STATEMENT");
+    REQUIRE(it->getValue() == "statement");
     ++it;
 
     checkCircle(it);
     
-    REQUIRE(it->getValue() == "STATEMENT");
+    REQUIRE(it->getValue() == "statement");
     ++it;
 
     checkDiamond(it);
     
-    REQUIRE(it->getValue() == "STATEMENT");
+    REQUIRE(it->getValue() == "statement");
     ++it;
 
     checkReactangle(it);
 
-    REQUIRE(it->getValue() == "STATEMENT");
+    REQUIRE(it->getValue() == "statement");
     ++it;
 
     checkLine(it);    
 
-    REQUIRE(it->getValue() == "STATEMENT");
+    REQUIRE(it->getValue() == "statement");
     ++it;
 
     checkNote(it);
@@ -862,7 +862,7 @@ TEST_CASE("Check graph retranslate", "[Retranslator]")
     REQUIRE(it->getValue() == "@startgraph");
     ++it;
 
-    REQUIRE(it->getValue() == "STATEMENT");
+    REQUIRE(it->getValue() == "statement");
     ++it;
 
     REQUIRE(it->getValue() == "graph");
@@ -1027,7 +1027,7 @@ TEST_CASE("Check dot_cloud retranslate", "[Retranslator]")
     REQUIRE(it->getValue() == "@startgraph");
     ++it;
 
-    REQUIRE(it->getValue() == "STATEMENT");
+    REQUIRE(it->getValue() == "statement");
     ++it;
 
     

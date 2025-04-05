@@ -26,7 +26,7 @@ ASTTree Retranslator::parseTree(std::vector<Shape*> const& vec) const{
 
     for (const auto& elem : vec)
     {
-        Node* cur = new Node("STATEMENT");
+        Node* cur = new Node("statement");
         root->addChild(cur);
         if (const Note* const note = dynamic_cast<const Note* const>(elem))
         {
@@ -50,7 +50,9 @@ ASTTree Retranslator::parseTree(std::vector<Shape*> const& vec) const{
         }
         else 
         {
-            LOG_ERROR(RETRANSLATOR_LOG, "wrong figure in parseTree function");
+            std::string errMsg("wrong figure in parseTree function");
+            LOG_ERROR(RETRANSLATOR_LOG, errMsg);
+            throw std::invalid_argument(errMsg);
         }
     }
 
@@ -199,7 +201,9 @@ Node* Retranslator::makeGraph(const Graph& shape) const
         }
         else 
         {
-            LOG_ERROR(RETRANSLATOR_LOG, "wrong figure in makeGraph function");
+            std::string errMsg("wrong figure in parseTree function");
+            LOG_ERROR(RETRANSLATOR_LOG, errMsg);
+            throw std::invalid_argument(errMsg);
         }
     }
 
