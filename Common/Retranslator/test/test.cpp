@@ -4,62 +4,9 @@
 
 using namespace AST;
 
-TEST_CASE("Check objects retranslate", "[Retranslator]")
+void checkCircle(AST::ASTTree::DSFIterator& it)
 {
-    std::vector<Shape*> vec;
-
-    Circle circle;
-    circle.text = "circleTEXT";
-    circle.id = "circleID";
-    circle.x = 1;
-    circle.y = 1;
-
-    Shape* circle_ptr = &circle;
-    vec.push_back(circle_ptr);
-
-    Diamond diamond;
-    diamond.text = "diamondTEXT";
-    diamond.id = "diamondID";
-    diamond.x = 2;
-    diamond.y = 2;
-
-    Shape* diamond_ptr = &diamond;
-    vec.push_back(diamond_ptr);
-
-    Rectangle rectangle;
-    rectangle.text = "rectangleTEXT";
-    rectangle.id = "rectangleID";
-    rectangle.x = 3;
-    rectangle.y = 3;
-
-    Shape* rectangle_ptr = &rectangle;
-    vec.push_back(rectangle_ptr);
-
-    Line line;
-    line.text = "lineTEXT";
-    line.id = "lineID";
-    line.x = 4;
-    line.y = 4;
-    line.idFrom = "diamondID";
-    line.idTo = "rectangleID";
-
-    Shape* line_ptr = &line;
-    vec.push_back(line_ptr);
-
-
-
-
-    ASTTree tree(Retranslator::getInstance().parseTree(vec));
-    auto it = tree.begin();
-    REQUIRE(it->getValue() == "root");
-    ++it;
-    REQUIRE(it->getValue() == "@startgraph");
-    ++it;
-
-    ///circle-------------------------------
-
-    REQUIRE(it->getValue() == "STATEMENT");
-    ++it;
+    
     REQUIRE(it->getValue() == "object_decl");
     ++it;
     REQUIRE(it->getValue() == "SHAPE");
@@ -181,13 +128,10 @@ TEST_CASE("Check objects retranslate", "[Retranslator]")
     ++it;
     REQUIRE(it->getValue() == "}");
     ++it;
+}
 
-    ///circle end ----------------------------------
-
-    /// diamond ------------------------------------
-    
-    REQUIRE(it->getValue() == "STATEMENT");
-    ++it;
+void checkDiamond(AST::ASTTree::DSFIterator& it)
+{
     REQUIRE(it->getValue() == "object_decl");
     ++it;
     REQUIRE(it->getValue() == "SHAPE");
@@ -340,12 +284,10 @@ TEST_CASE("Check objects retranslate", "[Retranslator]")
     REQUIRE(it->getValue() == "}");
     ++it;
 
-    ///diamond end ----------------------------
+}
 
-    ///rectangle -----------------------------
-    
-    REQUIRE(it->getValue() == "STATEMENT");
-    ++it;
+void checkReactangle(AST::ASTTree::DSFIterator& it)
+{
     REQUIRE(it->getValue() == "object_decl");
     ++it;
     REQUIRE(it->getValue() == "SHAPE");
@@ -484,14 +426,12 @@ TEST_CASE("Check objects retranslate", "[Retranslator]")
 
     ++it;
     REQUIRE(it->getValue() == "}");
-
-
-    ///rectangle end ---------------------------------
-
-    ///line -----------------------------------------
     ++it;
-    REQUIRE(it->getValue() == "STATEMENT");
-    ++it;
+
+}
+
+void checkLine(AST::ASTTree::DSFIterator& it)
+{
     REQUIRE(it->getValue() == "relation");
     ++it;
     
@@ -608,10 +548,255 @@ TEST_CASE("Check objects retranslate", "[Retranslator]")
     ++it;
     REQUIRE(it->getValue() == "}");
 
-    ///line end------------------------------
+    ++it;
 
+}
+
+void checkNote(AST::ASTTree::DSFIterator& it)
+{
+    REQUIRE(it->getValue() == "note");
     ++it;
     
+    REQUIRE(it->getValue() == "ID");
+    ++it;
+    
+    REQUIRE(it->getValue() == "noteID");
+    ++it;
+    
+    REQUIRE(it->getValue() == "{");
+
+    ++it;
+    REQUIRE(it->getValue() == "property");
+    ++it;
+    REQUIRE(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    REQUIRE(it->getValue() == "text");
+    ++it;
+    REQUIRE(it->getValue() == "=");
+    ++it;
+    REQUIRE(it->getValue() == "TEXT");
+    ++it;
+    
+    REQUIRE(it->getValue() == "crocodilo bombordiro");
+    ++it;
+    REQUIRE(it->getValue() == ";");
+
+    ++it;
+    REQUIRE(it->getValue() == "property");
+    ++it;
+    REQUIRE(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    REQUIRE(it->getValue() == "color");
+    ++it;
+    REQUIRE(it->getValue() == "=");
+    ++it;
+    REQUIRE(it->getValue() == "TEXT");
+    ++it;
+    REQUIRE(it->getValue() == "NONE");
+    ++it;
+    REQUIRE(it->getValue() == ";");
+
+    ++it;
+    REQUIRE(it->getValue() == "property");
+    ++it;
+    REQUIRE(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    REQUIRE(it->getValue() == "border");
+    ++it;
+    REQUIRE(it->getValue() == "=");
+    ++it;
+    REQUIRE(it->getValue() == "NUMBER");
+    ++it;
+    REQUIRE(it->getValue() == "1");
+    ++it;
+    REQUIRE(it->getValue() == ";");
+
+    ++it;
+    REQUIRE(it->getValue() == "property");
+    ++it;
+    REQUIRE(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    REQUIRE(it->getValue() == "size_text");
+    ++it;
+    REQUIRE(it->getValue() == "=");
+    ++it;
+    REQUIRE(it->getValue() == "NUMBER");
+    ++it;
+    REQUIRE(it->getValue() == "10");
+    ++it;
+    REQUIRE(it->getValue() == ";");
+
+    ++it;
+    REQUIRE(it->getValue() == "property");
+    ++it;
+    REQUIRE(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    REQUIRE(it->getValue() == "x");
+    ++it;
+    REQUIRE(it->getValue() == "=");
+    ++it;
+    REQUIRE(it->getValue() == "NUMBER");
+    ++it;
+    REQUIRE(it->getValue() == "5");
+    ++it;
+    REQUIRE(it->getValue() == ";");
+
+    ++it;
+    REQUIRE(it->getValue() == "property");
+    ++it;
+    REQUIRE(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    REQUIRE(it->getValue() == "y");
+    ++it;
+    REQUIRE(it->getValue() == "=");
+    ++it;
+    REQUIRE(it->getValue() == "NUMBER");
+    ++it;
+    REQUIRE(it->getValue() == "5");
+    ++it;
+    REQUIRE(it->getValue() == ";");
+    
+    ++it;
+
+    REQUIRE(it->getValue() == "property");
+    ++it;
+    REQUIRE(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    REQUIRE(it->getValue() == "size_A");
+    ++it;
+    REQUIRE(it->getValue() == "=");
+    ++it;
+    REQUIRE(it->getValue() == "NUMBER");
+    ++it;
+    REQUIRE(std::stod(it->getValue()) == 1);
+    ++it;
+    REQUIRE(it->getValue() == ";");
+    ++it;
+
+    REQUIRE(it->getValue() == "property");
+    ++it;
+    REQUIRE(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    REQUIRE(it->getValue() == "size_B");
+    ++it;
+    REQUIRE(it->getValue() == "=");
+    ++it;
+    REQUIRE(it->getValue() == "NUMBER");
+    ++it;
+    REQUIRE(std::stod(it->getValue()) == 1);
+    ++it;
+    REQUIRE(it->getValue() == ";");
+    ++it;
+    
+
+
+    REQUIRE(it->getValue() == "property");
+    ++it;
+    REQUIRE(it->getValue() == "PROPERTY_KEY");
+    ++it;
+    REQUIRE(it->getValue() == "idTo");
+    ++it;
+    REQUIRE(it->getValue() == "=");
+    ++it;
+    REQUIRE(it->getValue() == "TEXT");
+    ++it;
+    REQUIRE(it->getValue() == "lineID");
+    ++it;
+    REQUIRE(it->getValue() == ";");
+    ++it;
+
+    REQUIRE(it->getValue() == "}");
+
+    ++it;
+
+}
+
+
+
+TEST_CASE("Check objects retranslate", "[Retranslator]")
+{
+    std::vector<Shape*> vec;
+
+    Circle circle;
+    circle.text = "circleTEXT";
+    circle.id = "circleID";
+    circle.x = 1;
+    circle.y = 1;
+
+    Shape* circle_ptr = &circle;
+    vec.push_back(circle_ptr);
+
+    Diamond diamond;
+    diamond.text = "diamondTEXT";
+    diamond.id = "diamondID";
+    diamond.x = 2;
+    diamond.y = 2;
+
+    Shape* diamond_ptr = &diamond;
+    vec.push_back(diamond_ptr);
+
+    Rectangle rectangle;
+    rectangle.text = "rectangleTEXT";
+    rectangle.id = "rectangleID";
+    rectangle.x = 3;
+    rectangle.y = 3;
+
+    Shape* rectangle_ptr = &rectangle;
+    vec.push_back(rectangle_ptr);
+
+    Line line;
+    line.text = "lineTEXT";
+    line.id = "lineID";
+    line.x = 4;
+    line.y = 4;
+    line.idFrom = "diamondID";
+    line.idTo = "rectangleID";
+
+    Shape* line_ptr = &line;
+    vec.push_back(line_ptr);
+
+    Note note;
+    note.text = "crocodilo bombordiro";
+    note.id = "noteID";
+    note.x = 5;
+    note.y = 5;
+    note.idTo = "lineID";
+
+    vec.push_back(&note);
+
+
+
+    ASTTree tree(Retranslator::getInstance().parseTree(vec));
+    auto it = tree.begin();
+    REQUIRE(it->getValue() == "root");
+    ++it;
+    REQUIRE(it->getValue() == "@startgraph");
+    ++it;
+
+    REQUIRE(it->getValue() == "STATEMENT");
+    ++it;
+
+    checkCircle(it);
+    
+    REQUIRE(it->getValue() == "STATEMENT");
+    ++it;
+
+    checkDiamond(it);
+    
+    REQUIRE(it->getValue() == "STATEMENT");
+    ++it;
+
+    checkReactangle(it);
+
+    REQUIRE(it->getValue() == "STATEMENT");
+    ++it;
+
+    checkLine(it);    
+
+    REQUIRE(it->getValue() == "STATEMENT");
+    ++it;
+
+    checkNote(it);
 
     REQUIRE(it->getValue() == "@endgraph");
 }
@@ -787,558 +972,16 @@ TEST_CASE("Check graph retranslate", "[Retranslator]")
     ++it;
     
     REQUIRE(it->getValue() == "{");
-
-
-    ///circle-------------------------------------
     ++it;
     
-    REQUIRE(it->getValue() == "object_decl");
-    ++it;
-    REQUIRE(it->getValue() == "SHAPE");
-    ++it;
-    REQUIRE(it->getValue() == "circle");
-    ++it;
-    REQUIRE(it->getValue() == "ID");
-    ++it;
-    REQUIRE(it->getValue() == "circleID");
-    ++it;
-    REQUIRE(it->getValue() == "{");
+    checkCircle(it);
 
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "text");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "TEXT");
-    ++it;
-    REQUIRE(it->getValue() == "circleTEXT");
-    ++it;
-    REQUIRE(it->getValue() == ";");
+    checkDiamond(it);
 
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "color");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "TEXT");
-    ++it;
-    REQUIRE(it->getValue() == "NONE");
-    ++it;
-    REQUIRE(it->getValue() == ";");
+    checkReactangle(it);
 
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "border");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "1");
-    ++it;
-    REQUIRE(it->getValue() == ";");
+    checkLine(it);
 
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "size_text");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "10");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-    
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "x");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "1");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "y");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(std::stod(it->getValue()) == 1);
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "radius");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(std::stod(it->getValue()) == 1);
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-
-    ++it;
-    REQUIRE(it->getValue() == "}");
-    ++it;
-
-    ///circle end ----------------------------------------
-
-
-
-    ///diamond --------------------------------------------
-
-    REQUIRE(it->getValue() == "object_decl");
-    ++it;
-    REQUIRE(it->getValue() == "SHAPE");
-    ++it;
-    REQUIRE(it->getValue() == "diamond");
-    ++it;
-    REQUIRE(it->getValue() == "ID");
-    ++it;
-    REQUIRE(it->getValue() == "diamondID");
-    ++it;
-    REQUIRE(it->getValue() == "{");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "text");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "TEXT");
-    ++it;
-    REQUIRE(it->getValue() == "diamondTEXT");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "color");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "TEXT");
-    ++it;
-    REQUIRE(it->getValue() == "NONE");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "border");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "1");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "size_text");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "10");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "x");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "2");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "y");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "2");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "size_A");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(std::stod(it->getValue()) == 1);
-    ++it;
-    REQUIRE(it->getValue() == ";");
-    ++it;
-
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "size_B");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(std::stod(it->getValue()) == 1);
-    ++it;
-    REQUIRE(it->getValue() == ";");
-    ++it;
-
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "angle");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(std::stod(it->getValue()) == 90);
-    ++it;
-    REQUIRE(it->getValue() == ";");
-    ++it;
-
-    
-    REQUIRE(it->getValue() == "}");
-    ++it;
-
-    ///diamond end-------------------------------------------
-
-
-    ///rectangle---------------------------------------
-
-    REQUIRE(it->getValue() == "object_decl");
-    ++it;
-    REQUIRE(it->getValue() == "SHAPE");
-    ++it;
-    
-    REQUIRE(it->getValue() == "rectangle");
-    ++it;
-    
-    REQUIRE(it->getValue() == "ID");
-    ++it;
-    REQUIRE(it->getValue() == "rectangleID");
-    ++it;
-    REQUIRE(it->getValue() == "{");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "text");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "TEXT");
-    ++it;
-    
-    REQUIRE(it->getValue() == "rectangleTEXT");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "color");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "TEXT");
-    ++it;
-    REQUIRE(it->getValue() == "NONE");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "border");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "1");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "size_text");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "10");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "x");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "3");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "y");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "3");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-    
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "size_A");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(std::stod(it->getValue()) == 1);
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "size_B");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(std::stod(it->getValue()) == 1);
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "}");
-    ++it;
-
-    ///rectangle end-----------------------------------
-
-    ///line------------------------------------------
-
-    REQUIRE(it->getValue() == "relation");
-    ++it;
-    
-    REQUIRE(it->getValue() == "ID");
-    ++it;
-    
-    REQUIRE(it->getValue() == "diamondID");
-    ++it;
-    
-    REQUIRE(it->getValue() == "ARROW");
-
-    ++it;
-    REQUIRE(it->getValue() == "-");
-    ++it;
-
-    REQUIRE(it->getValue() == "ID");
-    ++it;
-    REQUIRE(it->getValue() == "rectangleID");
-    ++it;
-
-    REQUIRE(it->getValue() == "{");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "text");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "TEXT");
-    ++it;
-    
-    REQUIRE(it->getValue() == "lineTEXT");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "color");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "TEXT");
-    ++it;
-    REQUIRE(it->getValue() == "NONE");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "border");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "1");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "size_text");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "10");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "x");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "4");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-
-    ++it;
-    REQUIRE(it->getValue() == "property");
-    ++it;
-    REQUIRE(it->getValue() == "PROPERTY_KEY");
-    ++it;
-    REQUIRE(it->getValue() == "y");
-    ++it;
-    REQUIRE(it->getValue() == "=");
-    ++it;
-    REQUIRE(it->getValue() == "NUMBER");
-    ++it;
-    REQUIRE(it->getValue() == "4");
-    ++it;
-    REQUIRE(it->getValue() == ";");
-    
-    ++it;
-    REQUIRE(it->getValue() == "}");
-    ++it;
-
-    ///line end-------------------------------------
     REQUIRE(it->getValue() == "}");
     ++it;
     REQUIRE(it->getValue() == "@endgraph");

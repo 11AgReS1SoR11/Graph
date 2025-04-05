@@ -31,9 +31,9 @@ private:
     
     static std::unique_ptr<Retranslator> instance;
 
-    Node* makeObject(const Shape* const shape) const;
-    Node* makeNote(const Note* const shape) const;
-    Node* makeLink(const Line* const shape) const;
-    Node* makeGraph(const Graph* const shape) const;
-    Node* makeDotCloud(const DotCloud* const shape) const;
+    Node* makeObject(const Shape& shape) const;
+    Node* makeNote(const Note& shape) const;
+    Node* makeLink(const Line& shape) const;
+    Node* makeGraph(const Graph& shape) const;
+    Node* makeDotCloud(const DotCloud& shape) const;
 };
