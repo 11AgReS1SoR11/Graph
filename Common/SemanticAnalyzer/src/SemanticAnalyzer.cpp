@@ -7,23 +7,23 @@ void SEMANTICANALYZER::SemanticAnalyzer::semanticAnalysis(const std::vector<std:
 
     for (const auto& [type, statement] : programTree)
     {
-        if (type == OBJECT_DECL)
+        if (type == GRAMMERCONSTANTS::OBJECT_DECL)
         {
             checkObjectDecl(std::any_cast<const ObjectDecl&>(statement), statementNumber);
         }
-        else if (type == RELATION)
+        else if (type == GRAMMERCONSTANTS::RELATION)
         {
             checkRelation(std::any_cast<const Relation&>(statement), statementNumber);
         }
-        else if (type == NOTE)
+        else if (type == GRAMMERCONSTANTS::NOTE)
         {
             checkNote(std::any_cast<const Note&>(statement), statementNumber);
         }
-        else if (type == GRAPH)
+        else if (type == GRAMMERCONSTANTS::GRAPH)
         {
             checkGraph(std::any_cast<const Graph&>(statement), statementNumber);
         }
-        else if (type == DOT_CLOUD)
+        else if (type == GRAMMERCONSTANTS::DOT_CLOUD)
         {
             checkDotCloud(std::any_cast<const DotCloud&>(statement), statementNumber);
         }
@@ -59,7 +59,7 @@ void SEMANTICANALYZER::SemanticAnalyzer::declareObject(const std::string &id, in
 
 void SEMANTICANALYZER::SemanticAnalyzer::checkPropertyValue(const Property &property, const ConstraintInfo &constraints, int statementNumber) const
 {
-    if (constraints.type == TYPE_NUMBER)
+    if (constraints.type == GRAMMERCONSTANTS::TYPE_NUMBER)
     {
         double propValue = 0.0;
 
@@ -83,9 +83,9 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkPropertyValue(const Property &prop
                                 std::to_string(constraints.max.value()) + ".", statementNumber);
         }
     }
-    else if(constraints.type == TYPE_STRING)
+    else if(constraints.type == GRAMMERCONSTANTS::TYPE_STRING)
     {
-        if (property.key == PROP_COLOR &&
+        if (property.key == GRAMMERCONSTANTS::PROP_COLOR &&
                 std::find(ALLOWED_COLORS.begin(), ALLOWED_COLORS.end(), property.value) == ALLOWED_COLORS.end())
         {
             std::string allowed = std::accumulate(ALLOWED_COLORS.begin(), ALLOWED_COLORS.end(), std::string(),
@@ -94,7 +94,7 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkPropertyValue(const Property &prop
             throw SemanticError("Значение свойства color должно быть одним из: " + allowed + ".", statementNumber);
         }
     }
-    else if(constraints.type == TYPE_BOOLEAN)
+    else if(constraints.type == GRAMMERCONSTANTS::TYPE_BOOLEAN)
     {
         if (property.value != "true" && property.value != "false")
         {
@@ -145,7 +145,7 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkRelation(const Relation &rel, int 
         throw SemanticError("Объект " + rel.id2 + " не объявлен.", statementNumber);
     }
 
-    if (rel.id1 == GRAPH || rel.id1 == DOT_CLOUD || rel.id2 == GRAPH || rel.id2 == DOT_CLOUD)
+    if (rel.id1 == GRAMMERCONSTANTS::GRAPH || rel.id1 == GRAMMERCONSTANTS::DOT_CLOUD || rel.id2 == GRAMMERCONSTANTS::GRAPH || rel.id2 == GRAMMERCONSTANTS::DOT_CLOUD)
     {
         throw SemanticError("Связь не может быть создана с графом или облаком точек.", statementNumber);
     }
@@ -244,7 +244,7 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkDotCloud(const DotCloud &dotCloud,
     enterScope();
 
     std::vector<std::string> allowedExternalProperties = COMMON_PROPERTIES;
-    auto specificProps = SHAPE_SPECIFIC_PROPERTIES.at(DOT_CLOUD);
+    auto specificProps = SHAPE_SPECIFIC_PROPERTIES.at(GRAMMERCONSTANTS::DOT_CLOUD);
     allowedExternalProperties.insert(allowedExternalProperties.end(), specificProps.begin(), specificProps.end());
 
     for (const Property& prop : dotCloud.externalProperties)
@@ -263,8 +263,8 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkDotCloud(const DotCloud &dotCloud,
 
         for(const Property& prop : dot.internalProperties)
         {
-            if (prop.key == PROP_X) hasX = true;
-            if (prop.key == PROP_Y) hasY = true;
+            if (prop.key == GRAMMERCONSTANTS::PROP_X) hasX = true;
+            if (prop.key == GRAMMERCONSTANTS::PROP_Y) hasY = true;
 
             checkPropertyValue(prop, PROPERTY_CONSTRAINTS.at(prop.key), statementNumber);
         }

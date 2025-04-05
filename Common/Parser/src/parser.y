@@ -34,7 +34,7 @@ extern int yylex(void);
 
 program:
     START_GRAPH statements END_GRAPH {
-        $$ = new AST::Node(PROGRAM);
+        $$ = new AST::Node("Program");
         $$->addChild(new AST::Node("@startgraph"));
         $$->addChild($2);
         $$->addChild(new AST::Node("@endgraph"));
