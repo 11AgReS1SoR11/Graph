@@ -1,6 +1,14 @@
 #include "Note.hpp"
 
-// std::string Note::toJson() const
-// {
-//     // TODO: implement during GRAP-17
-// }
+std::string Note::toJson() const
+{
+    return "{"
+    "\"type\": \"Diamond\","
+    + Shape::toJson() + ","
+    "\"property\": {"
+        "\"size_A\": " + std::to_string(sizeA) + ","
+        "\"size_B\": " + std::to_string(sizeB) + ","
+        "\"angle\": " + idTo +
+    "}"
+    "}";
+}

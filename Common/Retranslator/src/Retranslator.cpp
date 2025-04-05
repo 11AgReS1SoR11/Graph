@@ -114,11 +114,6 @@ Node* Retranslator::makeObject(const Shape& shape) const
 
 }
 
-// Node* Retranslator::makeNote(const Shape* const shape) const
-// {
-//     //to be inmpelented...
-// }
-
 std::string arrowMaker(const Line& line)
 {
     if (static_cast<short>(line.type) == 0 && static_cast<short>(line.orientation) == 0)
@@ -157,6 +152,19 @@ Node* Retranslator::makeLink(const Line& shape) const
     return node;
 }
 
+bool isObject(const Shape* shape)
+{
+    if (dynamic_cast<const Circle*>(shape))
+        return true;
+    if (dynamic_cast<const Diamond*>(shape))
+        return true;
+    if (dynamic_cast<const Rectangle*>(shape))
+        return true;
+
+    return false;
+
+}
+
 Node* Retranslator::makeGraph(const Graph& shape) const
 {
     Node* node = new Node("graph");
@@ -178,7 +186,7 @@ Node* Retranslator::makeGraph(const Graph& shape) const
         { 
             node->addChild(makeLink(*line));
         }
-        else 
+        else if (isObject(elem))
         {
             node->addChild(makeObject(*elem));
         }
