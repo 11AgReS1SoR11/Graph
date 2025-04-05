@@ -82,10 +82,10 @@ TEST_CASE("insert to any node of tree", "[AST]")
     ASTTree tree(root);
 
     // insert after PROGRAM
-    Node* nodeStatement = new Node("STATEMENT");
+    Node* nodeStatement = new Node("statement");
     auto itStatement = tree.insert(nodeStatement, tree.begin());
     REQUIRE(itStatement != tree.end());
-    REQUIRE(itStatement->getValue() == "STATEMENT");
+    REQUIRE(itStatement->getValue() == "statement");
 
     // insert after STATEMENT
     Node* nodeRelation = new Node("RELATION");
@@ -107,7 +107,7 @@ TEST_CASE("insert to any node of tree", "[AST]")
         ++it;
 
         REQUIRE(it != tree.end());
-        REQUIRE(it->getValue() == "STATEMENT");
+        REQUIRE(it->getValue() == "statement");
 
         ++it;
 
@@ -125,10 +125,10 @@ TEST_CASE("insert to any node of tree", "[AST]")
     }
 
     // insert after PROGRAM
-    Node* nodeStatement2 = new Node("STATEMENT");
+    Node* nodeStatement2 = new Node("statement");
     auto itStatement2 = tree.insert(nodeStatement2, tree.begin());
     REQUIRE(itStatement2 != tree.end());
-    REQUIRE(itStatement2->getValue() == "STATEMENT");
+    REQUIRE(itStatement2->getValue() == "statement");
 
     // insert after RELATION
     Node* nodeID = new Node("ID");
@@ -144,7 +144,7 @@ TEST_CASE("insert to any node of tree", "[AST]")
         ++it;
 
         REQUIRE(it != tree.end());
-        REQUIRE(it->getValue() == "STATEMENT");
+        REQUIRE(it->getValue() == "statement");
 
         ++it;
 
@@ -164,7 +164,7 @@ TEST_CASE("insert to any node of tree", "[AST]")
         ++it;
 
         REQUIRE(it != tree.end());
-        REQUIRE(it->getValue() == "STATEMENT");
+        REQUIRE(it->getValue() == "statement");
 
         ++it;
 
@@ -178,10 +178,10 @@ TEST_CASE("range for", "[AST]")
     ASTTree tree(root);
 
     // insert after PROGRAM
-    Node* nodeStatement = new Node("STATEMENT");
+    Node* nodeStatement = new Node("statement");
     auto itStatement = tree.insert(nodeStatement, tree.begin());
     REQUIRE(itStatement != tree.end());
-    REQUIRE(itStatement->getValue() == "STATEMENT");
+    REQUIRE(itStatement->getValue() == "statement");
 
     // insert after STATEMENT
     Node* nodeRelation = new Node("RELATION");
@@ -199,7 +199,7 @@ TEST_CASE("range for", "[AST]")
     for (auto it = tree.begin(); it != tree.end(); ++it, ++idx)
     {
         if (idx == 0) { REQUIRE(it->getValue() == "PROGRAM"); }
-        if (idx == 1) { REQUIRE(it->getValue() == "STATEMENT"); }
+        if (idx == 1) { REQUIRE(it->getValue() == "statement"); }
         if (idx == 2) { REQUIRE(it->getValue() == "RELATION"); }
         if (idx == 3) { REQUIRE(it->getValue() == "<--"); }
     }

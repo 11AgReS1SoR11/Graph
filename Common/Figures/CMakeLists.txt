@@ -7,6 +7,7 @@ set(SOURCE_FIGURES
     Rectangle.cpp
     Style.cpp
     Shape.cpp
+    Note.cpp
 )
 
 set(HEADERS_FIGURES
@@ -18,6 +19,7 @@ set(HEADERS_FIGURES
     Rectangle.hpp
     Style.hpp
     Shape.hpp
+    Note.hpp
 )
 
 add_library(Figures SHARED ${SOURCE_FIGURES})
