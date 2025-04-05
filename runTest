@@ -36,8 +36,10 @@ elif [[ "$test_arg" == "--Retranslator" ]]; then
     ctest -R RetranslatorTest --output-on-failure
 elif [[ "$test_arg" == "--FiguresStorage" ]]; then
     ctest -R FiguresStorageTest --output-on-failure
+elif [[ "$test_arg" == "--Translator" ]]; then
+    ctest -R TranslatorTest --output-on-failure
 else
-    echo "Usage: $0 [--all | --Common | --Backend | --AST | --Logger | --FileManager | --SA | --Retranslator | --FiguresStorage]" >&2
+    echo "Usage: $0 [--all | --Common | --Backend | --AST | --Logger | --FileManager | --SA | --Retranslator | --FiguresStorage | --Translator]" >&2
     exit 1
 fi
 

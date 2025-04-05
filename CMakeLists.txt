@@ -10,7 +10,7 @@ macro(include_catch2)
   FetchContent_MakeAvailable(Catch2)
 endmacro()
 
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.22)
 project(GRAPH)
 
 # Опция для включения/выключения сборки тестов
