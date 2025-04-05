@@ -119,7 +119,7 @@ property:
 
         $$->addChild(new AST::Node(";"));
     }
-    | PROPERTY_KEY '=' NUMBER {
+    | PROPERTY_KEY '=' NUMBER ';' {
 
         $$ = new AST::Node(GRAMMERCONSTANTS::PROPERTY);
         AST::Node* keyNode = new AST::Node(GRAMMERCONSTANTS::PROPERTY_KEY);

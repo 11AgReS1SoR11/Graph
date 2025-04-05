@@ -2,58 +2,107 @@
 #include <iostream>
 #include <string>
 #include "parser.h"
+
+bool is_decl = false;
+bool is_prop = false;
+
 %}
 
 %option yylineno
 %option noyywrap
 
+%x TEXT_MODE
+
 %%
 
-"@startgraph"   { std::cout << "TOKEN: START_GRAPH" << std::endl; return START_GRAPH; }
-"@endgraph"     { std::cout << "TOKEN: END_GRAPH" << std::endl; return END_GRAPH; }
+"@startgraph"   {
+#ifdef DEBUG
+    std::cout << "TOKEN: START_GRAPH" << std::endl;
+#endif
+    return START_GRAPH;
+}
 
-"circle"        { std::cout << "TOKEN: SHAPE (circle)" << std::endl; yylval.str = new std::string(yytext); return SHAPE; }
-"rectangle"     { std::cout << "TOKEN: SHAPE (rectangle)" << std::endl; yylval.str = new std::string(yytext); return SHAPE; }
-"diamond"       { std::cout << "TOKEN: SHAPE (diamond)" << std::endl; yylval.str = new std::string(yytext); return SHAPE; }
+"@endgraph"     {
+#ifdef DEBUG
+    std::cout << "TOKEN: END_GRAPH" << std::endl;
+#endif
+    return END_GRAPH;
+}
 
-"color"         { std::cout << "TOKEN: PROPERTY_KEY (color)" << std::endl; yylval.str = new std::string(yytext); return PROPERTY_KEY; }
-"text"          { std::cout << "TOKEN: PROPERTY_KEY (text)" << std::endl; yylval.str = new std::string(yytext); return PROPERTY_KEY; }
-"border"        { std::cout << "TOKEN: PROPERTY_KEY (border)" << std::endl; yylval.str = new std::string(yytext); return PROPERTY_KEY; }
-"x"             { std::cout << "TOKEN: PROPERTY_KEY (x)" << std::endl; yylval.str = new std::string(yytext); return PROPERTY_KEY; }
-"y"             { std::cout << "TOKEN: PROPERTY_KEY (y)" << std::endl; yylval.str = new std::string(yytext); return PROPERTY_KEY; }
-"size_text"     { std::cout << "TOKEN: PROPERTY_KEY (size_text)" << std::endl; yylval.str = new std::string(yytext); return PROPERTY_KEY; }
-"radius"        { std::cout << "TOKEN: PROPERTY_KEY (radius)" << std::endl; yylval.str = new std::string(yytext); return PROPERTY_KEY; }
-"size_A"        { std::cout << "TOKEN: PROPERTY_KEY (size_A)" << std::endl; yylval.str = new std::string(yytext); return PROPERTY_KEY; }
-"size_B"        { std::cout << "TOKEN: PROPERTY_KEY (size_B)" << std::endl; yylval.str = new std::string(yytext); return PROPERTY_KEY; }
-"angle"         { std::cout << "TOKEN: PROPERTY_KEY (angle)" << std::endl; yylval.str = new std::string(yytext); return PROPERTY_KEY; }
-"grid"          { std::cout << "TOKEN: PROPERTY_KEY (grid)" << std::endl; yylval.str = new std::string(yytext); return PROPERTY_KEY; }
+"circle"|"rectangle"|"diamond" {
+    is_decl = true;
+#ifdef DEBUG
+    std::cout << "TOKEN: SHAPE (" << yytext << ")" << std::endl;
+#endif
+    yylval.str = new std::string(yytext);
+    return SHAPE;
+}
 
-[a-zA-Z][a-zA-Z0-9_]* {
-    if (strcmp(yytext, "circle") == 0 || strcmp(yytext, "rectangle") == 0 || strcmp(yytext, "diamond") == 0) {
-        REJECT;
-    }
-    else {
-        std::cout << "TOKEN: ID (" << yytext << ")" << std::endl;
-        yylval.str = new std::string(yytext);
-        return ID;
-    }
+"color"|"text"|"border"|"x"|"y"|"size_text"|"size_A"|"size_B"|"angle"|"radius"|"grid" {
+    is_prop = true;
+#ifdef DEBUG
+    std::cout << "TOKEN: PROPERTY_KEY (" << yytext << ")" << std::endl;
+#endif
+    yylval.str = new std::string(yytext);
+    return PROPERTY_KEY;
 }
 
 [0-9]+ {
+
+#ifdef DEBUG
     std::cout << "TOKEN: NUMBER (" << yytext << ")" << std::endl;
+#endif
     yylval.str = new std::string(yytext);
     return NUMBER;
 }
 
-[ \t\r\n]+ ;
+[a-zA-Z][a-zA-Z0-9_]* {
+    if(is_decl)
+    {
+        is_decl = false;
+#ifdef DEBUG
+        std::cout << "TOKEN: ID (" << yytext << ")" << std::endl;
+#endif
+        yylval.str = new std::string(yytext);
+        return ID;
+    }
+    else if(is_prop)
+    {
+        is_prop = false;
+#ifdef DEBUG
+        std::cout << "TOKEN: TEXT (" << yytext << ")" << std::endl;
+#endif
+        yylval.str = new std::string(yytext);
+        return TEXT;
+    }
+}
+
+
+\"              { BEGIN(TEXT_MODE); }
+<TEXT_MODE>[a-zA-Z0-9,.!? -]+ {
+
+#ifdef DEBUG
+    std::cout << "TOKEN: TEXT (" << yytext << ")" << std::endl;
+#endif
+    yylval.str = new std::string(yytext);
+    return TEXT;
+}
+<TEXT_MODE>\"   { BEGIN(INITIAL); }
+
+
+[ \t\r\n]+      { }
 
 [{};=] {
+#ifdef DEBUG
     std::cout << "TOKEN: SYMBOL (" << yytext << ")" << std::endl;
+#endif
     return *yytext;
 }
 
 . {
+#ifdef DEBUG
     std::cout << "TOKEN: UNKNOWN (" << yytext << ")" << std::endl;
+#endif
     return *yytext;
 }
 

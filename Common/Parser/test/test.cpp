@@ -8,7 +8,7 @@
 
 TEST_CASE("test object_decl ", "[Parser]")
 {
-    Parser parser;
+    Parser parser("lsl");
     AST::ASTTree* astTree = parser.parse();
 
     AST::ASTTree::DSFIterator astIter;

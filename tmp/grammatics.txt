@@ -3,7 +3,7 @@
 
 program: '@startgraph ' statement* '@endgraph';
 
-statement: object_decl | relation | note | graph | dot_cloud;
+statement: object_decl;
 
 object_decl: SHAPE ID ('{' (property ';')* '}')?;
 
@@ -19,3 +19,27 @@ NUMBER: [0-9]+;
 WS: [ \t\r\n]+ -> skip;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@startgraph
+diamond gem {
+    color = blue;
+    x = 10;
+    y = 20;
+}
+@endgraph
+
+
+@startgraph
+rectangle box1 { color = red; }
+@endgraph
+
+
+@startgraph
+circle obj1
+@endgraph
+
+
+@startgraph
+circle c1
+rectangle r1 { size_A = 50; size_B = 30; }
+@endgraph
