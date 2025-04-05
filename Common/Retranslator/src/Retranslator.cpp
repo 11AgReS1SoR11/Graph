@@ -1,9 +1,23 @@
 #include "Retranslator.hpp"
 #include <typeinfo>
+#include "Logger.hpp"
 
 using namespace AST;
 
 std::unique_ptr<Retranslator> Retranslator::instance = nullptr;
+
+bool isObject(const Shape* shape)
+{
+    if (dynamic_cast<const Circle*>(shape))
+        return true;
+    if (dynamic_cast<const Diamond*>(shape))
+        return true;
+    if (dynamic_cast<const Rectangle*>(shape))
+        return true;
+
+    return false;
+
+}
 
 ASTTree Retranslator::parseTree(std::vector<Shape*> const& vec) const{
     
@@ -30,9 +44,13 @@ ASTTree Retranslator::parseTree(std::vector<Shape*> const& vec) const{
         {
             cur->addChild(makeDotCloud(*cloud));
         }
-        else 
+        else if (isObject(elem))
         {
             cur->addChild(makeObject(*elem));
+        }
+        else 
+        {
+            LOG_ERROR(RETRANSLATOR_LOG, "wrong figure in parseTree function");
         }
     }
 
@@ -152,18 +170,7 @@ Node* Retranslator::makeLink(const Line& shape) const
     return node;
 }
 
-bool isObject(const Shape* shape)
-{
-    if (dynamic_cast<const Circle*>(shape))
-        return true;
-    if (dynamic_cast<const Diamond*>(shape))
-        return true;
-    if (dynamic_cast<const Rectangle*>(shape))
-        return true;
 
-    return false;
-
-}
 
 Node* Retranslator::makeGraph(const Graph& shape) const
 {
@@ -189,6 +196,10 @@ Node* Retranslator::makeGraph(const Graph& shape) const
         else if (isObject(elem))
         {
             node->addChild(makeObject(*elem));
+        }
+        else 
+        {
+            LOG_ERROR(RETRANSLATOR_LOG, "wrong figure in makeGraph function");
         }
     }
 
