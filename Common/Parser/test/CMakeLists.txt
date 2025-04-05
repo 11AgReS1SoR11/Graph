@@ -2,6 +2,7 @@ set(SOURCE_PARSER_TEST test.cpp)
 
 set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/test1
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/test2
 )
 
 add_executable(ParserTest ${SOURCE_PARSER_TEST})
@@ -11,7 +12,7 @@ target_link_libraries(ParserTest PRIVATE
     Parser
 )
 
-target_compile_options(Parser PRIVATE
+target_compile_options(ParserTest PRIVATE
     $<$<CONFIG:Debug>:
         -DDEBUG
     >
@@ -20,7 +21,7 @@ target_compile_options(Parser PRIVATE
     >
 )
 
-set(TEST_OUTPUT_DIR "${CMAKE_BINARY_DIR}/Common/Parser/test")
+set(TEST_OUTPUT_DIR "${CMAKE_BINARY_DIR}/Common/Parser/test/tests")
 
 target_include_directories(ParserTest PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}

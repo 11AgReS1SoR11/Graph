@@ -1,0 +1,31 @@
+@startgraph
+circle sun {
+    color = yellow;
+    x = 100;
+    y = 50;
+    radius = 30;
+    text = "Hello, world!";
+}
+rectangle house {
+    color = brown;
+    x = 200;
+    y = 150;
+    size_A = 80;
+    size_B = 60;
+    border = thick;
+}
+diamond gem {
+    color = blue;
+    x = 300;
+    y = 250;
+    angle = 45;
+}
+circle moon
+rectangle fence {
+    color = gray;
+    x = 50;
+    y = 300;
+    size_A = 100;
+    size_B = 20;
+}
+@endgraph
