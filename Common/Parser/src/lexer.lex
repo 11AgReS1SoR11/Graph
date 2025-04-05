@@ -44,6 +44,14 @@ bool is_prop = false;
     return ARROW;
 }
 
+"note" {
+#ifdef DEBUG
+    std::cout << "TOKEN: NOTE (" << yytext << ")" << std::endl;
+#endif
+    yylval.str = new std::string(yytext);
+    return NOTE;
+}
+
 "color"|"text"|"border"|"x"|"y"|"size_text"|"size_A"|"size_B"|"angle"|"radius"|"grid" {
     is_prop = true;
 #ifdef DEBUG

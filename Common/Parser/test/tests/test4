@@ -1,0 +1,67 @@
+@startgraph
+
+circle StartPoint
+rectangle ProcessBox
+diamond DecisionNode
+
+circle Input {
+    color = blue;
+    x = 50;
+    y = 100;
+    radius = 30;
+    text = "Enter Data";
+}
+
+rectangle Output {
+    border = green;
+    size_A = 200;
+    size_B = 150;
+    grid = true;
+}
+
+StartPoint -> ProcessBox
+Input --> Output
+ProcessBox <-> DecisionNode
+Output <--> Input
+DecisionNode -- StartPoint
+Input - ProcessBox
+
+StartPoint --> DecisionNode {
+    color = red;
+    size_text = 14;
+    angle = 90;
+}
+
+ProcessBox <-> Output {
+    border = dashed;
+    text = "Bidirectional Flow";
+}
+
+note Info1
+note Warning2
+
+note Instruction {
+    text = "Please follow steps";
+    color = yellow;
+    x = 300;
+    y = 400;
+}
+
+note Reminder {
+    size_text = 12;
+    border = solid;
+    grid = false;
+}
+
+circle Main {
+    radius = 40;
+    color = purple;
+}
+
+Main --> Instruction {
+    text = "Reference Note";
+}
+
+DecisionNode - Reminder
+
+@endgraph

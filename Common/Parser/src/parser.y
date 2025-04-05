@@ -27,8 +27,8 @@ extern int yylex(void);
 }
 
 %token <str> START_GRAPH END_GRAPH
-%token <str> SHAPE PROPERTY_KEY ID NUMBER TEXT ARROW
-%type <node> program statements statement object_decl properties property relation
+%token <str> SHAPE PROPERTY_KEY ID NUMBER TEXT ARROW NOTE
+%type <node> program statements statement object_decl properties property relation note
 
 %%
 
@@ -58,6 +58,11 @@ statement:
         $$->addChild($1);
     }
     | relation {
+        $$ = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
+        $$->addChild($1);
+    }
+
+    | note {
         $$ = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
         $$->addChild($1);
     }
@@ -137,6 +142,31 @@ relation:
     }
 ;
 
+note:
+    NOTE ID {
+        $$ = new AST::Node(GRAMMERCONSTANTS::NOTE);
+        delete $1;
+
+        AST::Node* id = new AST::Node(GRAMMERCONSTANTS::ID);
+        id->addChild(new AST::Node(*$2));
+        $$->addChild(id);
+        delete $2;
+    }
+    | NOTE ID '{' properties '}' {
+        $$ = new AST::Node(GRAMMERCONSTANTS::NOTE);
+        delete $1;
+
+        AST::Node* id = new AST::Node(GRAMMERCONSTANTS::ID);
+        id->addChild(new AST::Node(*$2));
+        $$->addChild(id);
+        delete $2;
+
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::START_INTERNAL_BLOCK));
+        $$->addChild($4);
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
+    }
+;
+
 properties:
     /* empty */ {
         $$ = new AST::Node(GRAMMERCONSTANTS::PROPERTIES);
@@ -183,6 +213,10 @@ property:
 ;
 
 %%
+
+
+
+
 
 
 

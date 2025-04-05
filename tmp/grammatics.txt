@@ -3,13 +3,15 @@
 
 program: '@startgraph ' statement* '@endgraph';
 
-statement: object_decl | relation;
+statement: object_decl | relation | note;
 
 object_decl: SHAPE ID ('{' (property ';')* '}')?;
 
 SHAPE: 'circle' | 'rectangle' | 'diamond';
 
 relation: ID ARROW ID ('{' (property ';')* '}')?;
+
+note: 'note' ID ('{' (property ';')* '}')?;
 
 property: PROPERTY_KEY '=' (TEXT | NUMBER);
 
