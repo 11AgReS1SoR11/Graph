@@ -4,9 +4,9 @@ find_package(BISON REQUIRED)
 set(FLEX_REQUIRED_VERSION "2.6.0")
 set(BISON_REQUIRED_VERSION "3.0.0")
 
-set(FLEX_OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/lexer.cpp)
-set(BISON_OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/parser.cpp)
-set(BISON_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/parser.h)
+set(FLEX_OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/_lexer_.cpp)
+set(BISON_OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/_parser_.cpp)
+set(BISON_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/_parser_.h)
 
 FLEX_TARGET(Lexer lexer.lex ${FLEX_OUTPUT})
 
@@ -29,7 +29,7 @@ set(HEADERS_PARSER
     ${BISON_HEADER}
 )
 
-add_library(Parser SHARED ${SOURCE_PARSER} ${HEADERS_PARSER})
+add_library(Parser SHARED ${SOURCE_PARSER})
 
 target_include_directories(Parser PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -43,7 +43,7 @@ target_link_libraries(Parser PUBLIC
     Logger
     AST
     SemanticAnalyzer
-    ${FLEX_LIBRARIES}
+    # ${FLEX_LIBRARIES}
 )
 
 target_compile_options(Parser PRIVATE

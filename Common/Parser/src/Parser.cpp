@@ -1,5 +1,9 @@
 #include "Parser.h"
 
+extern std::unique_ptr<AST::ASTTree> astTree;
+extern int yyparse(void);
+extern FILE* yyin;
+
 std::unique_ptr<AST::ASTTree> Parser::parse()
 {
     FILE* input_file = fopen(filepath.c_str(), "r");

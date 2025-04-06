@@ -63,16 +63,36 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Setup MSYS2
+      - name: Install MSYS2 (bison & flex)
         uses: msys2/setup-msys2@v2
         with:
-          update: true
-          install: >-
-            bison
+          path-type: minimal
+          install: |
+            base-devel
+            gcc
+            make
             flex
-            winpthreads-git
+            bison
+            cmake
             mingw-w64-x86_64-toolchain
-          msystem: MINGW64
+
+      - name: List MSYS2 directory
+        run: ls ${{ steps.msys2.outputs.msys2-path }} # Смотрим, что там есть
+
+      - name: Check if flex.exe exists
+        run: |
+          if (Test-Path "${{ steps.msys2.outputs.msys2-path }}\usr\bin\flex.exe") {
+            Write-Host "flex.exe exists"
+          } else {
+            Write-Host "flex.exe does NOT exist"
+          }
+        shell: pwsh
+
+      - name: Add Bison and Flex to PATH (using Environment File)
+        run: |
+          echo "MSYS2_BIN_PATH=${{ steps.msys2.outputs.msys2-path }}\usr\bin" >> $GITHUB_ENV
+          echo "${{ steps.msys2.outputs.msys2-path }}\usr\bin" >> $GITHUB_PATH # Add to PATH
+
 
       - name: Build project (Windows - ${{ matrix.build_type }})
         shell: msys2 {0}
