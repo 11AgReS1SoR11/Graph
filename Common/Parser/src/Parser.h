@@ -10,10 +10,6 @@
 
 #include "AST.hpp"
 
-extern std::unique_ptr<AST::ASTTree> astTree;
-extern int yyparse(void);
-extern FILE* yyin;
-
 class Parser
 {
 public:
