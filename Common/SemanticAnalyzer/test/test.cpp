@@ -18,13 +18,13 @@ AST::Node* createDotCloudAST(SEMANTICANALYZER::DotCloud const& dotCloud);
 AST::Node* createPropertyAST(SEMANTICANALYZER::Property const& property);
 AST::Node* createDotAST(SEMANTICANALYZER::Dot const& dot);
 
-/*
-void SemanticAnalyzerTest::testObjectDecl()
+
+TEST_CASE("test object_decl semantic", "[SemanticAnalyzer]")
 {
-    AST::ASTTree ast(new AST::Node(PROGRAM));
+    AST::ASTTree ast(new AST::Node(GRAMMERCONSTANTS::PROGRAM));
     auto programIt = ast.begin();
 
-    ast.insert(new AST::Node(START_GRAPH), programIt);
+    ast.insert(new AST::Node(GRAMMERCONSTANTS::START_GRAPH), programIt);
 
     SEMANTICANALYZER::ObjectDecl inputObject;
 
@@ -69,7 +69,12 @@ void SemanticAnalyzerTest::testObjectDecl()
     }
 
     ast.insert(createObjectDeclAST(inputObject), programIt);
-    ast.insert(new AST::Node(END_GRAPH), programIt);
+    ast.insert(new AST::Node(GRAMMERCONSTANTS::END_GRAPH), programIt);
+
+    for(auto it = ast.begin(); it != ast.end(); ++it)
+    {
+        std::cout << it.get()->value << std::endl;
+    }
 
 #ifdef DEBUG
     for(auto it = ast.begin(); it != ast.end(); ++it)
@@ -87,7 +92,7 @@ void SemanticAnalyzerTest::testObjectDecl()
     REQUIRE_MESSAGE(programTree.size() == 1,
              ("Expected program tree to contain exactly 1 statement, but found "
               + std::to_string(programTree.size())).c_str());
-    REQUIRE_MESSAGE(programTree[0].first == OBJECT_DECL,
+    REQUIRE_MESSAGE(programTree[0].first == GRAMMERCONSTANTS::OBJECT_DECL,
             "Expected first element to be an OBJECT_DECL, but it was not");
 
     SEMANTICANALYZER::ObjectDecl resultingObject = std::any_cast<SEMANTICANALYZER::ObjectDecl&>(programTree[0].second);
@@ -136,246 +141,12 @@ void SemanticAnalyzerTest::testObjectDecl()
 }
 
 
-void SemanticAnalyzerTest::testRelation()
-{
-    AST::ASTTree ast(new AST::Node(PROGRAM));
-    auto programIt = ast.begin();
-
-    ast.insert(new AST::Node(START_GRAPH), programIt);
-
-    SEMANTICANALYZER::Relation inputRelation;
-
-    const auto* ciEnv = std::getenv(CI_SYSTEM);
-    const std::string_view ciFlag = ciEnv ? std::string_view(ciEnv) : std::string_view{};
-
-    if (ciEnv && ciFlag == "true")
-    {
-        inputRelation.id1 = "rect1";
-        inputRelation.arrow = "->";
-        inputRelation.id2 = "rect2";
-    }
-    else
-    {
-        std::cout << "=== Testing Relation Declaration ===" << std::endl;
-        std::cout << "Let's define a relation between two objects!" << std::endl;
-
-        std::cout << "1. What is the ID of the first object? (Enter ID1): ";
-        std::cin >> inputRelation.id1;
-
-        std::cout << "2. What is the ID of the second object? (Enter ID2): ";
-        std::cin >> inputRelation.id2;
-
-        std::cout << "3. What arrow connects them? (e.g., ->, --, =>): ";
-        std::cin >> inputRelation.arrow;
-
-        std::cout << "4. How many properties would you like to add to this relation? (Enter a number): ";
-        std::size_t numberOfProperties{};
-
-        if (std::cin >> numberOfProperties)
-        {
-            for(std::size_t i = 0; i < numberOfProperties; ++i)
-            {
-                SEMANTICANALYZER::Property property;
-                std::cout << "\nProperty #" << (i + 1) << ":" << std::endl;
-                std::cout << "   - Enter the key for this property: ";
-                std::cin >> property.key;
-
-                std::cout << "   - Enter the value for this property: ";
-                std::cin >> property.value;
-
-                inputRelation.properties.push_back(std::move(property));
-            }
-        }
-        std::cout << "Great! Your relation has been created." << std::endl;
-    }
-
-    ast.insert(createRelationAST(inputRelation), programIt);
-    ast.insert(new AST::Node(END_GRAPH), programIt);
-
-#ifdef DEBUG
-    for(auto it = ast.begin(); it != ast.end(); ++it)
-    {
-        std::cout << it.get()->value << std::endl;
-    }
-#endif
-
-    SEMANTICANALYZER::AstStatementParser parser(ast);
-
-    auto programTree = parser.parse();
-    auto& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
-    analyzer.reset();
-
-    REQUIRE_MESSAGE(programTree.size() == 1,
-             ("Expected program tree to contain exactly 1 statement, but found "
-              + std::to_string(programTree.size())).c_str());
-    REQUIRE_MESSAGE(programTree[0].first == RELATION,
-            "Expected first element to be a RELATION, but it was not");
-
-    SEMANTICANALYZER::Relation resultingRelation = std::any_cast<SEMANTICANALYZER::Relation&>(programTree[0].second);
-
-    try
-    {
-        analyzer.semanticAnalysis(programTree, 1);
-
-        REQUIRE_MESSAGE(resultingRelation.id1 == inputRelation.id1, "First object IDs do not match");
-        REQUIRE_MESSAGE(resultingRelation.id2 == inputRelation.id2, "Second object IDs do not match");
-        REQUIRE_MESSAGE(resultingRelation.arrow == inputRelation.arrow, "Arrow types do not match");
-        REQUIRE_MESSAGE(resultingRelation.properties.size() == inputRelation.properties.size(), "Number of properties does not match");
-
-        for (std::size_t i = 0; i < resultingRelation.properties.size(); ++i)
-        {
-            REQUIRE_MESSAGE(resultingRelation.properties[i].key == inputRelation.properties[i].key,
-                     ("Property key mismatch at index " + std::to_string(i)).c_str());
-            REQUIRE_MESSAGE(resultingRelation.properties[i].value == inputRelation.properties[i].value,
-                     ("Property value mismatch at index " + std::to_string(i)).c_str());
-        }
-
-        std::cout << "\n=== Test Results ===" << std::endl;
-        std::cout << "Relation Successfully Processed!" << std::endl;
-        std::cout << "----------------------------------------" << std::endl;
-        std::cout << "First Object ID: " << resultingRelation.id1 << std::endl;
-        std::cout << "Arrow: " << resultingRelation.arrow << std::endl;
-        std::cout << "Second Object ID: " << resultingRelation.id2 << std::endl;
-        std::cout << "Properties:" << std::endl;
-
-        if (resultingRelation.properties.empty())
-        {
-            std::cout << "   (No properties defined)" << std::endl;
-        }
-        else
-        {
-            for (std::size_t i = 0; i < resultingRelation.properties.size(); ++i)
-            {
-                std::cout << "   " << (i + 1) << ". " << resultingRelation.properties[i].key
-                          << ": " << resultingRelation.properties[i].value << std::endl;
-            }
-        }
-        std::cout << "----------------------------------------" << std::endl;
-    }
-    catch (const SEMANTICANALYZER::SemanticError& error)
-    {
-        FAIL(("Unexpected exception: " + std::string(error.what())).c_str());
-    }
-}
-
-
-void SemanticAnalyzerTest::testNote()
-{
-    AST::ASTTree ast(new AST::Node(PROGRAM));
-    auto programIt = ast.begin();
-
-    ast.insert(new AST::Node(START_GRAPH), programIt);
-
-    SEMANTICANALYZER::Note inputNote;
-
-    const auto* ciEnv = std::getenv(CI_SYSTEM);
-    const std::string_view ciFlag = ciEnv ? std::string_view(ciEnv) : std::string_view{};
-
-    if (ciEnv && ciFlag == "true")
-    {
-        inputNote.id = "rect";
-    }
-    else
-    {
-        std::cout << "=== Testing Note Declaration ===" << std::endl;
-        std::cout << "Let's create a note together!" << std::endl;
-
-        std::cout << "1. What would you like to name your note? (Enter an ID): ";
-        std::cin >> inputNote.id;
-
-        std::cout << "2. How many properties would you like to add to your note? (Enter a number): ";
-        std::size_t numberOfProperties{};
-
-        if (std::cin >> numberOfProperties)
-        {
-            for(std::size_t i = 0; i < numberOfProperties; ++i)
-            {
-                SEMANTICANALYZER::Property property;
-                std::cout << "\nProperty #" << (i + 1) << ":" << std::endl;
-                std::cout << "   - Enter the key for this property: ";
-                std::cin >> property.key;
-
-                std::cout << "   - Enter the value for this property: ";
-                std::cin >> property.value;
-
-                inputNote.properties.push_back(std::move(property));
-            }
-        }
-        std::cout << "Great! Your note has been created." << std::endl;
-    }
-
-    ast.insert(createNoteAST(inputNote), programIt);
-    ast.insert(new AST::Node(END_GRAPH), programIt);
-
-#ifdef DEBUG
-    for(auto it = ast.begin(); it != ast.end(); ++it)
-    {
-        std::cout << it.get()->value << std::endl;
-    }
-#endif
-
-    SEMANTICANALYZER::AstStatementParser parser(ast);
-
-    auto programTree = parser.parse();
-    auto& analyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
-    analyzer.reset();
-
-    REQUIRE_MESSAGE(programTree.size() == 1,
-             ("Expected program tree to contain exactly 1 statement, but found "
-              + std::to_string(programTree.size())).c_str());
-    REQUIRE_MESSAGE(programTree[0].first == NOTE,
-            "Expected first element to be a NOTE, but it was not");
-
-    SEMANTICANALYZER::Note resultingNote = std::any_cast<SEMANTICANALYZER::Note&>(programTree[0].second);
-
-    try
-    {
-        analyzer.semanticAnalysis(programTree, 1);
-
-        REQUIRE_MESSAGE(resultingNote.id == inputNote.id, "Note IDs do not match");
-        REQUIRE_MESSAGE(resultingNote.properties.size() == inputNote.properties.size(), "Number of properties does not match");
-
-        for (std::size_t i = 0; i < resultingNote.properties.size(); ++i)
-        {
-            REQUIRE_MESSAGE(resultingNote.properties[i].key == inputNote.properties[i].key,
-                     ("Property key mismatch at index " + std::to_string(i)).c_str());
-            REQUIRE_MESSAGE(resultingNote.properties[i].value == inputNote.properties[i].value,
-                     ("Property value mismatch at index " + std::to_string(i)).c_str());
-        }
-
-        std::cout << "\n=== Test Results ===" << std::endl;
-        std::cout << "Note Successfully Processed!" << std::endl;
-        std::cout << "----------------------------------------" << std::endl;
-        std::cout << "ID: " << resultingNote.id << std::endl;
-        std::cout << "Properties:" << std::endl;
-
-        if (resultingNote.properties.empty())
-        {
-            std::cout << "   (No properties defined)" << std::endl;
-        }
-        else
-        {
-            for (std::size_t i = 0; i < resultingNote.properties.size(); ++i)
-            {
-                std::cout << "   " << (i + 1) << ". " << resultingNote.properties[i].key
-                          << ": " << resultingNote.properties[i].value << std::endl;
-            }
-        }
-        std::cout << "----------------------------------------" << std::endl;
-    }
-    catch (const SEMANTICANALYZER::SemanticError& error)
-    {
-        FAIL(("Unexpected exception: " + std::string(error.what())).c_str());
-    }
-}
-*/
-
 TEST_CASE("test graph semantic", "[SemanticAnalyzer]")
 {
-    AST::ASTTree ast(new AST::Node(PROGRAM));
+    AST::ASTTree ast(new AST::Node(GRAMMERCONSTANTS::PROGRAM));
     auto programIt = ast.begin();
 
-    ast.insert(new AST::Node(START_GRAPH), programIt);
+    ast.insert(new AST::Node(GRAMMERCONSTANTS::START_GRAPH), programIt);
 
     SEMANTICANALYZER::Graph inputGraph;
 
@@ -495,7 +266,7 @@ TEST_CASE("test graph semantic", "[SemanticAnalyzer]")
     }
 
     ast.insert(createGraphAST(inputGraph), programIt);
-    ast.insert(new AST::Node(END_GRAPH), programIt);
+    ast.insert(new AST::Node(GRAMMERCONSTANTS::END_GRAPH), programIt);
 
 #ifdef DEBUG
     for(auto it = ast.begin(); it != ast.end(); ++it)
@@ -513,7 +284,7 @@ TEST_CASE("test graph semantic", "[SemanticAnalyzer]")
     REQUIRE_MESSAGE(programTree.size() == 1,
              ("Expected program tree to contain exactly 1 statement, but found "
               + std::to_string(programTree.size())).c_str());
-    REQUIRE_MESSAGE(programTree[0].first == GRAPH,
+    REQUIRE_MESSAGE(programTree[0].first == GRAMMERCONSTANTS::GRAPH,
             "Expected first element to be a GRAPH, but it was not");
 
     SEMANTICANALYZER::Graph resultingGraph = std::any_cast<SEMANTICANALYZER::Graph&>(programTree[0].second);
@@ -658,10 +429,10 @@ TEST_CASE("test graph semantic", "[SemanticAnalyzer]")
 
 TEST_CASE("test dot_cloud semantic", "[SemanticAnalyzer]")
 {
-    AST::ASTTree ast(new AST::Node(PROGRAM));
+    AST::ASTTree ast(new AST::Node(GRAMMERCONSTANTS::PROGRAM));
     auto programIt = ast.begin();
 
-    ast.insert(new AST::Node(START_GRAPH), programIt);
+    ast.insert(new AST::Node(GRAMMERCONSTANTS::START_GRAPH), programIt);
 
     SEMANTICANALYZER::DotCloud inputDotCloud;
 
@@ -735,7 +506,7 @@ TEST_CASE("test dot_cloud semantic", "[SemanticAnalyzer]")
     }
 
     ast.insert(createDotCloudAST(inputDotCloud), programIt);
-    ast.insert(new AST::Node(END_GRAPH), programIt);
+    ast.insert(new AST::Node(GRAMMERCONSTANTS::END_GRAPH), programIt);
 
 #ifdef DEBUG
     for(auto it = ast.begin(); it != ast.end(); ++it)
@@ -753,7 +524,7 @@ TEST_CASE("test dot_cloud semantic", "[SemanticAnalyzer]")
     REQUIRE_MESSAGE(programTree.size() == 1,
              ("Expected program tree to contain exactly 1 statement, but found "
               + std::to_string(programTree.size())).c_str());
-    REQUIRE_MESSAGE(programTree[0].first == DOT_CLOUD,
+    REQUIRE_MESSAGE(programTree[0].first == GRAMMERCONSTANTS::DOT_CLOUD,
             "Expected first element to be a DOT_CLOUD, but it was not");
 
     SEMANTICANALYZER::DotCloud resultingDotCloud = std::any_cast<SEMANTICANALYZER::DotCloud&>(programTree[0].second);
@@ -843,28 +614,28 @@ TEST_CASE("test dot_cloud semantic", "[SemanticAnalyzer]")
 
 AST::Node* createObjectDeclAST(SEMANTICANALYZER::ObjectDecl const& objectDecl)
 {
-    AST::Node* statement = new AST::Node(STATEMENT);
+    AST::Node* statement = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
     {
-        AST::Node* object_decl = new AST::Node(OBJECT_DECL);
+        AST::Node* object_decl = new AST::Node(GRAMMERCONSTANTS::OBJECT_DECL);
         {
-            object_decl->addChild(new AST::Node(SHAPE));
+            object_decl->addChild(new AST::Node(GRAMMERCONSTANTS::SHAPE));
             {
                 object_decl->childNodes.back()->addChild(new AST::Node(objectDecl.shape));
             }
 
-            object_decl->addChild(new AST::Node(ID));
+            object_decl->addChild(new AST::Node(GRAMMERCONSTANTS::ID));
             {
                 object_decl->childNodes.back()->addChild(new AST::Node(objectDecl.id));
             }
 
-            object_decl->addChild(new AST::Node(START_INTERNAL_BLOCK));
+            object_decl->addChild(new AST::Node(GRAMMERCONSTANTS::START_INTERNAL_BLOCK));
 
             for(auto& prop : objectDecl.properties)
             {
                 object_decl->addChild(createPropertyAST(prop));
             }
 
-            object_decl->addChild(new AST::Node(END_INTERNAL_BLOCK));
+            object_decl->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
         }
         statement->addChild(object_decl);
     }
@@ -875,33 +646,33 @@ AST::Node* createObjectDeclAST(SEMANTICANALYZER::ObjectDecl const& objectDecl)
 
 AST::Node* createRelationAST(SEMANTICANALYZER::Relation const& rel)
 {
-    AST::Node* statement = new AST::Node(STATEMENT);
+    AST::Node* statement = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
     {
-        AST::Node* relation = new AST::Node(RELATION);
+        AST::Node* relation = new AST::Node(GRAMMERCONSTANTS::RELATION);
         {
-            relation->addChild(new AST::Node(ID));
+            relation->addChild(new AST::Node(GRAMMERCONSTANTS::ID));
             {
                 relation->childNodes.back()->addChild(new AST::Node(rel.id1));
             }
 
-            relation->addChild(new AST::Node(ARROW));
+            relation->addChild(new AST::Node(GRAMMERCONSTANTS::ARROW));
             {
                 relation->childNodes.back()->addChild(new AST::Node(rel.arrow));
             }
 
-            relation->addChild(new AST::Node(ID));
+            relation->addChild(new AST::Node(GRAMMERCONSTANTS::ID));
             {
                 relation->childNodes.back()->addChild(new AST::Node(rel.id2));
             }
 
-            relation->addChild(new AST::Node(START_INTERNAL_BLOCK));
+            relation->addChild(new AST::Node(GRAMMERCONSTANTS::START_INTERNAL_BLOCK));
 
             for(auto& prop : rel.properties)
             {
                 relation->addChild(createPropertyAST(prop));
             }
 
-            relation->addChild(new AST::Node(END_INTERNAL_BLOCK));
+            relation->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
         }
         statement->addChild(relation);
     }
@@ -912,21 +683,21 @@ AST::Node* createRelationAST(SEMANTICANALYZER::Relation const& rel)
 
 AST::Node* createNoteAST(SEMANTICANALYZER::Note const& strNote)
 {
-    AST::Node* statement = new AST::Node(STATEMENT);
+    AST::Node* statement = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
     {
-        AST::Node* note = new AST::Node(NOTE);
+        AST::Node* note = new AST::Node(GRAMMERCONSTANTS::NOTE);
         {
-            note->addChild(new AST::Node(ID));
+            note->addChild(new AST::Node(GRAMMERCONSTANTS::ID));
             note->childNodes.back()->addChild(new AST::Node(strNote.id));
 
-            note->addChild(new AST::Node(START_INTERNAL_BLOCK));
+            note->addChild(new AST::Node(GRAMMERCONSTANTS::START_INTERNAL_BLOCK));
 
             for(auto& prop : strNote.properties)
             {
                 note->addChild(createPropertyAST(prop));
             }
 
-            note->addChild(new AST::Node(END_INTERNAL_BLOCK));
+            note->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
         }
         statement->addChild(note);
     }
@@ -937,14 +708,14 @@ AST::Node* createNoteAST(SEMANTICANALYZER::Note const& strNote)
 
 AST::Node* createGraphAST(SEMANTICANALYZER::Graph const& strGraph)
 {
-    AST::Node* statement = new AST::Node(STATEMENT);
+    AST::Node* statement = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
     {
-        AST::Node* graph = new AST::Node(GRAPH);
+        AST::Node* graph = new AST::Node(GRAMMERCONSTANTS::GRAPH);
         {
-            graph->addChild(new AST::Node(ID));
+            graph->addChild(new AST::Node(GRAMMERCONSTANTS::ID));
             graph->childNodes.back()->addChild(new AST::Node(strGraph.id));
 
-            graph->addChild(new AST::Node(START_INTERNAL_BLOCK));
+            graph->addChild(new AST::Node(GRAMMERCONSTANTS::START_INTERNAL_BLOCK));
 
             for(auto& objectDecl : strGraph.objects)
             {
@@ -960,7 +731,7 @@ AST::Node* createGraphAST(SEMANTICANALYZER::Graph const& strGraph)
                 rel->destroy();
             }
 
-            graph->addChild(new AST::Node(END_INTERNAL_BLOCK));
+            graph->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
         }
         statement->addChild(graph);
     }
@@ -971,14 +742,14 @@ AST::Node* createGraphAST(SEMANTICANALYZER::Graph const& strGraph)
 
 AST::Node* createDotCloudAST(SEMANTICANALYZER::DotCloud const& dotCloud)
 {
-    AST::Node* statement = new AST::Node(STATEMENT);
+    AST::Node* statement = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
     {
-        AST::Node* dot_cloud = new AST::Node(DOT_CLOUD);
+        AST::Node* dot_cloud = new AST::Node(GRAMMERCONSTANTS::DOT_CLOUD);
         {
-            dot_cloud->addChild(new AST::Node(ID));
+            dot_cloud->addChild(new AST::Node(GRAMMERCONSTANTS::ID));
             dot_cloud->childNodes.back()->addChild(new AST::Node(dotCloud.id));
 
-            dot_cloud->addChild(new AST::Node(START_INTERNAL_BLOCK));
+            dot_cloud->addChild(new AST::Node(GRAMMERCONSTANTS::START_INTERNAL_BLOCK));
 
             for(auto& dot : dotCloud.dots)
             {
@@ -992,7 +763,7 @@ AST::Node* createDotCloudAST(SEMANTICANALYZER::DotCloud const& dotCloud)
                 _dot->destroy();
             }
 
-            dot_cloud->addChild(new AST::Node(END_INTERNAL_BLOCK));
+            dot_cloud->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
         }
         statement->addChild(dot_cloud);
     }
@@ -1003,16 +774,16 @@ AST::Node* createDotCloudAST(SEMANTICANALYZER::DotCloud const& dotCloud)
 
 AST::Node* createPropertyAST(SEMANTICANALYZER::Property const& prop)
 {
-    AST::Node* property = new AST::Node(PROPERTY);
+    AST::Node* property = new AST::Node(GRAMMERCONSTANTS::PROPERTY);
     {
-        property->addChild(new AST::Node(PROPERTY_KEY));
+        property->addChild(new AST::Node(GRAMMERCONSTANTS::PROPERTY_KEY));
         {
             property->childNodes.back()->addChild(new AST::Node(prop.key));
         }
 
         property->addChild(new AST::Node("="));
 
-        property->addChild(new AST::Node(TEXT));
+        property->addChild(new AST::Node(GRAMMERCONSTANTS::TEXT));
         {
             property->childNodes.back()->addChild(new AST::Node(prop.value));
         }
@@ -1028,14 +799,14 @@ AST::Node* createDotAST(SEMANTICANALYZER::Dot const& strDot)
 {
     AST::Node* dot = new AST::Node(DOT);
     {
-        dot->addChild(new AST::Node(START_INTERNAL_BLOCK));
+        dot->addChild(new AST::Node(GRAMMERCONSTANTS::START_INTERNAL_BLOCK));
 
         for(auto& property : strDot.internalProperties)
         {
             dot->addChild(createPropertyAST(property));
         }
 
-        dot->addChild(new AST::Node(END_INTERNAL_BLOCK));
+        dot->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
 
     return dot;

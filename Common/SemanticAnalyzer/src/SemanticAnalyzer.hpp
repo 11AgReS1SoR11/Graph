@@ -17,55 +17,60 @@
 
 #include "Logger.hpp"
 
-#define PROGRAM                 "Program"
-#define START_GRAPH             "@startgraph"
-#define END_GRAPH               "@endgraph"
-#define STATEMENT               "statement"
-#define OBJECT_DECL             "object_decl"
-#define RELATION                "relation"
-#define NOTE                    "note"
-#define GRAPH                   "graph"
-#define DOT_CLOUD               "dot_cloud"
-#define SHAPE                   "SHAPE"
-#define ID                      "ID"
-#define PROPERTY                "property"
-#define START_INTERNAL_BLOCK    "{"
-#define END_INTERNAL_BLOCK      "}"
-#define PROPERTY_KEY            "PROPERTY_KEY"
-#define TEXT                    "TEXT"
-#define NUMBER                  "NUMBER"
-#define ARROW                   "ARROW"
-#define START_DOT_BLOCK         "{"
-#define END_DOT_BLOCK           "}"
 
-#define PROP_COLOR      "color"
-#define PROP_TEXT       "text"
-#define PROP_BORDER     "border"
-#define PROP_X          "x"
-#define PROP_Y          "y"
-#define PROP_SIZE_TEXT  "size_text"
-#define PROP_RADIUS     "radius"
-#define PROP_SIZE_A     "size_A"
-#define PROP_SIZE_B     "size_B"
-#define PROP_ANGLE      "angle"
-#define PROP_GRID       "grid"
+namespace GRAMMERCONSTANTS
+{
+constexpr const char* PROGRAM = "Program";
+constexpr const char* START_GRAPH = "@startgraph";
+constexpr const char* END_GRAPH = "@endgraph";
+constexpr const char* STATEMENTS = "statements";
+constexpr const char* STATEMENT = "statement";
+constexpr const char* OBJECT_DECL = "object_decl";
+constexpr const char* RELATION = "relation";
+constexpr const char* NOTE = "note";
+constexpr const char* GRAPH = "graph";
+constexpr const char* DOT_CLOUD = "dot_cloud";
+constexpr const char* SHAPE = "SHAPE";
+constexpr const char* ID = "ID";
+constexpr const char* PROPERTIES = "properties";
+constexpr const char* PROPERTY = "property";
+constexpr const char* START_INTERNAL_BLOCK = "{";
+constexpr const char* END_INTERNAL_BLOCK = "}";
+constexpr const char* PROPERTY_KEY = "PROPERTY_KEY";
+constexpr const char* TEXT = "TEXT";
+constexpr const char* NUMBER = "NUMBER";
+constexpr const char* ARROW = "ARROW";
+constexpr const char* START_DOT_BLOCK = "{";
+constexpr const char* END_DOT_BLOCK = "}";
 
-#define TYPE_NUMBER     "number"
-#define TYPE_STRING     "string"
-#define TYPE_BOOLEAN    "bool"
+constexpr const char* PROP_COLOR = "color";
+constexpr const char* PROP_TEXT = "text";
+constexpr const char* PROP_BORDER = "border";
+constexpr const char* PROP_X = "x";
+constexpr const char* PROP_Y = "y";
+constexpr const char* PROP_SIZE_TEXT = "size_text";
+constexpr const char* PROP_RADIUS = "radius";
+constexpr const char* PROP_SIZE_A = "size_A";
+constexpr const char* PROP_SIZE_B = "size_B";
+constexpr const char* PROP_ANGLE = "angle";
+constexpr const char* PROP_GRID = "grid";
 
-#define SHAPE_CIRCLE    "circle"
-#define SHAPE_RECTANGLE "rectangle"
-#define SHAPE_DIAMOND   "diamond"
+constexpr const char* TYPE_NUMBER = "number";
+constexpr const char* TYPE_STRING = "string";
+constexpr const char* TYPE_BOOLEAN = "bool";
 
-inline std::string const RED = "red";
-inline std::string const BLUE = "blue";
-inline std::string const GREEN = "green";
-inline std::string const BLACK = "black";
-inline std::string const WHITE = "white";
-inline std::string const YELLOW = "yellow";
-inline std::string const PURPLE = "purple";
+constexpr const char* SHAPE_CIRCLE = "circle";
+constexpr const char* SHAPE_RECTANGLE = "rectangle";
+constexpr const char* SHAPE_DIAMOND = "diamond";
 
+constexpr const char* RED = "red";
+constexpr const char* BLUE = "blue";
+constexpr const char* GREEN = "green";
+constexpr const char* BLACK = "black";
+constexpr const char* WHITE = "white";
+constexpr const char* YELLOW = "yellow";
+constexpr const char* PURPLE = "purple";
+}
 
 
 namespace SEMANTICANALYZER
@@ -128,40 +133,40 @@ struct ConstraintInfo
 
 inline static const std::vector<std::string> COMMON_PROPERTIES =
 {
-    PROP_COLOR,
-    PROP_TEXT,
-    PROP_BORDER,
-    PROP_X,
-    PROP_Y,
-    PROP_SIZE_TEXT
+    GRAMMERCONSTANTS::PROP_COLOR,
+    GRAMMERCONSTANTS::PROP_TEXT,
+    GRAMMERCONSTANTS::PROP_BORDER,
+    GRAMMERCONSTANTS::PROP_X,
+    GRAMMERCONSTANTS::PROP_Y,
+    GRAMMERCONSTANTS::PROP_SIZE_TEXT
 };
 
 inline static const std::map<std::string, std::vector<std::string>> SHAPE_SPECIFIC_PROPERTIES =
 {
-    {SHAPE_CIRCLE,    {PROP_RADIUS}},
-    {SHAPE_RECTANGLE, {PROP_SIZE_A, PROP_SIZE_B}},
-    {SHAPE_DIAMOND,   {PROP_SIZE_A, PROP_SIZE_B, PROP_ANGLE}},
-    {DOT_CLOUD,       {PROP_GRID}}
+    {GRAMMERCONSTANTS::SHAPE_CIRCLE,    {GRAMMERCONSTANTS::PROP_RADIUS}},
+    {GRAMMERCONSTANTS::SHAPE_RECTANGLE, {GRAMMERCONSTANTS::PROP_SIZE_A, GRAMMERCONSTANTS::PROP_SIZE_B}},
+    {GRAMMERCONSTANTS::SHAPE_DIAMOND,   {GRAMMERCONSTANTS::PROP_SIZE_A, GRAMMERCONSTANTS::PROP_SIZE_B, GRAMMERCONSTANTS::PROP_ANGLE}},
+    {GRAMMERCONSTANTS::DOT_CLOUD,       {GRAMMERCONSTANTS::PROP_GRID}}
 };
 
 inline static const std::map<std::string, ConstraintInfo> PROPERTY_CONSTRAINTS =
 {
-    {PROP_RADIUS,    {TYPE_NUMBER, 0.0, std::nullopt}},
-    {PROP_SIZE_A,    {TYPE_NUMBER, 0.0, std::nullopt}},
-    {PROP_SIZE_B,    {TYPE_NUMBER, 0.0, std::nullopt}},
-    {PROP_ANGLE,     {TYPE_NUMBER, 0.0, 360.0}},
-    {PROP_COLOR,     {TYPE_STRING, std::nullopt, std::nullopt}},
-    {PROP_TEXT,      {TYPE_STRING, std::nullopt, std::nullopt}},
-    {PROP_BORDER,    {TYPE_NUMBER, 0.0, std::nullopt}},
-    {PROP_X,         {TYPE_NUMBER, std::nullopt, std::nullopt}},
-    {PROP_Y,         {TYPE_NUMBER, std::nullopt, std::nullopt}},
-    {PROP_SIZE_TEXT, {TYPE_NUMBER, 0.0, std::nullopt}},
-    {PROP_GRID,      {TYPE_BOOLEAN, std::nullopt, std::nullopt}}
+    {GRAMMERCONSTANTS::PROP_RADIUS,    {GRAMMERCONSTANTS::TYPE_NUMBER, 0.0, std::nullopt}},
+    {GRAMMERCONSTANTS::PROP_SIZE_A,    {GRAMMERCONSTANTS::TYPE_NUMBER, 0.0, std::nullopt}},
+    {GRAMMERCONSTANTS::PROP_SIZE_B,    {GRAMMERCONSTANTS::TYPE_NUMBER, 0.0, std::nullopt}},
+    {GRAMMERCONSTANTS::PROP_ANGLE,     {GRAMMERCONSTANTS::TYPE_NUMBER, 0.0, 360.0}},
+    {GRAMMERCONSTANTS::PROP_COLOR,     {GRAMMERCONSTANTS::TYPE_STRING, std::nullopt, std::nullopt}},
+    {GRAMMERCONSTANTS::PROP_TEXT,      {GRAMMERCONSTANTS::TYPE_STRING, std::nullopt, std::nullopt}},
+    {GRAMMERCONSTANTS::PROP_BORDER,    {GRAMMERCONSTANTS::TYPE_NUMBER, 0.0, std::nullopt}},
+    {GRAMMERCONSTANTS::PROP_X,         {GRAMMERCONSTANTS::TYPE_NUMBER, std::nullopt, std::nullopt}},
+    {GRAMMERCONSTANTS::PROP_Y,         {GRAMMERCONSTANTS::TYPE_NUMBER, std::nullopt, std::nullopt}},
+    {GRAMMERCONSTANTS::PROP_SIZE_TEXT, {GRAMMERCONSTANTS::TYPE_NUMBER, 0.0, std::nullopt}},
+    {GRAMMERCONSTANTS::PROP_GRID,      {GRAMMERCONSTANTS::TYPE_BOOLEAN, std::nullopt, std::nullopt}}
 };
 
 inline static const std::vector<std::string> ALLOWED_COLORS =
 {
-    RED, GREEN, BLUE, BLACK, WHITE, YELLOW, PURPLE
+    GRAMMERCONSTANTS::RED, GRAMMERCONSTANTS::GREEN, GRAMMERCONSTANTS::BLUE, GRAMMERCONSTANTS::BLACK, GRAMMERCONSTANTS::WHITE, GRAMMERCONSTANTS::YELLOW, GRAMMERCONSTANTS::PURPLE
 };
 
 

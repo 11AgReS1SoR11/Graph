@@ -10,12 +10,7 @@ error()
   exit 1
 }
 
-# Определяем команду make
-if [[ "$OS" == "MINGW"* || "$OS" == "Windows_NT"* ]]; then
-  CMAKE_GENERATOR="MinGW Makefiles"
-else
-  CMAKE_GENERATOR="Unix Makefiles"
-fi
+CMAKE_GENERATOR="Unix Makefiles"
 
 if ! which cmake > /dev/null; then
   echo "cmake не найден."

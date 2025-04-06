@@ -1,0 +1,46 @@
+@startgraph
+
+circle Node1
+rectangle Box2
+diamond Decision3
+
+circle Start {
+    color = red;
+    x = 100;
+    y = 200;
+    text = "Hello World";
+    radius = 50;
+}
+
+rectangle Process {
+    border = blue;
+    size_A = 150;
+    size_B = 100;
+    grid = true;
+}
+
+Node1 -> Box2
+Start --> Process {
+    color = green;
+    size_text = 12;
+}
+Box2 <-> Decision3 {
+    angle = 45;
+}
+Process <-- Start
+Node1 -- Decision3 {
+    text = Connection;
+}
+Start - Box2
+
+diamond End {
+    x = 300;
+    y = 400;
+    color = purple;
+}
+
+Process --> End {
+    border = dashed;
+}
+
+@endgraph

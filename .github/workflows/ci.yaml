@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake
+          sudo apt-get install -y build-essential cmake flex libfl-dev bison
 
       - name: Build project (Linux - ${{ matrix.build_type }})
         run: |
@@ -43,7 +43,7 @@ jobs:
         with:
           name: build-artifacts-linux-${{ matrix.build_type }}
           path: ${{ matrix.build_dir }}
-
+          
   build-windows:
     runs-on: windows-latest
     strategy:
@@ -63,8 +63,39 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Install MSYS2 (bison & flex)
+        uses: msys2/setup-msys2@v2
+        with:
+          path-type: minimal
+          install: |
+            base-devel
+            gcc
+            make
+            flex
+            bison
+            cmake
+            mingw-w64-x86_64-toolchain
+
+      - name: List MSYS2 directory
+        run: ls ${{ steps.msys2.outputs.msys2-path }} # Смотрим, что там есть
+
+      - name: Check if flex.exe exists
+        run: |
+          if (Test-Path "${{ steps.msys2.outputs.msys2-path }}\usr\bin\flex.exe") {
+            Write-Host "flex.exe exists"
+          } else {
+            Write-Host "flex.exe does NOT exist"
+          }
+        shell: pwsh
+
+      - name: Add Bison and Flex to PATH (using Environment File)
+        run: |
+          echo "MSYS2_BIN_PATH=${{ steps.msys2.outputs.msys2-path }}\usr\bin" >> $GITHUB_ENV
+          echo "${{ steps.msys2.outputs.msys2-path }}\usr\bin" >> $GITHUB_PATH # Add to PATH
+
+
       - name: Build project (Windows - ${{ matrix.build_type }})
-        shell: bash
+        shell: msys2 {0}
         run: |
           chmod +x Build.sh
           ./Build.sh ${{ matrix.build_arg }}
@@ -145,7 +176,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake # Ensure you have cmake and other essentials
+          sudo apt-get install -y build-essential cmake flex libfl-dev bison
 
       - name: Download build artifacts (Linux Debug)
         uses: actions/download-artifact@v4
@@ -172,7 +203,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake
+          sudo apt-get install -y build-essential cmake flex libfl-dev bison
 
       - name: Download build artifacts (Linux Release)
         uses: actions/download-artifact@v4
