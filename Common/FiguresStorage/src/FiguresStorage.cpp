@@ -2,7 +2,7 @@
 
 #include "Figures.hpp"
 #include "Logger.hpp"
-
+#include "json.hpp"
 #include <stdexcept>
 #include <algorithm>
 
@@ -134,7 +134,7 @@ Shape* createFigure(const json& data)
 
     else
     {
-        std::string errMsg("wrong type in createFigure function");
+        std::string errMsg("unsupported type");
         LOG_ERROR(FIGURES_STORAGE_LOG, errMsg);
         throw std::invalid_argument(errMsg);
     }

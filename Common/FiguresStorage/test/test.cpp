@@ -140,14 +140,14 @@ TEST_CASE("Creates DotCloud", "[FiguresStorage]")
     std::string const json = getJsonFromFigures({&dotCloud});
 
     FiguresStorage figures = FiguresStorage::createFigures(json);
-    // REQUIRE(figures.size() == 1);
+    REQUIRE(figures.size() == 1);
 
-    // DotCloud* dotcloudFromJson = dynamic_cast<DotCloud*>(figures[0]);
+    DotCloud* dotcloudFromJson = dynamic_cast<DotCloud*>(figures[0]);
 
-    // REQUIRE(dotcloudFromJson);
-    // REQUIRE(compareShape(*dotcloudFromJson, dotCloud));
+    REQUIRE(dotcloudFromJson);
+    REQUIRE(compareShape(*dotcloudFromJson, dotCloud));
 
-    // checkCircle(dotcloudFromJson->dots[0], circle1);
-    // checkCircle(dotcloudFromJson->dots[1], circle2);
-    // checkCircle(dotcloudFromJson->dots[2], circle3);
+    checkCircle(dotcloudFromJson->dots[0], circle1);
+    checkCircle(dotcloudFromJson->dots[1], circle2);
+    checkCircle(dotcloudFromJson->dots[2], circle3);
 }
