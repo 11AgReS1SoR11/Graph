@@ -12,6 +12,8 @@ target_include_directories(Backend PUBLIC
     ${CMAKE_SOURCE_DIR}/Common/Logger/src
     ${CMAKE_SOURCE_DIR}/Common/SemanticAnalyzer/src
     ${CMAKE_SOURCE_DIR}/Common/FileManager/src
+    ${CMAKE_SOURCE_DIR}/Common/Parser/src
+    ${CMAKE_SOURCE_DIR}/Common/Translator/src
 )
 
 target_link_libraries(Backend PUBLIC
@@ -22,6 +24,8 @@ target_link_libraries(Backend PUBLIC
     Logger
     SemanticAnalyzer
     FileManager
+    Parser
+    Translator
 )
 
 # Копирование библиотеки в bin

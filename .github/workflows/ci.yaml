@@ -66,6 +66,7 @@ jobs:
       - name: Install MSYS2 (bison & flex)
         uses: msys2/setup-msys2@v2
         with:
+          msystem: CLANG64
           path-type: minimal
           install: |
             base-devel
@@ -75,23 +76,6 @@ jobs:
             bison
             cmake
             mingw-w64-x86_64-toolchain
-
-      - name: List MSYS2 directory
-        run: ls ${{ steps.msys2.outputs.msys2-path }} # Смотрим, что там есть
-
-      - name: Check if flex.exe exists
-        run: |
-          if (Test-Path "${{ steps.msys2.outputs.msys2-path }}\usr\bin\flex.exe") {
-            Write-Host "flex.exe exists"
-          } else {
-            Write-Host "flex.exe does NOT exist"
-          }
-        shell: pwsh
-
-      - name: Add Bison and Flex to PATH (using Environment File)
-        run: |
-          echo "MSYS2_BIN_PATH=${{ steps.msys2.outputs.msys2-path }}\usr\bin" >> $GITHUB_ENV
-          echo "${{ steps.msys2.outputs.msys2-path }}\usr\bin" >> $GITHUB_PATH # Add to PATH
 
 
       - name: Build project (Windows - ${{ matrix.build_type }})
@@ -150,18 +134,17 @@ jobs:
           name: build-artifacts-windows-Release
           path: build_release
 
-      # TODO: uncomment when std::ifstream don't fall on SEGFAULT
-      # - name: Run App retranslate (Windows Release)
-      #   shell: bash
-      #   run: |
-      #     chmod +x runApp
-      #     ./runApp --Release --retranslate --figuresJsonPath build/figures.json
+      - name: Run App retranslate (Windows Release)
+        shell: bash
+        run: |
+          chmod +x runApp
+          ./runApp --Release --retranslate --figuresJsonPath build/figures.json
 
-      # - name: Run App translate (Windows Debug)
-      #   shell: bash
-      #   run: |
-      #     chmod +x runApp
-      #     ./runApp --translate --codeFilePath build/code.txt
+      - name: Run App translate (Windows Debug)
+        shell: bash
+        run: |
+          chmod +x runApp
+          ./runApp --translate --codeFilePath build/code.txt
 
   tests-linux-debug:
     needs: build-linux
