@@ -62,7 +62,7 @@ TEST_CASE("Translate objects", "[Translator]"){
     REQUIRE(shape);
     REQUIRE(shape->id == "crcl");
     REQUIRE(shape->text == "here is circle");
-    REQUIRE(colorToString(shape->style.color) == "RED");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "RED");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 4);
@@ -77,7 +77,7 @@ TEST_CASE("Translate objects", "[Translator]"){
     REQUIRE(shape);
     REQUIRE(shape->id == "rctngl");
     REQUIRE(shape->text == "here is rectangle");
-    REQUIRE(colorToString(shape->style.color) == "BLUE");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "BLUE");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 8);
@@ -93,7 +93,7 @@ TEST_CASE("Translate objects", "[Translator]"){
     REQUIRE(shape);
     REQUIRE(shape->id == "dmnd");
     REQUIRE(shape->text == "here is diamond");
-    REQUIRE(colorToString(shape->style.color) == "NONE");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "NONE");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 8);
@@ -159,7 +159,7 @@ TEST_CASE("Translate relations", "[Translator]"){
     Shape* shape = result_tree[0];
     REQUIRE(shape);
     REQUIRE(shape->text == "here is line1");
-    REQUIRE(colorToString(shape->style.color) == "RED");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "RED");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 4);
@@ -176,7 +176,7 @@ TEST_CASE("Translate relations", "[Translator]"){
     shape = result_tree[1];
     REQUIRE(shape);
     REQUIRE(shape->text == "here is line2");
-    REQUIRE(colorToString(shape->style.color) == "NONE");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "NONE");
     REQUIRE(shape->style.border == 3);
     REQUIRE(shape->style.textSize == 8);
     REQUIRE(shape->x == 10);
@@ -193,7 +193,7 @@ TEST_CASE("Translate relations", "[Translator]"){
     shape = result_tree[2];
     REQUIRE(shape);
     REQUIRE(shape->text == "here is line3");
-    REQUIRE(colorToString(shape->style.color) == "BLACK");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "BLACK");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 5);
@@ -243,7 +243,7 @@ TEST_CASE("Translate note", "[Translator]"){
     Shape* shape = result_tree[0];
     REQUIRE(shape);
     REQUIRE(shape->text == "here is note1");
-    REQUIRE(colorToString(shape->style.color) == "PURPLE");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "PURPLE");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 4);
@@ -256,7 +256,7 @@ TEST_CASE("Translate note", "[Translator]"){
     shape = result_tree[1];
     REQUIRE(shape);
     REQUIRE(shape->text == "here is note2");
-    REQUIRE(colorToString(shape->style.color) == "YELLOW");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "YELLOW");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 5);
@@ -365,7 +365,7 @@ TEST_CASE("Translate graph", "[Translator]"){
     Shape* shape = result_tree[0];
     REQUIRE(shape);
     REQUIRE(shape->text == "here is graph");
-    REQUIRE(colorToString(shape->style.color) == "BLACK");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "BLACK");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 4);
@@ -442,7 +442,7 @@ TEST_CASE("Translate dot_cloud", "[Translator]"){
     Shape* shape = result_tree[0];
     REQUIRE(shape);
     REQUIRE(shape->text == "here is dot_cloud");
-    REQUIRE(colorToString(shape->style.color) == "BLACK");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "BLACK");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 4);

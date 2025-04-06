@@ -24,3 +24,9 @@ struct Line : Shape
     line_type_e type = line_type_e::Solid;
     line_orientation_e orientation = line_orientation_e::Undirected;
 };
+
+namespace line_helper
+{
+    line_type_e stringToLineType(std::string str);
+    line_orientation_e stringToLineOrientation(std::string);
+}

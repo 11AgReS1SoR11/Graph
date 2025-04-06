@@ -4,15 +4,21 @@
 #include "FiguresStorage.hpp"
 #include "Figures.hpp"
 
+
 std::string getJsonFromFigures(std::vector<Shape*> const& figures)
 {
-    std::string json = "[";
+
+    std::string json = "{";
+    json += "\"figures\":";
+    json += "[";
+    
     for (Shape* figure : figures)
     {
         json += figure->toJson() + ",";
     }
+    json.pop_back();
     json += "]";
-
+    json += "}";
     return json;
 }
 
