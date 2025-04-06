@@ -65,6 +65,7 @@ FUNCTION layout_objects(program_tree):
     # 2. Разделяем объекты на связанные компоненты (группы связанных объектов)
     DECLARE components AS LIST OF LIST OF ObjectInfo
     components = find_connected_components(objects, relations)
+
     
     # 3. Распределяем компоненты по холсту
     DECLARE current_x, current_y AS INTEGER
@@ -141,9 +142,19 @@ FUNCTION find_connected_components(objects, relations):
     
     FOR obj IN objects:
         IF obj.id NOT IN visited:
-            DECLARE component AS LIST OF ObjectInfo
-            dfs_find_component(obj, relations, visited, component)
-            ADD component TO components
+            IF obj IS graph: 
+                graph = layout_graph(graph, CANVAS_WIDTH, CANVAS_HEIGHT)
+                DECLARE component AS LIST OF ObjectInfo = [obj]
+                ADD component TO components
+                ADD obj.id TO visited
+            IF obj IS dot_cloud:
+                DECLARE component AS LIST OF ObjectInfo = [obj]
+                ADD component TO components
+                ADD obj.id TO visited
+            ELSE:
+                DECLARE component AS LIST OF ObjectInfo
+                dfs_find_component(obj, relations, visited, component)
+                ADD component TO components
     
     RETURN components
 
@@ -166,9 +177,23 @@ FUNCTION dfs_find_component(obj, relations, visited, component):
 
 # Функция расчета размера компоненты 
 FUNCTION calculate_component_size(component, relations):
+
+    IF LENGTH(component) == 1 AND component[0] IS graph:
+        DECLARE min_x, min_y, max_x, max_y as INTEGER
+        calculate_bounding_box(component[0].positions, min_x, min_y, max_x, max_y)
+        RETURN (max_x - min_x), 
+               (max_y - min_y)
+
+    IF LENGTH(component) == 1 AND component[0] IS dot_cloud:
+        DECLARE min_x, min_y, max_x, max_y as INTEGER
+        calculate_dot_cloud_bbox(component[0], min_x, min_y, max_x, max_y)
+        RETURN (max_x - min_x), 
+               (max_y - min_y)
+
     # Если в компоненте только один объект
     IF LENGTH(component) == 1:
-        RETURN component[0].width + 2*DEFAULT_SPACING, component[0].height + 2*DEFAULT_SPACING
+        RETURN component[0].width + 2*DEFAULT_SPACING, component[0].height 
+        + 2*DEFAULT_SPACING
     
     
     DECLARE levels AS MAP OF INTEGER TO LIST OF ObjectInfo
@@ -201,7 +226,8 @@ FUNCTION calculate_component_size(component, relations):
         levels[max_level] = next_level
     
     # Рассчитываем размеры
-    DECLARE width AS INTEGER = (max_level + 1) * (MAX_SHAPE_WIDTH() + DEFAULT_SPACING) #чтобы уместить все уровни
+    DECLARE width AS INTEGER = (max_level + 1) * (MAX_SHAPE_WIDTH() 
+    + DEFAULT_SPACING) #чтобы уместить все уровни
     DECLARE height AS INTEGER = 0
     
     FOR level IN levels:
@@ -233,7 +259,8 @@ FUNCTION layout_component(component, relations, start_x, start_y):
     
     WHILE queue IS NOT EMPTY:
         DECLARE level_size AS INTEGER = LENGTH(queue)
-        DECLARE current_x AS INTEGER = start_x + (current_level + 1) * (MAX_SHAPE_WIDTH() + DEFAULT_SPACING)
+        DECLARE current_x AS INTEGER = start_x + (current_level + 1) 
+        * (MAX_SHAPE_WIDTH() + DEFAULT_SPACING)
         DECLARE current_y AS INTEGER = start_y
         DECLARE max_height_in_level AS INTEGER = 0
         
@@ -330,3 +357,25 @@ FUNCTION calculate_connection_point(obj, side):
             RETURN (obj.x + obj.width/2, obj.y)
     END SWITCH
 
+
+# Новая функция для расчета bbox облака точек
+FUNCTION calculate_dot_cloud_bbox(dot_cloud, OUT min_x, OUT min_y, OUT max_x, OUT max_y):
+    min_x = INFINITY
+    min_y = INFINITY
+    max_x = -INFINITY
+    max_y = -INFINITY
+    
+    FOR point IN dot_cloud.points:
+        DECLARE x = point.properties["x"]
+        DECLARE y = point.properties["y"]
+        
+        min_x = MIN(min_x, x)
+        min_y = MIN(min_y, y)
+        max_x = MAX(max_x, x)
+        max_y = MAX(max_y, y)
+    
+    # Добавляем отступы
+    min_x -= DEFAULT_SPACING
+    min_y -= DEFAULT_SPACING
+    max_x += DEFAULT_SPACING
+    max_y += DEFAULT_SPACING
