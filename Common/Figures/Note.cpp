@@ -1,5 +1,4 @@
 #include "Note.hpp"
-
 std::string Note::toJson() const
 {
     return "{"
@@ -8,7 +7,7 @@ std::string Note::toJson() const
     "\"property\": {"
         "\"size_A\": " + std::to_string(sizeA) + ","
         "\"size_B\": " + std::to_string(sizeB) + ","
-        "\"idTo\": " + idTo +
+        "\"idTo\": \"" + idTo + "\""
     "}"
     "}";
 }

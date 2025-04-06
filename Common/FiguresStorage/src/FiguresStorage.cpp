@@ -90,6 +90,18 @@ Shape* createFigure(const json& data)
         return note;
     }
 
+    if (type == "Graph")
+    {
+        Graph* graph = new Graph();
+        addShapeParams(graph, data);
+        
+    }
+
+    if (type == "DotCloud")
+    {
+        
+    }
+
     else
     {
         std::string errMsg("wrong type in createFigure function");

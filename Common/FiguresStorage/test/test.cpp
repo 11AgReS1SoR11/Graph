@@ -35,11 +35,12 @@ TEST_CASE("Creates simpe figures", "[FiguresStorage]")
     Rectangle rectangle;
     Diamond diamond;
     Line line;
+    Note note;
 
-    std::string const json = getJsonFromFigures({&circle, &rectangle, &diamond, &line});
+    std::string const json = getJsonFromFigures({&circle, &rectangle, &diamond, &line, &note});
 
     FiguresStorage figures = FiguresStorage::createFigures(json);
-    REQUIRE(figures.size() == 4);
+    REQUIRE(figures.size() == 5);
 
     // check Circle
     Circle* circleFromJson = dynamic_cast<Circle*>(figures[0]);
@@ -70,4 +71,12 @@ TEST_CASE("Creates simpe figures", "[FiguresStorage]")
     REQUIRE(lineFromJson->idTo == line.idTo);
     REQUIRE(lineFromJson->orientation == line.orientation);
     REQUIRE(lineFromJson->type == line.type);
+
+    // check Note
+    Note* noteFromJson = dynamic_cast<Note*>(figures[4]);
+    REQUIRE(noteFromJson);
+    REQUIRE(compareShape(*noteFromJson, note));
+    REQUIRE(noteFromJson->idTo == note.idTo);
+    REQUIRE(noteFromJson->sizeA == note.sizeA);
+    REQUIRE(noteFromJson->sizeB == note.sizeB);
 }
