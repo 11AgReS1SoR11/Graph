@@ -5,7 +5,6 @@
 
 #include <stdexcept>
 #include <algorithm>
-#include <iostream>
 
 using json = nlohmann::json;
 
@@ -92,14 +91,45 @@ Shape* createFigure(const json& data)
 
     if (type == "Graph")
     {
+        
         Graph* graph = new Graph();
         addShapeParams(graph, data);
-        
+        json nodes = data["property"]["nodes"];
+        for (const auto& node : nodes)
+        {
+            if (node["type"] == "Note" || node["type"] == "DotCloud" || node["type"] == "Graph")
+            {
+                std::string errMsg = "wrong node type in Graph in createFigure function";
+                LOG_ERROR(FIGURES_STORAGE_LOG, errMsg);
+                throw std::invalid_argument(errMsg);
+            }
+
+            graph->nodes.push_back(createFigure(node));
+        }   
+
+        return graph;
     }
 
     if (type == "DotCloud")
     {
         
+        DotCloud* dotCloud = new DotCloud();
+        addShapeParams(dotCloud, data);
+        dotCloud->grid = (data["property"]["grid"] == "true") ? true : false;
+        json nodes = data["property"]["dots"];
+        for (const auto& node : nodes)
+        {
+            if (node["type"] != "Circle")
+            {
+                std::string errMsg = "wrong figure type in Dotcloud in createFigure function";
+                LOG_ERROR(FIGURES_STORAGE_LOG, errMsg);
+                throw std::invalid_argument(errMsg);
+            }
+
+            dotCloud->dots.push_back(dynamic_cast<Circle*>(createFigure(node)));
+        }   
+
+        return dotCloud;
     }
 
     else
@@ -114,7 +144,6 @@ Shape* createFigure(const json& data)
 FiguresStorage FiguresStorage::createFigures(std::string const& figuresJson)
 {
     FiguresStorage figures;
-    std::cout << figuresJson << std::endl;
     json data = json::parse(figuresJson);
     for (const auto& figureData : data["figures"]) {
         figures.push_back(createFigure(figureData));
