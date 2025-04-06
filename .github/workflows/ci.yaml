@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake
+          sudo apt-get install -y build-essential cmake flex libfl-dev bison
 
       - name: Build project (Linux - ${{ matrix.build_type }})
         run: |
@@ -43,7 +43,7 @@ jobs:
         with:
           name: build-artifacts-linux-${{ matrix.build_type }}
           path: ${{ matrix.build_dir }}
-
+          
   build-windows:
     runs-on: windows-latest
     strategy:
@@ -63,8 +63,19 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            bison
+            flex
+            winpthreads-git
+            mingw-w64-x86_64-toolchain
+          msystem: MINGW64
+
       - name: Build project (Windows - ${{ matrix.build_type }})
-        shell: bash
+        shell: msys2 {0}
         run: |
           chmod +x Build.sh
           ./Build.sh ${{ matrix.build_arg }}
@@ -145,7 +156,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake # Ensure you have cmake and other essentials
+          sudo apt-get install -y build-essential cmake flex libfl-dev bison
 
       - name: Download build artifacts (Linux Debug)
         uses: actions/download-artifact@v4
@@ -172,7 +183,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake
+          sudo apt-get install -y build-essential cmake flex libfl-dev bison
 
       - name: Download build artifacts (Linux Release)
         uses: actions/download-artifact@v4
