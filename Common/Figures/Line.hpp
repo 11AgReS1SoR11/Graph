@@ -27,6 +27,6 @@ struct Line : Shape
 
 namespace line_helper
 {
-    line_type_e stringToLineType(std::string str);
-    line_orientation_e stringToLineOrientation(std::string);
+    line_type_e stringToLineType(const std::string& str);
+    line_orientation_e stringToLineOrientation(const std::string& str);
 }

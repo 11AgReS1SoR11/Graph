@@ -11,3 +11,5 @@ public:
 
     static FiguresStorage createFigures(std::string const& figuresJson);
 };
+
+std::string getJsonFromFigures(std::vector<Shape*> const& figures);

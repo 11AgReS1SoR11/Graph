@@ -32,7 +32,6 @@ std::string Line::toJson() const
 {
     return "{"
            "\"type\": \"Line\","
-           "\"id\": \"" + id + "\","
            "\"text\": \"" + text + "\","
            + style.toJson() + ","
            "\"property\": {"
@@ -44,7 +43,7 @@ std::string Line::toJson() const
            "}";
 }
 
-line_type_e line_helper::stringToLineType(std::string str)
+line_type_e line_helper::stringToLineType(const std::string& str)
 {
     if (str == "Dotted")
         return line_type_e::Dotted;
@@ -52,7 +51,7 @@ line_type_e line_helper::stringToLineType(std::string str)
     return line_type_e::Solid;
 }
 
-line_orientation_e line_helper::stringToLineOrientation(std::string str)
+line_orientation_e line_helper::stringToLineOrientation(const std::string& str)
 {
     if (str == "Undirected")
         return line_orientation_e::Undirected;

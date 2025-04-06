@@ -17,16 +17,16 @@ FiguresStorage::~FiguresStorage()
     }
 }
 
-void addShapeParams(Shape* shape, const json& data)
+void addShapeParams(Shape shape, const json& data)
 {
-    shape->id = data["id"];
-    shape->text = data["text"];
-    shape->x = data["position"]["x"];
-    shape->y = data["position"]["y"];
+    shape.id = data["id"];
+    shape.text = data["text"];
+    shape.x = data["position"]["x"];
+    shape.y = data["position"]["y"];
     
-    shape->style.color = style_helper::stringToColor(data["style"]["color"]);
-    shape->style.border = data["style"]["border"];
-    shape->style.textSize = data["style"]["textSize"];
+    shape.style.color = style_helper::stringToColor(data["style"]["color"]);
+    shape.style.border = data["style"]["border"];
+    shape.style.textSize = data["style"]["textSize"];
     
 }
 
@@ -37,7 +37,7 @@ Shape* createFigure(const json& data)
     if (type == "Circle")
     {
         Circle* circle = new Circle();
-        addShapeParams(circle, data);
+        addShapeParams(*circle, data);
         circle->radius = data["property"]["radius"];
         return circle;
     }
@@ -45,7 +45,7 @@ Shape* createFigure(const json& data)
     if (type == "Diamond")
     {
         Diamond* diamond = new Diamond();
-        addShapeParams(diamond, data);
+        addShapeParams(*diamond, data);
         diamond->sizeA = data["property"]["size_A"];
         diamond->sizeB = data["property"]["size_B"];
         diamond->angle = data["property"]["angle"];
@@ -55,7 +55,7 @@ Shape* createFigure(const json& data)
     if (type == "Rectangle")
     {
         Rectangle* rectangle = new Rectangle();
-        addShapeParams(rectangle, data);
+        addShapeParams(*rectangle, data);
         rectangle->sizeA = data["property"]["size_A"];
         rectangle->sizeB = data["property"]["size_B"];
         return rectangle;
@@ -66,7 +66,6 @@ Shape* createFigure(const json& data)
         
         Line* line = new Line();
 
-        line->id = data["id"];
         line->text = data["text"];
         line->style.color = style_helper::stringToColor(data["style"]["color"]);
         line->style.border = data["style"]["border"];
@@ -82,7 +81,7 @@ Shape* createFigure(const json& data)
     if (type == "Note")
     {
         Note* note = new Note();
-        addShapeParams(note, data);
+        addShapeParams(*note, data);
         note->sizeA = data["property"]["size_A"];
         note->sizeB = data["property"]["size_B"];
         note->idTo = data["property"]["idTo"];
@@ -93,13 +92,13 @@ Shape* createFigure(const json& data)
     {
         
         Graph* graph = new Graph();
-        addShapeParams(graph, data);
-        json nodes = data["property"]["nodes"];
+        addShapeParams(*graph, data);
+        const json& nodes = data["property"]["nodes"];
         for (const auto& node : nodes)
         {
             if (node["type"] == "Note" || node["type"] == "DotCloud" || node["type"] == "Graph")
             {
-                std::string errMsg = "wrong node type in Graph in createFigure function";
+                std::string const errMsg = "Unsupported graph's node type: " + node["type"].get<std::string>();
                 LOG_ERROR(FIGURES_STORAGE_LOG, errMsg);
                 throw std::invalid_argument(errMsg);
             }
@@ -114,9 +113,9 @@ Shape* createFigure(const json& data)
     {
         
         DotCloud* dotCloud = new DotCloud();
-        addShapeParams(dotCloud, data);
+        addShapeParams(*dotCloud, data);
         dotCloud->grid = (data["property"]["grid"] == "true") ? true : false;
-        json nodes = data["property"]["dots"];
+        const json& nodes = data["property"]["dots"];
         for (const auto& node : nodes)
         {
             if (node["type"] != "Circle")
@@ -138,6 +137,8 @@ Shape* createFigure(const json& data)
         LOG_ERROR(FIGURES_STORAGE_LOG, errMsg);
         throw std::invalid_argument(errMsg);
     }
+    
+    return nullptr;
 
 }
 
@@ -150,4 +151,21 @@ FiguresStorage FiguresStorage::createFigures(std::string const& figuresJson)
     }
     
     return figures;
+}
+
+std::string getJsonFromFigures(std::vector<Shape*> const& figures)
+{
+
+    std::string json = "{";
+    json += "\"figures\":";
+    json += "[";
+    
+    for (Shape* figure : figures)
+    {
+        json += figure->toJson() + ",";
+    }
+    json.pop_back();
+    json += "]";
+    json += "}";
+    return json;
 }
