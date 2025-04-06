@@ -55,6 +55,11 @@ void Logger::log(Level level, std::string const& entity, std::string const& mess
 
 void Logger::updLogOutput(std::string const& filePath)
 {
+    if (m_logFile.is_open())
+    {
+        m_logFile.close();
+    }
+
     m_logFilePath = filePath;
     m_logFile.open(m_logFilePath, std::ios::app);
     if (!m_logFile)

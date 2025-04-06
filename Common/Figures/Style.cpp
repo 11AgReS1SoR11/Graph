@@ -35,14 +35,14 @@ std::string style_helper::colorToString(color_e color)
 {
     switch (color)
     {
-        case color_e::RED: return "RED";
-        case color_e::GREEN: return "GREEN";
-        case color_e::BLUE: return "BLUE";
-        case color_e::BLACK: return "BLACK";
-        case color_e::WHITE: return "WHITE";
-        case color_e::YELLOW: return "YELLOW";
-        case color_e::PURPLE: return "PURPLE";
-        case color_e::NONE: return "NONE";
+        case color_e::RED: return "red";
+        case color_e::GREEN: return "green";
+        case color_e::BLUE: return "blud";
+        case color_e::BLACK: return "black";
+        case color_e::WHITE: return "white";
+        case color_e::YELLOW: return "yellow";
+        case color_e::PURPLE: return "purple";
+        case color_e::NONE: return "none";
     }
 
     return {};

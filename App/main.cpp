@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
     std::vector<std::string> const args(argv + 1, argv + argc);
 
     std::string const logFilePath = getArgValue(args, "--logFilePath");
-    if (logFilePath.empty()) { Logger::getInstance().updLogOutput(logFilePath); }
+    if (!logFilePath.empty()) { Logger::getInstance().updLogOutput(logFilePath); }
 
     backend::Backend backend;
 
@@ -49,6 +49,7 @@ int main(int argc, char* argv[])
         }
 
         backend.translate(codeFilePath);
+        LOG_INFO(BACKEND_LOG, "Translate success");
     }
     else
     {

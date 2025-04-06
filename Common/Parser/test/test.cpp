@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <iostream>
 
-#include "Parser.h"
+#include "Parser.hpp"
 
 TEST_CASE("test1 object_decl ", "[Parser]")
 {

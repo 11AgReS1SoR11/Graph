@@ -1,4 +1,4 @@
-#include "Parser.h"
+#include "Parser.hpp"
 
 extern std::unique_ptr<AST::ASTTree> astTree;
 extern int yyparse(void);

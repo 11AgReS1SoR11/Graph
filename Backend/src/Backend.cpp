@@ -4,9 +4,11 @@
 #include "FileManager.hpp"
 #include "FiguresStorage.hpp"
 #include "Retranslator.hpp"
+#include "Translator.hpp"
 
 #include "AstStatementParser.hpp"
 #include "SemanticAnalyzer.hpp"
+#include "Parser.hpp"
 
 #include <stdexcept>
 
@@ -53,11 +55,47 @@ std::string getCode(AST::ASTTree& ast)
     return result;
 }
 
+std::string getFigures(FiguresStorage const& figures)
+{
+    std::string json = "[";
+    for (auto const& figure : figures)
+    {
+        json += figure->toJson() + ",";
+    }
+    json += "]";
+
+    return json;
+}
+
 } // details
 
-void Backend::translate(std::string const& code)
+void Backend::translate(std::string const& filePath)
 {
-    // TODO: implement
+    try
+    {
+        Parser parser(filePath);
+        std::unique_ptr<AST::ASTTree> ast = parser.parse();
+
+        SEMANTICANALYZER::AstStatementParser parserAST(*ast);
+        auto programTree = parserAST.parse();
+
+        SEMANTICANALYZER::SemanticAnalyzer& semanticAnalyzer = SEMANTICANALYZER::SemanticAnalyzer::getInstance();
+        semanticAnalyzer.semanticAnalysis(programTree, 1);
+
+        Translator trans;
+        FiguresStorage figures = trans.translate(programTree);
+
+        std::string figuresJson = details::getFigures(figures);
+
+        if (!FileManager::writeToFile("build/figures.json", figuresJson)) // TODO: make path variable
+        {
+            LOG_ERROR(BACKEND_LOG, "Failed to write json with figures");
+        }
+    }
+    catch (std::exception const& e)
+    {
+        LOG_ERROR(BACKEND_LOG, "Translate failed: " + std::string(e.what()));
+    }
 }
 
 std::string Backend::retranslate(std::string const& filePath)
@@ -91,7 +129,7 @@ std::string Backend::retranslate(std::string const& filePath)
     }
     catch (std::exception const& e)
     {
-        LOG_ERROR(BACKEND_LOG, "Failed to process: " + std::string(e.what()));
+        LOG_ERROR(BACKEND_LOG, "Retranslate failed: " + std::string(e.what()));
     }
 
     return "";

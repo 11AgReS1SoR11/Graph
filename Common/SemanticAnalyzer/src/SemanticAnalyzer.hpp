@@ -71,6 +71,7 @@ constexpr const char* BLACK = "black";
 constexpr const char* WHITE = "white";
 constexpr const char* YELLOW = "yellow";
 constexpr const char* PURPLE = "purple";
+constexpr const char* NONE = "none";
 }
 
 
@@ -167,7 +168,7 @@ inline static const std::map<std::string, ConstraintInfo> PROPERTY_CONSTRAINTS =
 
 inline static const std::vector<std::string> ALLOWED_COLORS =
 {
-    GRAMMERCONSTANTS::RED, GRAMMERCONSTANTS::GREEN, GRAMMERCONSTANTS::BLUE, GRAMMERCONSTANTS::BLACK, GRAMMERCONSTANTS::WHITE, GRAMMERCONSTANTS::YELLOW, GRAMMERCONSTANTS::PURPLE
+    GRAMMERCONSTANTS::RED, GRAMMERCONSTANTS::GREEN, GRAMMERCONSTANTS::BLUE, GRAMMERCONSTANTS::BLACK, GRAMMERCONSTANTS::WHITE, GRAMMERCONSTANTS::YELLOW, GRAMMERCONSTANTS::PURPLE, GRAMMERCONSTANTS::NONE
 };
 
 

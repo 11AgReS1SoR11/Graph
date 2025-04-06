@@ -100,12 +100,11 @@ fi
 APP_COMMAND="$APP_COMMAND $FILE_PATH_ARG \"$FILE_PATH\""
 
 if [[ -n "$LOG_FILE_PATH" ]]; then
-  APP_COMMAND="$APP_COMMAND --logFile \"$LOG_FILE_PATH\""
+  APP_COMMAND="$APP_COMMAND --logFilePath \"$LOG_FILE_PATH\""
 else
-  APP_COMMAND="$APP_COMMAND --logFile \"${BUILD_DIR}/log.log\"" # Default path
+  APP_COMMAND="$APP_COMMAND --logFilePath \"${BUILD_DIR}/log.log\"" # Default path
 fi
 
-echo "Запускаем приложение с командой: $APP_COMMAND"
 eval "$APP_COMMAND" || error "Ошибка выполнения приложения"
 
 echo "Приложение успешно завершено!"

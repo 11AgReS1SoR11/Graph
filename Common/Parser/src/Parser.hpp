@@ -13,7 +13,7 @@
 class Parser
 {
 public:
-    explicit Parser(const std::string filepath): filepath(filepath) {}
+    explicit Parser(std::string const& filepath): filepath(filepath) {}
     std::unique_ptr<AST::ASTTree> parse();
 
 private:

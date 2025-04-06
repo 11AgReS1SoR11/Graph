@@ -8,7 +8,7 @@ namespace backend
 class Backend
 {
 public:
-    void translate(std::string const& code);
+    void translate(std::string const& filePath);
     std::string retranslate(std::string const& filePath);
 };
 
