@@ -52,6 +52,14 @@ bool is_prop = false;
     return NOTE;
 }
 
+"graph" {
+#ifdef DEBUG
+    std::cout << "TOKEN: GRAPH (" << yytext << ")" << std::endl;
+#endif
+    yylval.str = new std::string(yytext);
+    return GRAPH;
+}
+
 "color"|"text"|"border"|"x"|"y"|"size_text"|"size_A"|"size_B"|"angle"|"radius"|"grid" {
     is_prop = true;
 #ifdef DEBUG
@@ -108,7 +116,7 @@ bool is_prop = false;
 
 [ \t\r\n]+      { }
 
-[{};=] {
+[{};=()] {
 #ifdef DEBUG
     std::cout << "TOKEN: SYMBOL (" << yytext << ")" << std::endl;
 #endif
