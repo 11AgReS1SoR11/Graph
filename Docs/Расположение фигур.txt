@@ -8,9 +8,9 @@ DECLARE SMALL_DISTANCE AS INTEGER
 SMALL_DISTANCE = 50 # константа для проверки близкого расположения фигур
 
 DECLARE SHAPE_SIZES AS MAP OF SHAPE TO (width, height)
-SHAPE_SIZES["circle"] = (100, 100)    # Диаметр круга по умолчанию
+SHAPE_SIZES["circle"] = (100, 100)    # Размеры прямоугольника, ограничивающего круг
 SHAPE_SIZES["rectangle"] = (120, 80)  # Размеры прямоугольника
-SHAPE_SIZES["diamond"] = (100, 100)   # Размеры ромба
+SHAPE_SIZES["diamond"] = (100, 100)   # Размеры прямоугольника, ограничивающего ромб
 SHAPE_SIZES["note"] = (150, 100)      # Размер заметки по умолчанию
 
 # Вспомогательная функция поиска максимальной ширины фигуры
