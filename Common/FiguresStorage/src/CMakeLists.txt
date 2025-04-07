@@ -1,5 +1,5 @@
 # FiguresStorage lib
-set(SOURCE_FIGURES_STORAGE FiguresStorage.cpp)	
+set(SOURCE_FIGURES_STORAGE FiguresStorage.cpp json.hpp)	
 
 add_library(FiguresStorage SHARED ${SOURCE_FIGURES_STORAGE})
 

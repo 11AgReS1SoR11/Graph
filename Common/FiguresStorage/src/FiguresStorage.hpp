@@ -10,4 +10,6 @@ public:
     ~FiguresStorage();
 
     static FiguresStorage createFigures(std::string const& figuresJson);
+    static std::string toJson(std::vector<Shape*> const& figures);
 };
+

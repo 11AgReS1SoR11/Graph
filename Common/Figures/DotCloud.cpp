@@ -3,7 +3,7 @@
 std::string DotCloud::toJson() const
 {
     std::string json = "{"
-                       "\"type\": \"Graph\","
+                       "\"type\": \"DotCloud\","
                        + Shape::toJson() + ","
                        "\"property\": {"
                           "\"grid\": " + ((grid) ? "\"true\"" : "\"false\"") + ","

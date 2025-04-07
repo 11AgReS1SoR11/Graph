@@ -84,7 +84,7 @@ void addProperty(Node* node, std::string const& key, std::string const& value, b
 void addBasicParams(Node* node, const Shape& shape)
 {
     addProperty(node, "text", shape.text, true);
-    addProperty(node, "color", colorToString(shape.style.color), true);
+    addProperty(node, "color", style_helper::colorToString(shape.style.color), true);
     addProperty(node, "border", std::to_string(shape.style.border));
     addProperty(node, "size_text", std::to_string(shape.style.textSize));
     addProperty(node, "x", std::to_string(shape.x));

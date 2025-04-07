@@ -2,9 +2,13 @@
 
 #include "Figures.hpp"
 #include "Logger.hpp"
-
+#include "json.hpp"
 #include <stdexcept>
 #include <algorithm>
+#include <iostream>
+#include <typeinfo>
+
+using json = nlohmann::json;
 
 FiguresStorage::~FiguresStorage()
 {
@@ -15,227 +19,225 @@ FiguresStorage::~FiguresStorage()
     }
 }
 
-namespace details
-{
 
-// Helper function to trim whitespace from a string
-std::string trim(std::string const& str)
-{
-    std::string result = str;
-    result.erase(std::remove_if(result.begin(), result.end(), [](unsigned char x){return std::isspace(x);}), result.end());
 
-    if (result.empty())
+void checkParam(const json& data, const std::string& param)
+{
+    if (!data.contains(param))
     {
-        static constexpr auto errorMsg = "Inccorect figure's json: only white space";
-        LOG_ERROR(FIGURES_STORAGE_LOG, errorMsg);
-        throw std::invalid_argument(errorMsg);
+        std::string errMsg = "missing param in json data: " + param;
+        LOG_ERROR(FIGURES_STORAGE_LOG, errMsg);
+        throw std::invalid_argument(errMsg);
     }
-
-    return result;
 }
 
-// Function to extract a string value from a JSON object
-std::string extractString(std::string const& json, std::string const& key)
+void checkSubParam(const json& data, const std::string& param, const std::string& subparam)
 {
-    size_t keyStart = json.find("\"" + key + "\"");
-    if (keyStart == std::string::npos)
+    if (!data.contains(param))
     {
-        std::string const errorMsg = "Missing key: \"" + key + "\" here: " + json;
-        LOG_ERROR(FIGURES_STORAGE_LOG, errorMsg);
-        throw std::invalid_argument(errorMsg);
+        std::string errMsg = "missing param in json data: " + param;
+        LOG_ERROR(FIGURES_STORAGE_LOG, errMsg);
+        throw std::invalid_argument(errMsg);
     }
-
-    keyStart += 1 + key.size() + 1; // skip "key"
-
-    if (keyStart > json.size())
+    
+    if (!((data[param]).contains(subparam)))
     {
-        std::string const errorMsg = "Invalid json format: expected \":\", but given nothing. key = " + key + " here: " + json;
-        LOG_ERROR(FIGURES_STORAGE_LOG, errorMsg);
-        throw std::invalid_argument(errorMsg);
+        std::string errMsg = "missing subparam in json data: " + subparam;
+        LOG_ERROR(FIGURES_STORAGE_LOG, errMsg);
+        throw std::invalid_argument(errMsg);
     }
-
-    if (json[keyStart] != ':')
-    {
-        std::string const errorMsg = "Invalid json format: expected \":\", for key = " + key + " here: " + json;
-        LOG_ERROR(FIGURES_STORAGE_LOG, errorMsg);
-        throw std::invalid_argument(errorMsg);
-    }
-
-    size_t valueStart = json.find("\"", keyStart); 
-    if (valueStart == std::string::npos)
-    {
-        std::string const errorMsg = "Invalid json format: expected quote, but given nothing for key = " + key + " here: " + json;
-        LOG_ERROR(FIGURES_STORAGE_LOG, errorMsg);
-        throw std::invalid_argument(errorMsg);
-    }
-
-    valueStart++; // skip quote
-
-    size_t const valueEnd = json.find("\"", valueStart);
-    if (valueEnd == std::string::npos)
-    {
-        std::string const errorMsg = "Invalid json format: expected end quote, but given nothing for key = " + key + " here: " + json;
-        LOG_ERROR(FIGURES_STORAGE_LOG, errorMsg);
-        throw std::invalid_argument(errorMsg);
-    }
-
-    return json.substr(valueStart, valueEnd - valueStart);
 }
 
-// Function to extract a double value from a JSON object
-double extractDouble(std::string const& json, std::string const& key)
+void addShapeParams(Shape& shape, const json& data)
 {
-    size_t keyStart = json.find("\"" + key + "\"");
-    if (keyStart == std::string::npos)
-    {
-        std::string const errorMsg = "Missing key: \"" + key + "\" here: " + json;
-        LOG_ERROR(FIGURES_STORAGE_LOG, errorMsg);
-        throw std::invalid_argument(errorMsg);
-    }
-
-    keyStart += 1 + key.size() + 1; // skip "key"
-
-    if (keyStart > json.size())
-    {
-        std::string const errorMsg = "Invalid json format: expected \":\", but given nothing. key = " + key + " here: " + json;
-        LOG_ERROR(FIGURES_STORAGE_LOG, errorMsg);
-        throw std::invalid_argument(errorMsg);
-    }
-
-    if (json[keyStart] != ':')
-    {
-        std::string const errorMsg = "Invalid json format: expected \":\", for key = " + key + " here: " + json;
-        LOG_ERROR(FIGURES_STORAGE_LOG, errorMsg);
-        throw std::invalid_argument(errorMsg);
-    }
-
-    size_t const valueStart = keyStart + 1;
-    if (valueStart == std::string::npos)
-    {
-        std::string const errorMsg = "Invalid json format: expected value, but given nothing. key = " + key + " here: " + json;
-        LOG_ERROR(FIGURES_STORAGE_LOG, errorMsg);
-        throw std::invalid_argument(errorMsg);
-    }
-
-    size_t valueEnd = json.find_first_of(",}", valueStart);
-    if (valueEnd == std::string::npos) { valueEnd = json.length(); }
-
-    std::string valueStr = json.substr(valueStart, valueEnd - valueStart);
-    return std::stod(valueStr); // TODO: log exception during GRAP-49
+    
+    checkParam(data, "id");
+    checkParam(data, "text");
+    checkSubParam(data, "position", "x");
+    checkSubParam(data, "position", "y");
+    checkSubParam(data, "style", "color");
+    checkSubParam(data, "style", "border");
+    checkSubParam(data, "style", "textSize");
+   
+    shape.id = data["id"];
+    shape.text = data["text"];
+    shape.x = data["position"]["x"];
+    shape.y = data["position"]["y"];
+    shape.style.color = style_helper::stringToColor(data["style"]["color"]);
+    shape.style.border = data["style"]["border"];
+    shape.style.textSize = data["style"]["textSize"];
 }
 
-// Function to create a Shape object from JSON
-Shape* createShapeFromJson(const std::string& json)
+Shape* createFigure(const json& data)
 {
-    std::string const type = extractString(json, "type");
+    const std::string type = data["type"];
 
-    if (type == "Circle")
+    try 
     {
-        Circle* circle = new Circle();
-        circle->id = extractString(json, "id");
-        circle->text = extractString(json, "text");
-        circle->x = extractDouble(json, "x");
-        circle->y = extractDouble(json, "y");
-        // TODO: implement during GRAP-49
-        // circle->style.color = extractString(json, "color");
-        circle->style.border = extractDouble(json, "border");
-        circle->style.textSize = extractDouble(json, "textSize");
-        circle->radius = extractDouble(json, "radius");
-        return circle;
-    }
-    else if (type == "Diamond")
-    {
-        Diamond* diamond = new Diamond();
-        diamond->id = extractString(json, "id");
-        diamond->text = extractString(json, "text");
-        diamond->x = extractDouble(json, "x");
-        diamond->y = extractDouble(json, "y");
-        // TODO: implement during GRAP-49
-        // diamond->style.color = extractString(json, "color");
-        diamond->style.border = extractDouble(json, "border");
-        diamond->style.textSize = extractDouble(json, "textSize");
-        diamond->sizeA = extractDouble(json, "size_A");
-        diamond->sizeB = extractDouble(json, "size_B");
-        diamond->angle = extractDouble(json, "angle");
-        return diamond;
 
-    }
-    else if (type == "Rectangle")
-    {
-        Rectangle* rectangle = new Rectangle();
-        rectangle->id = extractString(json, "id");
-        rectangle->text = extractString(json, "text");
-        rectangle->x = extractDouble(json, "x");
-        rectangle->y = extractDouble(json, "y");
-        // TODO: implement during GRAP-49
-        // rectangle->style.color = extractString(json, "color");
-        rectangle->style.border = extractDouble(json, "border");
-        rectangle->style.textSize = extractDouble(json, "textSize");
-        rectangle->sizeA = extractDouble(json, "size_A");
-        rectangle->sizeB = extractDouble(json, "size_B");
-        return rectangle;
-    }
-    else if (type == "Line")
-    {
-        // Line does not inherit from Shape, so handle it differently
-        Line* line = new Line();
-        line->id = extractString(json, "id");
-        line->text = extractString(json, "text");
-        // TODO: implement during GRAP-49
-        // line->style.color = extractString(json, "color");
-        line->style.border = extractDouble(json, "border");
-        line->style.textSize = extractDouble(json, "textSize");
-        line->idFrom = extractString(json, "idFrom");
-        line->idTo = extractString(json, "idTo");
-        // TODO: implement during GRAP-49
-        // line->type = extractInt(json, "type");
-        // line->orientation = extractInt(json, "orientation");
-        return line;
-    }
-    else
-    {
-        std::string const errorMsg = "Unsupported figure's type: " + type;
-        LOG_ERROR(FIGURES_STORAGE_LOG, errorMsg)
-        throw std::invalid_argument(errorMsg);
+        if (type == "Circle")
+        {
+            std::unique_ptr<Circle> circle = std::make_unique<Circle>();
+            addShapeParams(*circle, data);
+            checkSubParam(data, "property", "radius");
+            circle->radius = data["property"]["radius"];
+            return circle.release();
+        }
+
+        if (type == "Diamond")
+        {
+            std::unique_ptr<Diamond> diamond = std::make_unique<Diamond>();
+            addShapeParams(*diamond, data);
+            checkSubParam(data, "property", "size_A");
+            checkSubParam(data, "property", "size_B");
+            checkSubParam(data, "property", "angle");
+            diamond->sizeA = data["property"]["size_A"];
+            diamond->sizeB = data["property"]["size_B"];
+            diamond->angle = data["property"]["angle"];
+            return diamond.release();
+        }
+
+        if (type == "Rectangle")
+        {
+            std::unique_ptr<Rectangle> rectangle = std::make_unique<Rectangle>();
+            addShapeParams(*rectangle, data);
+            checkSubParam(data, "property", "size_A");
+            checkSubParam(data, "property", "size_B");
+            rectangle->sizeA = data["property"]["size_A"];
+            rectangle->sizeB = data["property"]["size_B"];
+            return rectangle.release();
+        }
+
+        if (type == "Line")
+        {
+            
+            
+            std::unique_ptr<Line> line = std::make_unique<Line>();
+
+            checkParam(data, "text");
+            checkSubParam(data, "style", "color");
+            checkSubParam(data, "style", "border");
+            checkSubParam(data, "style", "textSize");
+            checkSubParam(data, "property", "idFrom");
+            checkSubParam(data, "property", "idTo");
+            checkSubParam(data, "property", "type");
+            checkSubParam(data, "property", "orientation");
+
+            line->text = data["text"];
+            line->style.color = style_helper::stringToColor(data["style"]["color"]);
+            line->style.border = data["style"]["border"];
+            line->style.textSize = data["style"]["textSize"];
+            line->idFrom = data["property"]["idFrom"];
+            line->idTo = data["property"]["idTo"];
+            line->type = line_helper::stringToLineType(data["property"]["type"]);
+            line->orientation = line_helper::stringToLineOrientation(data["property"]["orientation"]);
+            
+            return line.release();
+        }
+
+        if (type == "Note")
+        {
+            std::unique_ptr<Note> note = std::make_unique<Note>();
+            addShapeParams(*note, data);
+            note->sizeA = data["property"]["size_A"];
+            note->sizeB = data["property"]["size_B"];
+            note->idTo = data["property"]["idTo"];
+            return note.release();
+        }
+
+        if (type == "Graph")
+        {
+            
+            std::unique_ptr<Graph> graph = std::make_unique<Graph>();
+            addShapeParams(*graph, data);
+            checkSubParam(data, "property", "nodes");
+            const json& nodes = data["property"]["nodes"];
+            for (const auto& node : nodes)
+            {
+                checkParam(data, "type");
+                if (node["type"] == "Note" || node["type"] == "DotCloud" || node["type"] == "Graph")
+                {
+                    std::string const errMsg = "Unsupported graph's node type: " + node["type"].get<std::string>();
+                    LOG_ERROR(FIGURES_STORAGE_LOG, errMsg);
+                    throw std::invalid_argument(errMsg);
+                }
+
+                graph->nodes.push_back(createFigure(node));
+            }   
+
+            return graph.release();
+        }
+
+        if (type == "DotCloud")
+        {
+            
+            std::unique_ptr<DotCloud> dotCloud = std::make_unique<DotCloud>();
+            addShapeParams(*dotCloud, data);
+            checkSubParam(data, "property", "grid");
+            dotCloud->grid = (data["property"]["grid"] == "true") ? true : false;
+            checkSubParam(data, "property", "dots");
+            const json& nodes = data["property"]["dots"];
+            for (const auto& node : nodes)
+            {
+                if (node["type"] != "Circle")
+                {
+                    std::string errMsg = "wrong figure type in Dotcloud in createFigure function";
+                    LOG_ERROR(FIGURES_STORAGE_LOG, errMsg);
+                    throw std::invalid_argument(errMsg);
+                }
+
+                dotCloud->dots.push_back(dynamic_cast<Circle*>(createFigure(node)));
+            }   
+
+            return dotCloud.release();
+        }
+
+        else
+        {
+            std::string const errMsg = "Unsupported figures type: " + type;
+            LOG_ERROR(FIGURES_STORAGE_LOG, errMsg);
+            throw std::invalid_argument(errMsg);
+        }
     }
 
-    return nullptr; // Unknown type
+    catch(std::exception& e)
+    {
+        std::string const errMsg = "Wrong json: " + std::string(e.what());
+        LOG_ERROR(FIGURES_STORAGE_LOG, errMsg);
+        throw std::invalid_argument(errMsg);
+    }
+
+
+    
+    return nullptr;
+
 }
-
-} // namespace details
 
 FiguresStorage FiguresStorage::createFigures(std::string const& figuresJson)
 {
     FiguresStorage figures;
-
-    std::string const trimmedJson = details::trim(figuresJson);
-
-    if (trimmedJson.empty() || trimmedJson[0] != '[' || trimmedJson.back() != ']')
-    {
-        static constexpr auto errorMsg = "Invalid JSON format: must be a JSON array.";
-        LOG_ERROR(FIGURES_STORAGE_LOG, errorMsg)
-        throw std::invalid_argument(errorMsg);
+    json data = json::parse(figuresJson);
+    checkParam(data, "figures");
+    for (const auto& figureData : data["figures"]) {
+        figures.push_back(createFigure(figureData));
     }
-
-    // Extract individual figure JSON strings (simplified parsing)
-    size_t start = 1; // Skip '['
-    size_t end;
-    while ((end = trimmedJson.find("},{", start)) != std::string::npos)
-    {
-        std::string const figureJson = trimmedJson.substr(start, end - start + 1); // +1 to include the comma
-        Shape* figure = details::createShapeFromJson(figureJson);
-        figures.push_back(figure);
-
-        start = end + 2; // Skip comma and space
-    }
-
-    // Handle the last element (no trailing comma)
-    if (start < trimmedJson.length() - 1)
-    {
-        std::string const figureJson = trimmedJson.substr(start, trimmedJson.length() - 1 - start); // -1 to skip the ']'
-        Shape* figure = details::createShapeFromJson(figureJson);
-        figures.push_back(figure);
-    }
-
+    
     return figures;
+}
+
+std::string FiguresStorage::toJson(std::vector<Shape*> const& figures)
+{
+
+    std::string json = "{";
+    json += "\"figures\":";
+    json += "[";
+    
+    for (Shape* figure : figures)
+    {
+        json += figure->toJson() + ",";
+    }
+    json.pop_back();
+    json += "]";
+    json += "}";
+    return json;
 }

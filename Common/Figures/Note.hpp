@@ -7,5 +7,5 @@ struct Note : Shape
 
     double sizeA = 1;
     double sizeB = 1;
-    std::string idTo{};
+    std::string idTo = "";
 };
