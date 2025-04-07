@@ -176,10 +176,11 @@ Node* Retranslator::makeLink(const Line& shape) const
 
 Node* Retranslator::makeGraph(const Graph& shape) const
 {
-    Node* node = new Node("graph");
+    Node* node = new Node("GRAPH");
 
+    node->addChild(new Node("graph"));
     node->addChild(new Node("ID"));
-    node->childNodes[0]->addChild(new Node(shape.id));
+    node->childNodes[1]->addChild(new Node(shape.id));
     
     node->addChild(new Node("("));
 
@@ -216,8 +217,9 @@ Node* Retranslator::makeGraph(const Graph& shape) const
 
 Node* Retranslator::makeDotCloud(const DotCloud& shape) const
 {
-    Node* node = new Node("dot_cloud");
+    Node* node = new Node("DOT_CLOUD");
 
+    node->addChild(new Node("dot_cloud"));
     node->addChild(new Node("("));
     addBasicParams(node, shape);
     addProperty(node, "grid", shape.grid ? "true" : "false", true);
@@ -241,10 +243,11 @@ Node* Retranslator::makeDotCloud(const DotCloud& shape) const
 
 Node* Retranslator::makeNote(const Note& shape) const
 {
-    Node* node = new Node("note");
+    Node* node = new Node("NOTE");
 
+    node->addChild(new Node("note"));
     node->addChild(new Node("ID"));
-    node->childNodes[0]->addChild(new Node(shape.id));
+    node->childNodes[1]->addChild(new Node(shape.id));
 
     node->addChild(new Node("{"));
     addBasicParams(node, shape);

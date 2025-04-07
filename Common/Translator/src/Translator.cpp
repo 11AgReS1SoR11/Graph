@@ -7,14 +7,14 @@ Style parseStyle(std::vector<SEMANTICANALYZER::Property>& _props, Style const& d
   Style _style = default_style;
   for (auto& _prop : _props) {
     if (_prop.key == "color") {
-      if (_prop.value == "RED") { _style.color = color_e::RED; }
-      else if (_prop.value == "GREEN") { _style.color = color_e::GREEN; } 
-      else if (_prop.value == "BLUE") { _style.color = color_e::BLUE; } 
-      else if (_prop.value == "BLACK") { _style.color = color_e::BLACK; } 
-      else if (_prop.value == "WHITE") { _style.color = color_e::WHITE; } 
-      else if (_prop.value == "YELLOW") { _style.color = color_e::YELLOW; } 
-      else if (_prop.value == "PURPLE") { _style.color = color_e::PURPLE; } 
-      else if (_prop.value == "NONE") { _style.color = color_e::NONE; } 
+      if (_prop.value == "red") { _style.color = color_e::RED; }
+      else if (_prop.value == "green") { _style.color = color_e::GREEN; } 
+      else if (_prop.value == "blue") { _style.color = color_e::BLUE; } 
+      else if (_prop.value == "black") { _style.color = color_e::BLACK; } 
+      else if (_prop.value == "white") { _style.color = color_e::WHITE; } 
+      else if (_prop.value == "yellow") { _style.color = color_e::YELLOW; } 
+      else if (_prop.value == "purple") { _style.color = color_e::PURPLE; } 
+      else if (_prop.value == "none") { _style.color = color_e::NONE; } 
     }
     else if (_prop.key == "border") {
       _style.border = std::stod(_prop.value);

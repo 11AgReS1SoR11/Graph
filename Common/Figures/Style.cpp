@@ -9,14 +9,14 @@ color_e style_helper::stringToColor(const std::string str)
 
     std::map<const std::string, int> mapping;
 
-    mapping["RED"] = 1;
-    mapping["GREEN"] = 2;
-    mapping["BLUE"] = 3;
-    mapping["BLACK"] = 4;
-    mapping["WHITE"] = 5;
-    mapping["YELLOW"] = 6;
-    mapping["PURPLE"] = 7;
-    mapping["NONE"] = 0;
+    mapping["red"] = 1;
+    mapping["green"] = 2;
+    mapping["blue"] = 3;
+    mapping["black"] = 4;
+    mapping["white"] = 5;
+    mapping["yellow"] = 6;
+    mapping["purple"] = 7;
+    mapping["none"] = 0;
     
     switch (mapping[str])
     {

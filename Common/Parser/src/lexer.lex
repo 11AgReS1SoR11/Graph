@@ -102,14 +102,20 @@ bool is_prop = false;
 
 
 \"              { BEGIN(TEXT_MODE); }
-<TEXT_MODE>[a-zA-Z0-9,.!? -]+ {
-
-    if(is_prop) is_prop = false;
-#ifdef DEBUG
-    std::cout << "TOKEN: TEXT (" << yytext << ")" << std::endl;
-#endif
-    yylval.str = new std::string(yytext);
-    return TEXT;
+<TEXT_MODE>"" {
+    #ifdef DEBUG
+        std::cout << "TOKEN: TEXT (empty)" << std::endl;
+    #endif
+        yylval.str = new std::string("");
+        return TEXT;
+    }
+    <TEXT_MODE>[a-zA-Z0-9,.!? -]+ {
+        if(is_prop) is_prop = false;
+    #ifdef DEBUG
+        std::cout << "TOKEN: TEXT (" << yytext << ")" << std::endl;
+    #endif
+        yylval.str = new std::string(yytext);
+        return TEXT;
 }
 <TEXT_MODE>\"   { BEGIN(INITIAL); }
 

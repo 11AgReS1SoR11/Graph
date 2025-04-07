@@ -68,7 +68,8 @@ extern int yydebug;
     NUMBER = 263,                  /* NUMBER  */
     TEXT = 264,                    /* TEXT  */
     ARROW = 265,                   /* ARROW  */
-    NOTE = 266                     /* NOTE  */
+    NOTE = 266,                    /* NOTE  */
+    GRAPH = 267                    /* GRAPH  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -82,7 +83,7 @@ union YYSTYPE
     std::string* str;
     AST::Node* node;
 
-#line 86 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.h"
+#line 87 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

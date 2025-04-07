@@ -169,8 +169,6 @@ void SEMANTICANALYZER::SemanticAnalyzer::checkNote(const Note &note, int stateme
         throw SemanticError("Объект " + note.id + " не объявлен.", statementNumber);
     }
 
-    declareObject(note.id, statementNumber);
-
     for (const Property& prop : note.properties)
     {
         if (std::find(COMMON_PROPERTIES.begin(), COMMON_PROPERTIES.end(), prop.key) == COMMON_PROPERTIES.end())

@@ -5,7 +5,7 @@ struct Note : Shape
 {
     std::string toJson() const override;
 
-    double sizeA = 1;
-    double sizeB = 1;
+    int sizeA = 1;
+    int sizeB = 1;
     std::string idTo = "";
 };
