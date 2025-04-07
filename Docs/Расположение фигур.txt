@@ -94,7 +94,7 @@ FUNCTION layout_objects(program_tree):
             max_height_in_row = component_height
     
     # 4. Генерируем координаты для связей
-    generate_relation_points(objects, relations)
+    # generate_relation_points(objects, relations) отказались от этой затеи
     
     # Возвращаем объекты с координатами
     RETURN objects, relations
@@ -245,13 +245,13 @@ FUNCTION calculate_component_size(component, relations):
 FUNCTION layout_component(component, relations, start_x, start_y):
     # Если в компоненте только один объект
     IF LENGTH(component) == 1:
-        component[0].x = start_x
-        component[0].y = start_y
+        component[0].x = start_x + component[0].width / 2
+        component[0].y = start_y + component[0].height / 2
         RETURN
     
     DECLARE root AS ObjectInfo = component[0]  # Первый объект как корень
-    root.x = start_x
-    root.y = start_y + (MAX_SHAPE_HEIGHT() - root.height)/2  # Центрируем по вертикали
+    root.x = start_x + MAX_SHAPE_WIDTH() / 2
+    root.y = start_y + MAX_SHAPE_HEIGHT() / 2  
     
     DECLARE visited AS SET = {root.id}
     DECLARE queue AS QUEUE OF ObjectInfo = [root]
@@ -272,90 +272,33 @@ FUNCTION layout_component(component, relations, start_x, start_y):
             FOR rel IN relations:
                 IF rel.id1 == obj.id AND rel.id2 NOT IN visited:
                     DECLARE neighbor AS ObjectInfo = FIND_OBJECT_BY_ID(rel.id2, objects)
-                    IF neighbor:
-                        ADD neighbor TO neighbors
-                        ADD neighbor.id TO visited
+                    ADD neighbor TO neighbors
+                    ADD neighbor.id TO visited
                 ELIF rel.id2 == obj.id AND rel.id1 NOT IN visited:
                     DECLARE neighbor AS ObjectInfo = FIND_OBJECT_BY_ID(rel.id1, objects)
-                    IF neighbor:
-                        ADD neighbor TO neighbors
-                        ADD neighbor.id TO visited
+                    ADD neighbor TO neighbors
+                    ADD neighbor.id TO visited
             
             # Располагаем соседей справа от текущего объекта
             IF neighbors IS NOT EMPTY:
-                DECLARE total_neighbors_width AS INTEGER = 0
+            # Рассчитываем общую высоту всех соседей с отступами
+                DECLARE total_neighbors_height AS INTEGER = 0
                 FOR neighbor IN neighbors:
-                    total_neighbors_width += neighbor.width + DEFAULT_SPACING
-                
-                current_y = start_y + (MAX_SHAPE_HEIGHT() - total_neighbors_width)/2
-                
+                    total_neighbors_height += neighbor.height + DEFAULT_SPACING
+                total_neighbors_height -= DEFAULT_SPACING  # Убираем последний лишний отступ
+    
+                # Центрируем блок соседей вертикально
+                current_y = start_y - (total_neighbors_height / 2)
+    
                 FOR neighbor IN neighbors:
-                    neighbor.x = current_x
-                    neighbor.y = current_y
-                    current_y += neighbor.height + DEFAULT_SPACING
+                    neighbor.x = current_x + neighbor.width / 2  
+                    neighbor.y = current_y + neighbor.height / 2  
+                    current_y += neighbor.height + DEFAULT_SPACING  
                     ADD neighbor TO queue
                     max_height_in_level = MAX(max_height_in_level, neighbor.height)
         
         current_level += 1
         start_y += max_height_in_level + DEFAULT_SPACING
-
-# Функция генерации точек для связей
-FUNCTION generate_relation_points(objects, relations):
-    FOR rel IN relations:
-        DECLARE obj1 AS ObjectInfo = FIND_OBJECT_BY_ID(rel.id1, objects)
-        DECLARE obj2 AS ObjectInfo = FIND_OBJECT_BY_ID(rel.id2, objects)
-        
-        IF obj1 AND obj2:
-            # Определяем стороны соединения в зависимости от относительного положения
-            DECLARE start_side, end_side AS STRING
-
-            IF abs(obj1.y - obj2.y) > abs(obj1.x - obj2.x):
-                IF obj1.y < obj2.y:
-                    start_side = "bottom"  # Выход снизу obj1
-                    end_side = "top"       # Вход сверху obj2
-                ELSE:
-                    start_side = "top"     # Выход сверху obj1
-                    end_side = "bottom"
-                
-            ELSE:
-
-                IF obj1.x < obj2.x:
-                    start_side = "right"
-                    end_side = "left"
-                ELSE:
-                    start_side = "left"
-                    end_side = "right"
-            
-            # Вычисляем точки соединения
-            DECLARE start_point, end_point AS (x, y)
-            start_point = calculate_connection_point(obj1, start_side)
-            end_point = calculate_connection_point(obj2, end_side)
-            
-            IF abs(start_point.x - end_point.x) < SMALL_DISTANCE:
-                rel.points = [start_point, (start_point.x, end_point.y), end_point]
-
-            # Добавляем контрольные точки 
-            DECLARE control_x AS INTEGER = (start_point.x + end_point.x) / 2
-            rel.points = [
-                start_point, # стартовая точка
-                (control_x, start_point.y), # до середины горизонтально
-                (control_x, end_point.y), # вертикальный спуск до уровня второго объекта
-                end_point # конечная точка
-            ]
-            
-
-# Вспомогательная функция вычисления точки соединения
-FUNCTION calculate_connection_point(obj, side):
-    SWITCH side:
-        CASE "top":
-            RETURN (obj.x, obj.y + obj.height/2)
-        CASE "bottom":
-            RETURN (obj.x, obj.y - obj.height/2)
-        CASE "left":
-            RETURN (obj.x - obj.width/2, obj.y)
-        CASE "right":
-            RETURN (obj.x + obj.width/2, obj.y)
-    END SWITCH
 
 
 # Новая функция для расчета bbox облака точек
