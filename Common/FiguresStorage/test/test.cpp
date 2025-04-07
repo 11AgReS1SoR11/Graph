@@ -2,9 +2,8 @@
 #include <catch2/matchers/catch_matchers_string.hpp>
 
 #include "FiguresStorage.hpp"
+#include <iostream>
 #include "Figures.hpp"
-
-
 
 
 bool compareShape(Shape const& first, Shape const& second)
@@ -62,7 +61,7 @@ TEST_CASE("Creates simpe figures", "[FiguresStorage]")
     Line line;
     Note note;
 
-    std::string const json = getJsonFromFigures({&circle, &rectangle, &diamond, &line, &note});
+    std::string const json = FiguresStorage::toJson({&circle, &rectangle, &diamond, &line, &note});
 
     FiguresStorage figures = FiguresStorage::createFigures(json);
     REQUIRE(figures.size() == 5);
@@ -95,7 +94,7 @@ TEST_CASE("Creates graph", "[FiguresStorage]")
     graph.nodes.push_back(&diamond);
     graph.nodes.push_back(&line);
 
-    std::string const json = getJsonFromFigures({&graph});
+    std::string const json = FiguresStorage::toJson({&graph});
 
     FiguresStorage figures = FiguresStorage::createFigures(json);
     REQUIRE(figures.size() == 1);
@@ -122,8 +121,8 @@ TEST_CASE("Creates DotCloud", "[FiguresStorage]")
     dotCloud.dots.push_back(&circle2);
     dotCloud.dots.push_back(&circle3);
 
-    std::string const json = getJsonFromFigures({&dotCloud});
-
+    std::string const json = FiguresStorage::toJson({&dotCloud});
+    std::cout << json << std::endl;
     FiguresStorage figures = FiguresStorage::createFigures(json);
     REQUIRE(figures.size() == 1);
 
@@ -135,4 +134,11 @@ TEST_CASE("Creates DotCloud", "[FiguresStorage]")
     checkCircle(dotcloudFromJson->dots[0], circle1);
     checkCircle(dotcloudFromJson->dots[1], circle2);
     checkCircle(dotcloudFromJson->dots[2], circle3);
+}
+
+TEST_CASE("Wrong param", "[FiguresStorage]")
+{
+    std::string jsonWrong = R"({"figures":[{"type": "DotCloud","id": "","text": "","passition": {"x": 0,"y": 0},"style": {"color": "NONE","border": 1,"textSize": 10},"property": {"grid": "false","dots": [{"type": "Circle","id": "","text": "","position": {"x": 0,"y": 0},"style": {"color": "NONE","border": 1,"textSize": 10},"property": {"radius": 1.000000}},{"type": "Circle","id": "","text": "","position": {"x": 0,"y": 0},"style": {"color": "NONE","border": 1,"textSize": 10},"property": {"radius": 1.000000}},{"type": "Circle","id": "","text": "","position": {"x": 0,"y": 0},"style": {"color": "NONE","border": 1,"textSize": 10},"property": {"radius": 1.000000}}]}}]})";
+
+    REQUIRE_THROWS_WITH(FiguresStorage::createFigures(jsonWrong), "Wrong json: missing param in json data: position");
 }
