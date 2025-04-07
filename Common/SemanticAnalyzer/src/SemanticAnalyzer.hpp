@@ -30,6 +30,7 @@ constexpr const char* RELATION = "relation";
 constexpr const char* NOTE = "note";
 constexpr const char* GRAPH = "graph";
 constexpr const char* DOT_CLOUD = "dot_cloud";
+constexpr const char* GRAPH_CONTENTS = "graph_contents";
 constexpr const char* SHAPE = "SHAPE";
 constexpr const char* ID = "ID";
 constexpr const char* PROPERTIES = "properties";

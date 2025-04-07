@@ -1,0 +1,48 @@
+@startgraph
+
+circle node1 {
+    color=red; size_text=12;
+}
+
+rectangle node2 {
+    color=blue;
+    size_A=10;
+    size_B=20;
+}
+
+diamond node3 {
+    color=green;
+    size_A=5;
+    size_B=15;
+    angle=45;
+}
+
+note note1 {
+    text="This is a note";
+    color=green;
+}
+
+graph graph1 (color=black; radius=15;) {
+
+    circle node4 {
+        color=yellow;
+        size_A=30;
+        size_B=50;
+    }
+
+    node1 -> node2 {
+        color=purple;
+        size_A=5;
+    }
+
+    node2 <-> node3 {
+        color=orange;
+        size_A=25;
+    }
+
+    node3 --> node4 {
+        size_A=10;
+        size_B=20;
+    }
+}
+@endgraph
