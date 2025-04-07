@@ -27,21 +27,21 @@ std::string getCode(AST::ASTTree& ast)
         {
             if (it->getValue() == ";")
             {
-                result += it->getValue() + " ";
+                result += it->getValue() + "\n\t";
             }
             else if (it->getValue() == "{")
             {
-                result += " " + it->getValue();
+                result += " " + it->getValue() + "\n\t";
             }
             else if (it->getValue() == "}")
             {
-                result += it->getValue() + " ";
+                result += it->getValue() + "\n";
             }
             else if (it->getValue() == "@endgraph")
             {
                 result += "\n" + it->getValue();
             }
-            else if (it->getValue() == "circle" || it->getValue() == "rectangle" || it->getValue() == "diamond")
+            else if (it->getValue() == "circle" || it->getValue() == "rectangle" || it->getValue() == "diamond" || it->getValue() == "graph" || it->getValue() == "dot_cloud")
             {
                 result += "\n" + it->getValue() + " ";
             }
@@ -76,6 +76,12 @@ void Backend::translate(std::string const& filePath)
         Parser parser(filePath);
         std::unique_ptr<AST::ASTTree> ast = parser.parse();
 
+        if (!ast)
+        {
+            LOG_ERROR(BACKEND_LOG, "Failed to parse code");
+            return;
+        }
+
         SEMANTICANALYZER::AstStatementParser parserAST(*ast);
         auto programTree = parserAST.parse();
 
@@ -85,9 +91,9 @@ void Backend::translate(std::string const& filePath)
         Translator trans;
         FiguresStorage figures = trans.translate(programTree);
 
-        std::string figuresJson = details::getFigures(figures);
+        std::string const figuresJson = FiguresStorage::toJson(figures);
 
-        if (!FileManager::writeToFile("build/figures.json", figuresJson)) // TODO: make path variable
+        if (!FileManager::writeToFile("build_release/figures.json", figuresJson)) // TODO: make path variable
         {
             LOG_ERROR(BACKEND_LOG, "Failed to write json with figures");
         }
@@ -123,7 +129,7 @@ std::string Backend::retranslate(std::string const& filePath)
 
         std::string const codeStr = details::getCode(ast);
 
-        FileManager::writeToFile("build/code.txt", codeStr);
+        FileManager::writeToFile("build_release/code.txt", codeStr);
 
         return codeStr;
     }

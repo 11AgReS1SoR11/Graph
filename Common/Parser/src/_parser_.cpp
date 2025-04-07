@@ -127,19 +127,24 @@ enum yysymbol_kind_t
   YYSYMBOL_TEXT = 9,                       /* TEXT  */
   YYSYMBOL_ARROW = 10,                     /* ARROW  */
   YYSYMBOL_NOTE = 11,                      /* NOTE  */
-  YYSYMBOL_12_ = 12,                       /* '{'  */
-  YYSYMBOL_13_ = 13,                       /* '}'  */
-  YYSYMBOL_14_ = 14,                       /* '='  */
-  YYSYMBOL_15_ = 15,                       /* ';'  */
-  YYSYMBOL_YYACCEPT = 16,                  /* $accept  */
-  YYSYMBOL_program = 17,                   /* program  */
-  YYSYMBOL_statements = 18,                /* statements  */
-  YYSYMBOL_statement = 19,                 /* statement  */
-  YYSYMBOL_object_decl = 20,               /* object_decl  */
-  YYSYMBOL_relation = 21,                  /* relation  */
-  YYSYMBOL_note = 22,                      /* note  */
-  YYSYMBOL_properties = 23,                /* properties  */
-  YYSYMBOL_property = 24                   /* property  */
+  YYSYMBOL_GRAPH = 12,                     /* GRAPH  */
+  YYSYMBOL_13_ = 13,                       /* '{'  */
+  YYSYMBOL_14_ = 14,                       /* '}'  */
+  YYSYMBOL_15_ = 15,                       /* '('  */
+  YYSYMBOL_16_ = 16,                       /* ')'  */
+  YYSYMBOL_17_ = 17,                       /* '='  */
+  YYSYMBOL_18_ = 18,                       /* ';'  */
+  YYSYMBOL_YYACCEPT = 19,                  /* $accept  */
+  YYSYMBOL_program = 20,                   /* program  */
+  YYSYMBOL_statements = 21,                /* statements  */
+  YYSYMBOL_statement = 22,                 /* statement  */
+  YYSYMBOL_graph = 23,                     /* graph  */
+  YYSYMBOL_graph_contents = 24,            /* graph_contents  */
+  YYSYMBOL_object_decl = 25,               /* object_decl  */
+  YYSYMBOL_relation = 26,                  /* relation  */
+  YYSYMBOL_note = 27,                      /* note  */
+  YYSYMBOL_properties = 28,                /* properties  */
+  YYSYMBOL_property = 29                   /* property  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -467,19 +472,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   30
+#define YYLAST   46
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  16
+#define YYNTOKENS  19
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  9
+#define YYNNTS  11
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  17
+#define YYNRULES  23
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  33
+#define YYNSTATES  47
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   266
+#define YYMAXUTOK   267
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -497,15 +502,15 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,    15,
-       2,    14,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      15,    16,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,    18,
+       2,    17,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    12,     2,    13,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,    13,     2,    14,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -519,15 +524,16 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9,    10,    11
+       5,     6,     7,     8,     9,    10,    11,    12
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    37,    37,    47,    50,    57,    61,    66,    73,    86,
-     106,   123,   147,   156,   172,   175,   182,   198
+       0,    38,    38,    48,    51,    58,    62,    67,    71,    78,
+      91,   111,   114,   118,   125,   138,   158,   175,   199,   208,
+     224,   227,   234,   250
 };
 #endif
 
@@ -545,8 +551,9 @@ static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "START_GRAPH",
   "END_GRAPH", "SHAPE", "PROPERTY_KEY", "ID", "NUMBER", "TEXT", "ARROW",
-  "NOTE", "'{'", "'}'", "'='", "';'", "$accept", "program", "statements",
-  "statement", "object_decl", "relation", "note", "properties", "property", YY_NULLPTR
+  "NOTE", "GRAPH", "'{'", "'}'", "'('", "')'", "'='", "';'", "$accept",
+  "program", "statements", "statement", "graph", "graph_contents",
+  "object_decl", "relation", "note", "properties", "property", YY_NULLPTR
 };
 
 static const char *
@@ -556,7 +563,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-11)
+#define YYPACT_NINF (-7)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -570,10 +577,11 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      13,   -11,     2,    -4,   -11,   -11,    10,     8,    12,   -11,
-     -11,   -11,   -11,    -3,    14,    11,   -11,    15,   -11,    -2,
-     -11,    -1,    16,   -11,   -11,     0,   -11,     6,   -11,     5,
-       7,   -11,   -11
+      15,    -7,     1,     2,    -7,    -7,    13,    12,    20,    22,
+      -7,    -7,    -7,    -7,    -7,    -5,    26,    21,     6,    -7,
+      24,    -7,    -7,    -7,     9,    -7,    10,    -3,    -6,    18,
+      -7,    -7,    11,    -7,    -7,    -7,    -7,    25,    23,    -7,
+      -7,    27,    28,    -2,    -7,    -7,    -7
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -581,22 +589,25 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     3,     0,     0,     1,     2,     0,     0,     0,     4,
-       5,     6,     7,     8,     0,    12,    14,    10,    14,     0,
-      14,     0,     0,     9,    15,     0,    13,     0,    11,     0,
-       0,    17,    16
+       0,     3,     0,     0,     1,     2,     0,     0,     0,     0,
+       4,     8,     5,     6,     7,    14,     0,    18,     0,    20,
+      16,    20,    11,    20,     0,    20,     0,     0,     0,     0,
+      15,    21,     0,    19,     9,    12,    13,     0,     0,    17,
+      11,     0,     0,     0,    23,    22,    10
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -11,   -11,   -11,   -11,   -11,   -11,   -11,   -10,   -11
+      -7,    -7,    -7,    -7,    -7,    -4,    36,    37,    -7,     5,
+      -7
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     2,     3,     9,    10,    11,    12,    19,    24
+       0,     2,     3,    10,    11,    27,    35,    36,    14,    24,
+      31
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -604,42 +615,47 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       5,     6,     4,     7,    22,    22,    22,     8,    21,    16,
-      25,    23,    26,    28,    29,    30,     1,    13,    14,    15,
-      31,    17,    32,    18,     0,     0,     0,    20,     0,     0,
-      27
+      29,     4,     6,     6,     7,     7,     5,     6,    19,     7,
+      37,    34,    46,     8,     9,    29,    29,    29,     1,    22,
+      15,    23,    16,    30,    33,    39,    26,    17,    28,    18,
+      32,    41,    42,    20,    21,    38,    43,    25,    40,    12,
+      13,     0,     0,     0,     0,    44,    45
 };
 
 static const yytype_int8 yycheck[] =
 {
-       4,     5,     0,     7,     6,     6,     6,    11,    18,    12,
-      20,    13,    13,    13,     8,     9,     3,     7,    10,     7,
-      15,     7,    15,    12,    -1,    -1,    -1,    12,    -1,    -1,
-      14
+       6,     0,     5,     5,     7,     7,     4,     5,    13,     7,
+      16,    14,    14,    11,    12,     6,     6,     6,     3,    13,
+       7,    15,    10,    14,    14,    14,    21,     7,    23,     7,
+      25,     8,     9,     7,    13,    17,    40,    13,    13,     3,
+       3,    -1,    -1,    -1,    -1,    18,    18
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,    17,    18,     0,     4,     5,     7,    11,    19,
-      20,    21,    22,     7,    10,     7,    12,     7,    12,    23,
-      12,    23,     6,    13,    24,    23,    13,    14,    13,     8,
-       9,    15,    15
+       0,     3,    20,    21,     0,     4,     5,     7,    11,    12,
+      22,    23,    25,    26,    27,     7,    10,     7,     7,    13,
+       7,    13,    13,    15,    28,    13,    28,    24,    28,     6,
+      14,    29,    28,    14,    14,    25,    26,    16,    17,    14,
+      13,     8,     9,    24,    18,    18,    14
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    16,    17,    18,    18,    19,    19,    19,    20,    20,
-      21,    21,    22,    22,    23,    23,    24,    24
+       0,    19,    20,    21,    21,    22,    22,    22,    22,    23,
+      23,    24,    24,    24,    25,    25,    26,    26,    27,    27,
+      28,    28,    29,    29
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     3,     0,     2,     1,     1,     1,     2,     5,
-       3,     6,     2,     5,     0,     2,     4,     4
+       0,     2,     3,     0,     2,     1,     1,     1,     1,     5,
+       8,     0,     2,     2,     2,     5,     3,     6,     2,     5,
+       0,     2,     4,     4
 };
 
 
@@ -1103,7 +1119,7 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* program: START_GRAPH statements END_GRAPH  */
-#line 37 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+#line 38 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
                                      {
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::PROGRAM);
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::START_GRAPH));
@@ -1111,55 +1127,130 @@ yyreduce:
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_GRAPH));
         astTree = std::make_unique<AST::ASTTree>((yyval.node));
     }
-#line 1115 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1131 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 3: /* statements: %empty  */
-#line 47 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+#line 48 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
                 {
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::STATEMENTS);
     }
-#line 1123 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1139 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 4: /* statements: statements statement  */
-#line 50 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+#line 51 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
                            {
         (yyvsp[-1].node)->addChild((yyvsp[0].node));
         (yyval.node) = (yyvsp[-1].node);
     }
-#line 1132 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1148 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 5: /* statement: object_decl  */
-#line 57 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+#line 58 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
                 {
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
         (yyval.node)->addChild((yyvsp[0].node));
     }
-#line 1141 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1157 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 6: /* statement: relation  */
-#line 61 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+#line 62 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
                {
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
         (yyval.node)->addChild((yyvsp[0].node));
     }
-#line 1150 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1166 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 7: /* statement: note  */
-#line 66 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+#line 67 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
            {
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
         (yyval.node)->addChild((yyvsp[0].node));
     }
-#line 1159 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1175 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
-  case 8: /* object_decl: SHAPE ID  */
-#line 73 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+  case 8: /* statement: graph  */
+#line 71 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+            {
+            (yyval.node) = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
+            (yyval.node)->addChild((yyvsp[0].node));
+    }
+#line 1184 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+    break;
+
+  case 9: /* graph: GRAPH ID '{' graph_contents '}'  */
+#line 78 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+                                    {
+        (yyval.node) = new AST::Node(GRAMMERCONSTANTS::GRAPH);
+        delete (yyvsp[-4].str);
+
+        AST::Node* id = new AST::Node(GRAMMERCONSTANTS::ID);
+        id->addChild(new AST::Node(*(yyvsp[-3].str)));
+        (yyval.node)->addChild(id);
+        delete (yyvsp[-3].str);
+
+        (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::START_INTERNAL_BLOCK));
+        (yyval.node)->addChild((yyvsp[-1].node));
+        (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
+    }
+#line 1202 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+    break;
+
+  case 10: /* graph: GRAPH ID '(' properties ')' '{' graph_contents '}'  */
+#line 91 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+                                                         {
+        (yyval.node) = new AST::Node(GRAMMERCONSTANTS::GRAPH);
+        delete (yyvsp[-7].str);
+
+        AST::Node* id = new AST::Node(GRAMMERCONSTANTS::ID);
+        id->addChild(new AST::Node(*(yyvsp[-6].str)));
+        (yyval.node)->addChild(id);
+        delete (yyvsp[-6].str);
+
+        (yyval.node)->addChild(new AST::Node("("));
+        (yyval.node)->addChild((yyvsp[-4].node));
+        (yyval.node)->addChild(new AST::Node(")"));
+
+        (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::START_INTERNAL_BLOCK));
+        (yyval.node)->addChild((yyvsp[-1].node));
+        (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
+    }
+#line 1224 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+    break;
+
+  case 11: /* graph_contents: %empty  */
+#line 111 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+                {
+        (yyval.node) = new AST::Node(GRAMMERCONSTANTS::GRAPH_CONTENTS);
+    }
+#line 1232 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+    break;
+
+  case 12: /* graph_contents: graph_contents object_decl  */
+#line 114 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+                                 {
+        (yyvsp[-1].node)->addChild((yyvsp[0].node));
+        (yyval.node) = (yyvsp[-1].node);
+    }
+#line 1241 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+    break;
+
+  case 13: /* graph_contents: graph_contents relation  */
+#line 118 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+                              {
+        (yyvsp[-1].node)->addChild((yyvsp[0].node));
+        (yyval.node) = (yyvsp[-1].node);
+    }
+#line 1250 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+    break;
+
+  case 14: /* object_decl: SHAPE ID  */
+#line 125 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
              {
 
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::OBJECT_DECL);
@@ -1173,11 +1264,11 @@ yyreduce:
         (yyval.node)->addChild(id);
         delete (yyvsp[0].str);
     }
-#line 1177 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1268 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
-  case 9: /* object_decl: SHAPE ID '{' properties '}'  */
-#line 86 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+  case 15: /* object_decl: SHAPE ID '{' properties '}'  */
+#line 138 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
                                   {
 
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::OBJECT_DECL);
@@ -1195,11 +1286,11 @@ yyreduce:
         (yyval.node)->addChild((yyvsp[-1].node));
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
-#line 1199 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1290 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
-  case 10: /* relation: ID ARROW ID  */
-#line 106 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+  case 16: /* relation: ID ARROW ID  */
+#line 158 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
                 {
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::RELATION);
         AST::Node* fromId = new AST::Node(GRAMMERCONSTANTS::ID);
@@ -1217,11 +1308,11 @@ yyreduce:
         (yyval.node)->addChild(toId);
         delete (yyvsp[0].str);
     }
-#line 1221 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1312 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
-  case 11: /* relation: ID ARROW ID '{' properties '}'  */
-#line 123 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+  case 17: /* relation: ID ARROW ID '{' properties '}'  */
+#line 175 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
                                      {
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::RELATION);
         AST::Node* fromId = new AST::Node(GRAMMERCONSTANTS::ID);
@@ -1243,11 +1334,11 @@ yyreduce:
         (yyval.node)->addChild((yyvsp[-1].node));
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
-#line 1247 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1338 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
-  case 12: /* note: NOTE ID  */
-#line 147 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+  case 18: /* note: NOTE ID  */
+#line 199 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
             {
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::NOTE);
         delete (yyvsp[-1].str);
@@ -1257,11 +1348,11 @@ yyreduce:
         (yyval.node)->addChild(id);
         delete (yyvsp[0].str);
     }
-#line 1261 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1352 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
-  case 13: /* note: NOTE ID '{' properties '}'  */
-#line 156 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+  case 19: /* note: NOTE ID '{' properties '}'  */
+#line 208 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
                                  {
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::NOTE);
         delete (yyvsp[-4].str);
@@ -1275,28 +1366,28 @@ yyreduce:
         (yyval.node)->addChild((yyvsp[-1].node));
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
-#line 1279 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1370 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
-  case 14: /* properties: %empty  */
-#line 172 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+  case 20: /* properties: %empty  */
+#line 224 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
                 {
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::PROPERTIES);
     }
-#line 1287 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1378 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
-  case 15: /* properties: properties property  */
-#line 175 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+  case 21: /* properties: properties property  */
+#line 227 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
                           {
         (yyvsp[-1].node)->addChild((yyvsp[0].node));
         (yyval.node) = (yyvsp[-1].node);
     }
-#line 1296 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1387 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
-  case 16: /* property: PROPERTY_KEY '=' TEXT ';'  */
-#line 182 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+  case 22: /* property: PROPERTY_KEY '=' TEXT ';'  */
+#line 234 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
                               {
 
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::PROPERTY);
@@ -1313,11 +1404,11 @@ yyreduce:
 
         (yyval.node)->addChild(new AST::Node(";"));
     }
-#line 1317 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1408 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
-  case 17: /* property: PROPERTY_KEY '=' NUMBER ';'  */
-#line 198 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+  case 23: /* property: PROPERTY_KEY '=' NUMBER ';'  */
+#line 250 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
                                   {
 
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::PROPERTY);
@@ -1334,11 +1425,11 @@ yyreduce:
 
         (yyval.node)->addChild(new AST::Node(";"));
     }
-#line 1338 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1429 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
 
-#line 1342 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
+#line 1433 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/_parser_.cpp"
 
       default: break;
     }
@@ -1531,7 +1622,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 216 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
+#line 268 "/home/daniil/Desktop/Daniil/Graph/Common/Parser/src/parser.y"
 
 
 

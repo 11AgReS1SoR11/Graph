@@ -45,7 +45,7 @@ void checkCircle(AST::ASTTree::DSFIterator& it)
     ++it;
     REQUIRE(it->getValue() == "TEXT");
     ++it;
-    REQUIRE(it->getValue() == "NONE");
+    REQUIRE(it->getValue() == "none");
     ++it;
     REQUIRE(it->getValue() == ";");
 
@@ -170,7 +170,7 @@ void checkDiamond(AST::ASTTree::DSFIterator& it)
     ++it;
     REQUIRE(it->getValue() == "TEXT");
     ++it;
-    REQUIRE(it->getValue() == "NONE");
+    REQUIRE(it->getValue() == "none");
     ++it;
     REQUIRE(it->getValue() == ";");
 
@@ -329,7 +329,7 @@ void checkReactangle(AST::ASTTree::DSFIterator& it)
     ++it;
     REQUIRE(it->getValue() == "TEXT");
     ++it;
-    REQUIRE(it->getValue() == "NONE");
+    REQUIRE(it->getValue() == "none");
     ++it;
     REQUIRE(it->getValue() == ";");
 
@@ -481,7 +481,7 @@ void checkLine(AST::ASTTree::DSFIterator& it)
     ++it;
     REQUIRE(it->getValue() == "TEXT");
     ++it;
-    REQUIRE(it->getValue() == "NONE");
+    REQUIRE(it->getValue() == "none");
     ++it;
     REQUIRE(it->getValue() == ";");
 
@@ -554,6 +554,9 @@ void checkLine(AST::ASTTree::DSFIterator& it)
 
 void checkNote(AST::ASTTree::DSFIterator& it)
 {
+    REQUIRE(it->getValue() == "NOTE");
+    ++it;
+
     REQUIRE(it->getValue() == "note");
     ++it;
     
@@ -592,7 +595,7 @@ void checkNote(AST::ASTTree::DSFIterator& it)
     ++it;
     REQUIRE(it->getValue() == "TEXT");
     ++it;
-    REQUIRE(it->getValue() == "NONE");
+    REQUIRE(it->getValue() == "none");
     ++it;
     REQUIRE(it->getValue() == ";");
 
@@ -865,6 +868,9 @@ TEST_CASE("Check graph retranslate", "[Retranslator]")
     REQUIRE(it->getValue() == "statement");
     ++it;
 
+    REQUIRE(it->getValue() == "GRAPH");
+    ++it;
+
     REQUIRE(it->getValue() == "graph");
     ++it;
 
@@ -902,7 +908,7 @@ TEST_CASE("Check graph retranslate", "[Retranslator]")
     ++it;
     REQUIRE(it->getValue() == "TEXT");
     ++it;
-    REQUIRE(it->getValue() == "NONE");
+    REQUIRE(it->getValue() == "none");
     ++it;
     REQUIRE(it->getValue() == ";");
 
@@ -1029,9 +1035,10 @@ TEST_CASE("Check dot_cloud retranslate", "[Retranslator]")
 
     REQUIRE(it->getValue() == "statement");
     ++it;
+    
+    REQUIRE(it->getValue() == "DOT_CLOUD");
+    ++it;
 
-    
-    
     REQUIRE(it->getValue() == "dot_cloud");
     ++it;
 
@@ -1080,7 +1087,7 @@ TEST_CASE("Check dot_cloud retranslate", "[Retranslator]")
     ++it;
     
 
-    REQUIRE(it->getValue() == "NONE");
+    REQUIRE(it->getValue() == "none");
     ++it;
 
     REQUIRE(it->getValue() == ";");

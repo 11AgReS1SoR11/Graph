@@ -6,7 +6,7 @@ struct Diamond : Shape
 {
     std::string toJson() const override;
 
-    double sizeA = 1;
-    double sizeB = 1;
-    double angle = 90;
+    int sizeA = 1;
+    int sizeB = 1;
+    int angle = 90;
 };
