@@ -51,9 +51,9 @@ std::string style_helper::colorToString(color_e color)
 
 std::string Style::toJson() const
 {
-    return  "\"style\": {"
-            "\"color\": \"" + style_helper::colorToString(color) + "\","
-            "\"border\": " + std::to_string(border) + ","
-            "\"textSize\": " + std::to_string(textSize) +
-            "}";
+    return  "\n\t\"style\": {\n"
+            "\t\t\"color\": \"" + style_helper::colorToString(color) + "\",\n"
+            "\t\t\"border\": " + std::to_string(border) + ",\n"
+            "\t\t\"textSize\": " + std::to_string(textSize) +
+            "\n\t}";
 }

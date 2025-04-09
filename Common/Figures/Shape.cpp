@@ -2,11 +2,11 @@
 
 std::string Shape::toJson() const
 {
-    return  "\"id\": \"" + id + "\","
-            "\"text\": \"" + text + "\","
-            "\"position\": {"
-                "\"x\": " + std::to_string(x) + ","
-                "\"y\": " + std::to_string(y) +
-            "},"
+    return  "\n\t\"id\": \"" + id + "\",\n"
+            "\t\"text\": \"" + text + "\",\n"
+            "\t\"position\": {\n"
+                "\t\t\"x\": " + std::to_string(x) + ",\n"
+                "\t\t\"y\": " + std::to_string(y) +
+            "\n\t},"
             + style.toJson();
 }
