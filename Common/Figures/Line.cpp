@@ -38,7 +38,7 @@ std::string Line::toJson() const
                "\t\t\"idFrom\": \"" + idFrom + "\",\n"
                "\t\t\"idTo\": \"" + idTo + "\",\n"
                "\t\t\"type\": \"" + detail::lineTypeToString(type) + "\",\n"
-               "\t\t\"orientation\": \"" + detail::lineOrientationToString(orientation) + "\"\n"
+               "\t\t\"orientation\": \"" + detail::lineOrientationToString(orientation) + "\""
            "\n\t}\n"
            "}";
 }

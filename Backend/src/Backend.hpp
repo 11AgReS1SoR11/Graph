@@ -8,8 +8,8 @@ namespace backend
 class Backend
 {
 public:
-    void translate(std::string const& inputFilePath, std::string const& outputFilePath);
-    std::string retranslate(std::string const& filePath, std::string const& outputFilePath);
+    void translate(std::string const& inputFilePath, std::string const& outputFilePath) noexcept;
+    std::string retranslate(std::string const& filePath, std::string const& outputFilePath) noexcept;
 };
 
 } // namespace backend
