@@ -30,16 +30,16 @@ std::string lineOrientationToString(line_orientation_e orientation)
 
 std::string Line::toJson() const
 {
-    return "{"
-           "\"type\": \"Line\","
-           "\"text\": \"" + text + "\","
-           + style.toJson() + ","
-           "\"property\": {"
-               "\"idFrom\": \"" + idFrom + "\","
-               "\"idTo\": \"" + idTo + "\","
-               "\"type\": \"" + detail::lineTypeToString(type) + "\","
-               "\"orientation\": \"" + detail::lineOrientationToString(orientation) + "\""
-           "}"
+    return "{\n"
+           "\t\"type\": \"Line\",\n"
+           "\t\"text\": \"" + text + "\","
+           + style.toJson() + ",\n"
+           "\t\"property\": {\n"
+               "\t\t\"idFrom\": \"" + idFrom + "\",\n"
+               "\t\t\"idTo\": \"" + idTo + "\",\n"
+               "\t\t\"type\": \"" + detail::lineTypeToString(type) + "\",\n"
+               "\t\t\"orientation\": \"" + detail::lineOrientationToString(orientation) + "\"\n"
+           "\n\t}\n"
            "}";
 }
 

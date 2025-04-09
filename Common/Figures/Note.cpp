@@ -1,13 +1,13 @@
 #include "Note.hpp"
 std::string Note::toJson() const
 {
-    return "{"
-    "\"type\": \"Note\","
-    + Shape::toJson() + ","
-    "\"property\": {"
-        "\"size_A\": " + std::to_string(sizeA) + ","
-        "\"size_B\": " + std::to_string(sizeB) + ","
-        "\"idTo\": \"" + idTo + "\""
-    "}"
-    "}";
+    return "{\n"
+            "\t\"type\": \"Note\","
+            + Shape::toJson() + ",\n"
+            "\t\"property\": {\n"
+                "\t\t\"size_A\": " + std::to_string(sizeA) + ",\n"
+                "\t\t\"size_B\": " + std::to_string(sizeB) + ",\n"
+                "\t\t\"idTo\": \"" + idTo + "\""
+            "\n\t}\n"
+            "}";
 }

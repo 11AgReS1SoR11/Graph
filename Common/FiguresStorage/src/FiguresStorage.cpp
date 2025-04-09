@@ -14,12 +14,9 @@ FiguresStorage::~FiguresStorage()
 {
     for (auto* shape : *this)
     {
-        // TODO: figure out during GRAP-49
-        // delete shape;
+        delete shape;
     }
 }
-
-
 
 void checkParam(const json& data, const std::string& param)
 {
@@ -39,7 +36,7 @@ void checkSubParam(const json& data, const std::string& param, const std::string
         LOG_ERROR(FIGURES_STORAGE_LOG, errMsg);
         throw std::invalid_argument(errMsg);
     }
-    
+
     if (!((data[param]).contains(subparam)))
     {
         std::string errMsg = "missing subparam in json data: " + subparam;
@@ -50,7 +47,6 @@ void checkSubParam(const json& data, const std::string& param, const std::string
 
 void addShapeParams(Shape& shape, const json& data)
 {
-    
     checkParam(data, "id");
     checkParam(data, "text");
     checkSubParam(data, "position", "x");
@@ -58,7 +54,7 @@ void addShapeParams(Shape& shape, const json& data)
     checkSubParam(data, "style", "color");
     checkSubParam(data, "style", "border");
     checkSubParam(data, "style", "textSize");
-   
+
     shape.id = data["id"];
     shape.text = data["text"];
     shape.x = data["position"]["x"];
@@ -74,7 +70,6 @@ Shape* createFigure(const json& data)
 
     try 
     {
-
         if (type == "Circle")
         {
             std::unique_ptr<Circle> circle = std::make_unique<Circle>();
@@ -110,8 +105,6 @@ Shape* createFigure(const json& data)
 
         if (type == "Line")
         {
-            
-            
             std::unique_ptr<Line> line = std::make_unique<Line>();
 
             checkParam(data, "text");
@@ -147,7 +140,6 @@ Shape* createFigure(const json& data)
 
         if (type == "Graph")
         {
-            
             std::unique_ptr<Graph> graph = std::make_unique<Graph>();
             addShapeParams(*graph, data);
             checkSubParam(data, "property", "nodes");
@@ -170,7 +162,6 @@ Shape* createFigure(const json& data)
 
         if (type == "DotCloud")
         {
-            
             std::unique_ptr<DotCloud> dotCloud = std::make_unique<DotCloud>();
             addShapeParams(*dotCloud, data);
             checkSubParam(data, "property", "grid");
@@ -207,8 +198,6 @@ Shape* createFigure(const json& data)
         throw std::invalid_argument(errMsg);
     }
 
-
-    
     return nullptr;
 
 }
@@ -218,26 +207,25 @@ FiguresStorage FiguresStorage::createFigures(std::string const& figuresJson)
     FiguresStorage figures;
     json data = json::parse(figuresJson);
     checkParam(data, "figures");
-    for (const auto& figureData : data["figures"]) {
+    for (const auto& figureData : data["figures"])
+    {
         figures.push_back(createFigure(figureData));
     }
-    
+
     return figures;
 }
 
 std::string FiguresStorage::toJson(std::vector<Shape*> const& figures)
 {
+    std::string json = "{\n";
+    json += "\"figures\":[\n";
 
-    std::string json = "{";
-    json += "\"figures\":";
-    json += "[";
-    
     for (Shape* figure : figures)
     {
-        json += figure->toJson() + ",";
+        json += figure->toJson() + ",\n";
     }
+    if (!figures.empty()) { json.pop_back(); }
     json.pop_back();
-    json += "]";
-    json += "}";
+    json += "]\n}";
     return json;
 }
