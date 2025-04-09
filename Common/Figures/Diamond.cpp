@@ -2,13 +2,13 @@
 
 std::string Diamond::toJson() const
 {
-    return "{"
-           "\"type\": \"Diamond\","
-           + Shape::toJson() + ","
-           "\"property\": {"
-               "\"size_A\": " + std::to_string(sizeA) + ","
-               "\"size_B\": " + std::to_string(sizeB) + ","
-               "\"angle\": " + std::to_string(angle) +
-           "}"
+    return "{\n"
+           "\t\"type\": \"Diamond\","
+           + Shape::toJson() + ",\n"
+           "\t\"property\": {\n"
+               "\t\t\"size_A\": " + std::to_string(sizeA) + ",\n"
+               "\t\t\"size_B\": " + std::to_string(sizeB) + ",\n"
+               "\t\t\"angle\": " + std::to_string(angle) +
+           "\n\t}\n"
            "}";
 }
