@@ -55,18 +55,6 @@ std::string getCode(AST::ASTTree& ast)
     return result;
 }
 
-std::string getFigures(FiguresStorage const& figures)
-{
-    std::string json = "[";
-    for (auto const& figure : figures)
-    {
-        json += figure->toJson() + ",";
-    }
-    json += "]";
-
-    return json;
-}
-
 } // details
 
 void Backend::translate(std::string const& filePath, std::string const& outputFilePath)

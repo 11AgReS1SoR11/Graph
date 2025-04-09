@@ -2,11 +2,11 @@
 
 std::string Circle::toJson() const
 {
-    return "{"
-           "\"type\": \"Circle\","
-           + Shape::toJson() + ","
-           "\"property\": {"
-               "\"radius\": " + std::to_string(radius) +
-           "}"
+    return "{\n"
+           "\t\"type\": \"Circle\","
+           + Shape::toJson() + ",\n"
+           "\t\"property\": {\n"
+               "\t\t\"radius\": " + std::to_string(radius) +
+           "\n\t}\n"
            "}";
 }
