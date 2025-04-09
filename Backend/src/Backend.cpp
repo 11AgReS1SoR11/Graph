@@ -20,30 +20,60 @@ namespace details
 
 std::string getCode(AST::ASTTree& ast)
 {
+    size_t numOfSkobka = 0;
+    std::string prefix = ""; // for tabulate for graph's elements
+
     std::string result;
     for (auto it = ast.begin(); it != ast.end(); ++it)
     {
+        if (it->getValue() == "TEXT")
+        {
+            result += "\"" + (++it)->getValue() + "\"";
+            continue;
+        }
+
+        if (it->getValue() == "relation" && prefix == "\t") // is relation in graph
+        {
+            result += prefix;
+        }
+
         if (it->childNodes.empty())
         {
             if (it->getValue() == ";")
             {
-                result += it->getValue() + "\n\t";
+                result += ";\n\t" + prefix;
             }
             else if (it->getValue() == "{")
             {
-                result += " " + it->getValue() + "\n\t";
+                result += " {\n\t" + prefix;
+                ++numOfSkobka;
             }
             else if (it->getValue() == "}")
             {
-                result += it->getValue() + "\n";
+                result.pop_back();
+                result += "}\n\n";
+                if (prefix == "\t" && --numOfSkobka == 0) { prefix = ""; } // end of graph
             }
-            else if (it->getValue() == "@endgraph")
+            else if (it->getValue() == "(")
             {
-                result += "\n" + it->getValue();
+                result += " (\n\t";
+            }
+            else if (it->getValue() == ")")
+            {
+                result.pop_back();
+                result.pop_back();
+                result += ")\n{\n";
+                ++it; // skip '{'
+                ++numOfSkobka;
+                prefix = "\t";
+            }
+            else if (it->getValue() == "@startgraph")
+            {
+                result += "@startgraph\n\n";
             }
             else if (it->getValue() == "circle" || it->getValue() == "rectangle" || it->getValue() == "diamond" || it->getValue() == "graph" || it->getValue() == "dot_cloud")
             {
-                result += "\n" + it->getValue() + " ";
+                result += prefix + it->getValue() + " ";
             }
             else
             {
@@ -57,7 +87,7 @@ std::string getCode(AST::ASTTree& ast)
 
 } // details
 
-void Backend::translate(std::string const& filePath, std::string const& outputFilePath)
+void Backend::translate(std::string const& filePath, std::string const& outputFilePath) noexcept
 {
     try
     {
@@ -94,7 +124,7 @@ void Backend::translate(std::string const& filePath, std::string const& outputFi
     }
 }
 
-std::string Backend::retranslate(std::string const& filePath, std::string const& outputFilePath)
+std::string Backend::retranslate(std::string const& filePath, std::string const& outputFilePath) noexcept
 {
     auto json = FileManager::readFromFile(filePath);
 
