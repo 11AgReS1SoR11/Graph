@@ -16,68 +16,15 @@ else
   EXE_EXT=""
 fi
 
-# Значения по умолчанию
+first_arg="$1"
 BUILD_DIR="build" # Default to Debug build
-RETRANSLATE=false
-TRANSLATE=false
-FILE_PATH_ARG=""
-FILE_PATH=""
-LOG_FILE_PATH=""
 
-# Обрабатываем аргументы командной строки
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --Debug)
-      BUILD_DIR="build"
-      shift
-      ;;
-    --Release)
-      BUILD_DIR="build_release"
-      shift
-      ;;
-    --retranslate)
-      RETRANSLATE=true
-      shift
-      ;;
-    --translate)
-      TRANSLATE=true
-      shift
-      ;;
-    --figuresJsonPath)
-      if [[ -n "$2" ]]; then
-        FILE_PATH_ARG="--figuresJsonPath"
-        FILE_PATH="$2"
-        shift 2 # Shift past the flag and its value
-      else
-        echo "Error: --figuresJsonPath requires a value" >&2
-        exit 1
-      fi
-      ;;
-    --codeFilePath)
-      if [[ -n "$2" ]]; then
-        FILE_PATH_ARG="--codeFilePath"
-        FILE_PATH="$2"
-        shift 2 # Shift past the flag and its value
-      else
-        echo "Error: --codeFilePath requires a value" >&2
-        exit 1
-      fi
-      ;;
-    --logFilePath)
-      if [[ -n "$2" ]]; then
-        LOG_FILE_PATH="$2"
-        shift 2 # Shift past the flag and its value
-      else
-        echo "Error: --logFile requires a value" >&2
-        exit 1
-      fi
-      ;;
-    *)
-      echo "Error: Неизвестный параметр: $1" >&2
-      exit 1
-      ;;
-  esac
-done
+if [[  "$first_arg" == "--Debug" ]]; then
+    shift
+elif [[ "$first_arg" == "--Release" ]]; then
+    BUILD_DIR="build_release"
+    shift
+fi
 
 APP_PATH="./${BUILD_DIR}/bin/Graph${EXE_EXT}"
 
@@ -86,25 +33,6 @@ if [ ! -f "$APP_PATH" ]; then
   error "Ошибка: Исполняемый файл '$APP_PATH' не найден. Проверьте, что сборка выполнена в режиме '${BUILD_DIR}'."
 fi
 
-# Формируем команду для запуска приложения
-APP_COMMAND="$APP_PATH"
-
-if $RETRANSLATE; then
-  APP_COMMAND="$APP_COMMAND --retranslate"
-fi
-
-if $TRANSLATE; then
-  APP_COMMAND="$APP_COMMAND --translate"
-fi
-
-APP_COMMAND="$APP_COMMAND $FILE_PATH_ARG \"$FILE_PATH\""
-
-if [[ -n "$LOG_FILE_PATH" ]]; then
-  APP_COMMAND="$APP_COMMAND --logFilePath \"$LOG_FILE_PATH\""
-else
-  APP_COMMAND="$APP_COMMAND --logFilePath \"${BUILD_DIR}/log.log\"" # Default path
-fi
-
-eval "$APP_COMMAND" || error "Ошибка выполнения приложения"
+$APP_PATH $@
 
 echo "Приложение успешно завершено!"

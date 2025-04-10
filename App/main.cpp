@@ -21,7 +21,9 @@ int main(int argc, char* argv[])
     std::vector<std::string> const args(argv + 1, argv + argc);
 
     std::string const logFilePath = getArgValue(args, "--logFilePath");
-    if (!logFilePath.empty()) { Logger::getInstance().updLogOutput(logFilePath); }
+    Logger::getInstance().updLogOutput(logFilePath.empty() ? "log.log" : logFilePath);
+
+    std::string const outputFilePath = getArgValue(args, "--outputFilePath");
 
     backend::Backend backend;
 
@@ -35,8 +37,7 @@ int main(int argc, char* argv[])
             return 1;
         }
 
-        std::string const code = backend.retranslate(figuresJsonPath);
-        LOG_INFO(BACKEND_LOG, code);
+        backend.retranslate(figuresJsonPath, outputFilePath.empty() ? "code.graph" : outputFilePath);
     }
     else if (std::find(args.begin(), args.end(), "--translate") != args.end())
     {
@@ -48,8 +49,7 @@ int main(int argc, char* argv[])
             return 1;
         }
 
-        backend.translate(codeFilePath);
-        LOG_INFO(BACKEND_LOG, "Translate success");
+        backend.translate(codeFilePath, outputFilePath.empty() ? "figures.json" : outputFilePath);
     }
     else
     {

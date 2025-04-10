@@ -106,17 +106,15 @@ jobs:
           name: build-artifacts-windows-Debug
           path: build
 
-      # - name: Run App retranslate (Windows Debug)
-      #   shell: bash
-      #   run: |
-      #     chmod +x runApp
-      #     ./runApp --retranslate --figuresJsonPath build/figures.json
+      - name: Run App retranslate (Windows Debug)
+        shell: bash
+        run: |
+          bash runApp --retranslate --figuresJsonPath build/figures.json --outputFilePath build/code.txt --logFilePath build/logRet.log
 
-      # - name: Run App translate (Windows Debug)
-      #   shell: bash
-      #   run: |
-      #     chmod +x runApp
-      #     ./runApp --translate --codeFilePath build/code.txt
+      - name: Run App translate (Windows Debug)
+        shell: bash
+        run: |
+          bash runApp --translate --codeFilePath build/CODE1.txt --outputFilePath build/figures.json --logFilePath build/log.log
 
   run-app-windows-release:
     needs: build-windows
@@ -134,17 +132,15 @@ jobs:
           name: build-artifacts-windows-Release
           path: build_release
 
-      # - name: Run App retranslate (Windows Release)
-      #   shell: bash
-      #   run: |
-      #     chmod +x runApp
-      #     ./runApp --Release --retranslate --figuresJsonPath build/figures.json
+      - name: Run App retranslate (Windows Release)
+        shell: bash
+        run: |
+          bash runApp --Release --retranslate --figuresJsonPath build_release/figures.json --outputFilePath build_release/code.txt --logFilePath build_release/logRet.log
 
-      # - name: Run App translate (Windows Debug)
-      #   shell: bash
-      #   run: |
-      #     chmod +x runApp
-      #     ./runApp --translate --codeFilePath build/code.txt
+      - name: Run App translate (Windows Debug)
+        shell: bash
+        run: |
+          bash runApp --Release --translate --codeFilePath build_release/CODE1.txt --outputFilePath build_release/figures.json --logFilePath build_release/log.log
 
   tests-linux-debug:
     needs: build-linux

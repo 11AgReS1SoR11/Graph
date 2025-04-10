@@ -69,7 +69,7 @@ std::string getFigures(FiguresStorage const& figures)
 
 } // details
 
-void Backend::translate(std::string const& filePath)
+void Backend::translate(std::string const& filePath, std::string const& outputFilePath)
 {
     try
     {
@@ -93,10 +93,12 @@ void Backend::translate(std::string const& filePath)
 
         std::string const figuresJson = FiguresStorage::toJson(figures);
 
-        if (!FileManager::writeToFile("build_release/figures.json", figuresJson)) // TODO: make path variable
+        if (!FileManager::writeToFile(outputFilePath, figuresJson))
         {
             LOG_ERROR(BACKEND_LOG, "Failed to write json with figures");
         }
+
+        LOG_INFO(BACKEND_LOG, "Translated success:\n" + figuresJson);
     }
     catch (std::exception const& e)
     {
@@ -104,7 +106,7 @@ void Backend::translate(std::string const& filePath)
     }
 }
 
-std::string Backend::retranslate(std::string const& filePath)
+std::string Backend::retranslate(std::string const& filePath, std::string const& outputFilePath)
 {
     auto json = FileManager::readFromFile(filePath);
 
@@ -129,8 +131,12 @@ std::string Backend::retranslate(std::string const& filePath)
 
         std::string const codeStr = details::getCode(ast);
 
-        FileManager::writeToFile("build_release/code.txt", codeStr);
+        if (!FileManager::writeToFile(outputFilePath, codeStr))
+        {
+            LOG_ERROR(BACKEND_LOG, "Failed to write code");
+        }
 
+        LOG_INFO(BACKEND_LOG, "Retranslate success:\n" + codeStr);
         return codeStr;
     }
     catch (std::exception const& e)

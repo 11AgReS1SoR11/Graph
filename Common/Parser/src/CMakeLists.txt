@@ -1,20 +1,20 @@
-find_package(FLEX REQUIRED)
-find_package(BISON REQUIRED)
-
-set(FLEX_REQUIRED_VERSION "2.6.0")
-set(BISON_REQUIRED_VERSION "3.0.0")
+# Uncomment if you change syntax for regenerate parser files
+# find_package(FLEX REQUIRED)
+# find_package(BISON REQUIRED)
+# set(FLEX_REQUIRED_VERSION "2.6.0")
+# set(BISON_REQUIRED_VERSION "3.0.0")
 
 set(FLEX_OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/_lexer_.cpp)
 set(BISON_OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/_parser_.cpp)
 set(BISON_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/_parser_.h)
 
-FLEX_TARGET(Lexer lexer.lex ${FLEX_OUTPUT})
+# Uncomment if you change syntax for regenerate parser files
+# FLEX_TARGET(Lexer lexer.lex ${FLEX_OUTPUT})
+# BISON_TARGET(Parser parser.y ${BISON_OUTPUT}
+#              DEFINES_FILE ${BISON_HEADER}
+#              COMPILE_FLAGS "--defines=${BISON_HEADER}")
 
-BISON_TARGET(Parser parser.y ${BISON_OUTPUT}
-             DEFINES_FILE ${BISON_HEADER}
-             COMPILE_FLAGS "--defines=${BISON_HEADER}")
-
-ADD_FLEX_BISON_DEPENDENCY(Lexer Parser)
+# ADD_FLEX_BISON_DEPENDENCY(Lexer Parser)
 
 set(SOURCE_PARSER
     Parser.cpp
@@ -43,6 +43,7 @@ target_link_libraries(Parser PUBLIC
     Logger
     AST
     SemanticAnalyzer
+    # Uncomment if you change syntax for regenerate parser files
     # ${FLEX_LIBRARIES}
 )
 

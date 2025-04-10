@@ -68,11 +68,6 @@ void Logger::updLogOutput(std::string const& filePath)
     }
 }
 
-Logger::Logger()
-{
-    updLogOutput(m_logFilePath);
-}
-
 Logger::~Logger()
 {
     if (m_logFile.is_open())
