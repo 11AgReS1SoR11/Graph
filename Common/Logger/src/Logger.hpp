@@ -27,12 +27,12 @@ public:
     void updLogOutput(std::string const& filePath);
 
 private:
-    Logger();
+    Logger() = default;
     ~Logger();
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;
 
-    std::string m_logFilePath = "build/log.log";
+    std::string m_logFilePath;
     std::ofstream m_logFile;
     std::mutex m_mutex;
 };
