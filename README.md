@@ -1,6 +1,6 @@
 # Graph
 
-The applications for convenient graph manipulation
+The project provides domain-specific language (DSL) designed for creating and manipulating graphs, diagrams, and dot clouds via code. It allows user to define complex visual structures and convert them from DSL code to JSON and backwards. 
 
 ## Developers
 
@@ -60,7 +60,7 @@ bash runTest --Release
 There are some optional flags for test running:
 
 ```bash
---Common # all tests
+--Common # all tests # common components tests
 --Backend # backend tests
 --AST # abstract syntax tree
 --Logger
