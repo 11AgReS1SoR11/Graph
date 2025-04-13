@@ -8,7 +8,7 @@ Basalaev Daniil\
 Kromachev Maxim\
 Asanov Damir\
 Sazhin Daniil\
-Korpusova Sofia\
+Korpusova Sofia
 
 ## Requirements
 
@@ -60,7 +60,8 @@ bash runTest --Release
 There are some optional flags for test running:
 
 ```bash
---Common # all tests # common components tests
+--all# all tests
+--Common # common components tests
 --Backend # backend tests
 --AST # abstract syntax tree
 --Logger
