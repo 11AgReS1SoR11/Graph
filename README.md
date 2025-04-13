@@ -76,5 +76,5 @@ There are some optional flags for test running:
 ## Documentation
 
 See the documentation for additional infrmation:
-<https://github.com/11AgReS1SoR11/Graph>
+<https://github.com/11AgReS1SoR11/Graph/blob/master/Docs/GRAPHS_documentation.pdf>
 
