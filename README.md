@@ -4,11 +4,11 @@ The project provides domain-specific language (DSL) designed for creating and ma
 
 ## Developers
 
-Basalaev Daniil
-Kromachev Maxim
-Asanov Damir
-Sazhin Daniil
-Korpusova Sofia
+Basalaev Daniil\
+Kromachev Maxim\
+Asanov Damir\
+Sazhin Daniil\
+Korpusova Sofia\
 
 ## Requirements
 
