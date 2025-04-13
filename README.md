@@ -16,7 +16,7 @@ C++17 and CMake are required
 
 ## Building and Running
 
-#### Instalation
+#### Building
 
 ```bash
 bash Build.sh
