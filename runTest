@@ -21,7 +21,7 @@ cd $BUILD_DIR
 if [[ -z "$test_arg" || "$test_arg" == "--all" ]]; then
     ctest --output-on-failure
 elif [[ "$test_arg" == "--Common" ]]; then
-    ctest -R "(ASTTest|LoggerTest|FileManagerTest|SemanticAnalyzerTest|RetranslatorTest|FiguresStorageTest)" --output-on-failure
+    ctest -R "(ASTTest|LoggerTest|FileManagerTest|SemanticAnalyzerTest|RetranslatorTest|FiguresStorageTest|TranslatorTest|ParserTest)" --output-on-failure
 elif [[ "$test_arg" == "--Backend" ]]; then
     ctest -R BackendTest --output-on-failure
 elif [[ "$test_arg" == "--AST" ]]; then
