@@ -20,7 +20,7 @@ diamond node3 {
 note note1 {
     text="";
     color=green;
-}
+};
 
 graph graph1 (color=black; radius=15;) {
 
@@ -28,7 +28,7 @@ graph graph1 (color=black; radius=15;) {
         color=yellow;
         size_A=30;
         size_B=50;
-    };
+    }
 
     node1 -> node2 {
         color=purple;
