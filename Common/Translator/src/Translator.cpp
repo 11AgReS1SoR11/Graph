@@ -1,5 +1,7 @@
 #include "Translator.hpp"
 
+static size_t nextDotId = 1; // generate id for dot_cloud dots
+
 // work with semantic_analysator_parser
 
 //parsing style ASK BOUT coinsidence of #define and colors
@@ -113,7 +115,7 @@ Shape* parseRelation(SEMANTICANALYZER::Relation& relation, Style const& graph_st
 
 Shape* parseNote(SEMANTICANALYZER::Note& note){
   Note* _note = new Note;
-  _note->id = note.id;
+  _note->idTo = note.id;
   parseCommonProperty(note.properties, _note, {});
   return _note;
 }
@@ -151,6 +153,7 @@ Shape* parseDotCloud(SEMANTICANALYZER::DotCloud& dot_cloud){
   std::vector<Circle*> dots;
   for(auto& dot : dot_cloud.dots){
       Circle* _circle = new Circle();
+      _circle->id = "dot_" + std::to_string(nextDotId++);
       parseCommonProperty(dot.internalProperties, _circle, _dtcld->style);
       //for all circles set dot_cloud's style
       dots.push_back(_circle);

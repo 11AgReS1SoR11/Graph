@@ -28,10 +28,18 @@ std::string lineOrientationToString(line_orientation_e orientation)
 
 } // namespace detail
 
+static size_t nextId = 1;
+
+Line::Line()
+{
+    id = "line_" + std::to_string(nextId++);
+}
+
 std::string Line::toJson() const
 {
     return "{\n"
            "\t\"type\": \"Line\",\n"
+           "\t\"id\": \"" + id + "\",\n"
            "\t\"text\": \"" + text + "\","
            + style.toJson() + ",\n"
            "\t\"property\": {\n"

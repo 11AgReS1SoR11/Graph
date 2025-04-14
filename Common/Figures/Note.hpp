@@ -3,6 +3,7 @@
 
 struct Note : Shape
 {
+    Note();
     std::string toJson() const override;
 
     int sizeA = 1;

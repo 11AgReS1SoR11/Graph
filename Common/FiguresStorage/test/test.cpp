@@ -5,14 +5,17 @@
 #include <iostream>
 #include "Figures.hpp"
 
-
-bool compareShape(Shape const& first, Shape const& second)
+bool compareShapeWOid(Shape const& first, Shape const& second)
 {
-    return first.id == second.id && first.text == second.text && first.x == second.x && first.y == second.y
+    return first.text == second.text && first.x == second.x && first.y == second.y
             && first.style.border == second.style.border && first.style.color == second.style.color &&
             first.style.textSize == second.style.textSize;
 }
 
+bool compareShape(Shape const& first, Shape const& second)
+{
+    return first.id == second.id && compareShapeWOid(first, second);
+}
 
 void checkCircle(Shape* shape, Circle& circle)
 {
@@ -46,7 +49,7 @@ void checkLine(Shape* shape, Line& line)
 {
     Line* lineFromJson = dynamic_cast<Line*>(shape);
     REQUIRE(lineFromJson);
-    REQUIRE(compareShape(*lineFromJson, line));
+    REQUIRE(compareShapeWOid(*lineFromJson, line));
     REQUIRE(lineFromJson->idFrom == line.idFrom);
     REQUIRE(lineFromJson->idTo == line.idTo);
     REQUIRE(lineFromJson->orientation == line.orientation);

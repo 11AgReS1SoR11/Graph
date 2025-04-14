@@ -37,7 +37,7 @@ std::string style_helper::colorToString(color_e color)
     {
         case color_e::RED: return "red";
         case color_e::GREEN: return "green";
-        case color_e::BLUE: return "blud";
+        case color_e::BLUE: return "blue";
         case color_e::BLACK: return "black";
         case color_e::WHITE: return "white";
         case color_e::YELLOW: return "yellow";
