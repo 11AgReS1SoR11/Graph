@@ -6,6 +6,7 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/test3
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/test4
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/test5
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/test6
 )
 
 add_executable(ParserTest ${SOURCE_PARSER_TEST})

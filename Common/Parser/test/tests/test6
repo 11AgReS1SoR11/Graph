@@ -1,0 +1,27 @@
+@startgraph
+
+dot_cloud cloud1 {
+    { x=10; y=20; color=blue; }
+    { radius=5; text=Hello; }
+}
+
+dot_cloud cloud2 (size_A=100; size_B=200;) {
+    { x=50; y=50; grid=1; }
+}
+
+circle obj1 {
+    x=30;
+    y=40;
+    color=red;
+}
+
+//this is a comment
+
+note note1 {
+    text=This_is_a_note;
+    color=green; //comment
+};
+
+obj1 -> cloud1;
+
+@endgraph
