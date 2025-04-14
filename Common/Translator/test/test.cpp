@@ -3,7 +3,8 @@
 
 #include "Translator.hpp"
 
-TEST_CASE("Translate objects", "[Translator]"){
+TEST_CASE("Translate objects", "[Translator]")
+{
     std::vector<std::pair<std::string, std::any>> parsed_ast_tree;
 
     SEMANTICANALYZER::ObjectDecl circle, rectangle, diamond;
@@ -16,7 +17,7 @@ TEST_CASE("Translate objects", "[Translator]"){
     circle_property.push_back({"text", "here is circle"});
     circle_property.push_back({"x", "4"}); 
     circle_property.push_back({"y", "3"}); 
-    circle_property.push_back({"color", "RED"});
+    circle_property.push_back({"color", "red"});
     circle_property.push_back({"border", "2"});
     circle_property.push_back({"size_text", "10"});
     circle_property.push_back({"radius", "5"});
@@ -28,7 +29,7 @@ TEST_CASE("Translate objects", "[Translator]"){
     rectangle_property.push_back({"text", "here is rectangle"});
     rectangle_property.push_back({"x", "8"});
     rectangle_property.push_back({"y", "9"});
-    rectangle_property.push_back({"color", "BLUE"});
+    rectangle_property.push_back({"color", "blue"});
     rectangle_property.push_back({"border", "2"});
     rectangle_property.push_back({"size_text", "10"});
     rectangle_property.push_back({"size_A", "3"});
@@ -41,7 +42,7 @@ TEST_CASE("Translate objects", "[Translator]"){
     diamond_property.push_back({"text", "here is diamond"});
     diamond_property.push_back({"x", "8"});
     diamond_property.push_back({"y", "9"});
-    diamond_property.push_back({"color", "NONE"});
+    diamond_property.push_back({"color", "none"});
     diamond_property.push_back({"border", "2"});
     diamond_property.push_back({"size_text", "10"});
     diamond_property.push_back({"size_A", "6"});
@@ -62,7 +63,7 @@ TEST_CASE("Translate objects", "[Translator]"){
     REQUIRE(shape);
     REQUIRE(shape->id == "crcl");
     REQUIRE(shape->text == "here is circle");
-    REQUIRE(style_helper::colorToString(shape->style.color) == "RED");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "red");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 4);
@@ -77,7 +78,7 @@ TEST_CASE("Translate objects", "[Translator]"){
     REQUIRE(shape);
     REQUIRE(shape->id == "rctngl");
     REQUIRE(shape->text == "here is rectangle");
-    REQUIRE(style_helper::colorToString(shape->style.color) == "BLUE");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "blue");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 8);
@@ -93,7 +94,7 @@ TEST_CASE("Translate objects", "[Translator]"){
     REQUIRE(shape);
     REQUIRE(shape->id == "dmnd");
     REQUIRE(shape->text == "here is diamond");
-    REQUIRE(style_helper::colorToString(shape->style.color) == "NONE");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "none");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 8);
@@ -120,7 +121,7 @@ TEST_CASE("Translate relations", "[Translator]"){
     line1_property.push_back({"text", "here is line1"});
     line1_property.push_back({"x", "4"}); 
     line1_property.push_back({"y", "3"}); 
-    line1_property.push_back({"color", "RED"});
+    line1_property.push_back({"color", "red"});
     line1_property.push_back({"border", "2"});
     line1_property.push_back({"size_text", "10"});
     line1.properties = line1_property;
@@ -133,7 +134,7 @@ TEST_CASE("Translate relations", "[Translator]"){
     line2_property.push_back({"text", "here is line2"});
     line2_property.push_back({"x", "10"}); 
     line2_property.push_back({"y", "12"}); 
-    line2_property.push_back({"color", "NONE"});
+    line2_property.push_back({"color", "blue"});
     line2_property.push_back({"border", "3"});
     line2_property.push_back({"size_text", "8"});
     line2.properties = line2_property;
@@ -146,7 +147,7 @@ TEST_CASE("Translate relations", "[Translator]"){
     line3_property.push_back({"text", "here is line3"});
     line3_property.push_back({"x", "5"}); 
     line3_property.push_back({"y", "6"}); 
-    line3_property.push_back({"color", "BLACK"});
+    line3_property.push_back({"color", "black"});
     line3_property.push_back({"border", "2"});
     line3_property.push_back({"size_text", "10"});
     line3.properties = line3_property;
@@ -159,7 +160,7 @@ TEST_CASE("Translate relations", "[Translator]"){
     Shape* shape = result_tree[0];
     REQUIRE(shape);
     REQUIRE(shape->text == "here is line1");
-    REQUIRE(style_helper::colorToString(shape->style.color) == "RED");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "red");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 4);
@@ -176,7 +177,7 @@ TEST_CASE("Translate relations", "[Translator]"){
     shape = result_tree[1];
     REQUIRE(shape);
     REQUIRE(shape->text == "here is line2");
-    REQUIRE(style_helper::colorToString(shape->style.color) == "NONE");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "blue");
     REQUIRE(shape->style.border == 3);
     REQUIRE(shape->style.textSize == 8);
     REQUIRE(shape->x == 10);
@@ -193,7 +194,7 @@ TEST_CASE("Translate relations", "[Translator]"){
     shape = result_tree[2];
     REQUIRE(shape);
     REQUIRE(shape->text == "here is line3");
-    REQUIRE(style_helper::colorToString(shape->style.color) == "BLACK");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "black");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 5);
@@ -207,7 +208,8 @@ TEST_CASE("Translate relations", "[Translator]"){
     REQUIRE(line3AfterTranslate->type == line_type_e::Dotted);
 }
 
-TEST_CASE("Translate note", "[Translator]"){
+TEST_CASE("Translate note", "[Translator]")
+{
     std::vector<std::pair<std::string, std::any>> parsed_ast_tree;
 
     SEMANTICANALYZER::Note note1, note2;
@@ -219,7 +221,7 @@ TEST_CASE("Translate note", "[Translator]"){
     note1_property.push_back({"text", "here is note1"});
     note1_property.push_back({"x", "4"}); 
     note1_property.push_back({"y", "3"}); 
-    note1_property.push_back({"color", "PURPLE"});
+    note1_property.push_back({"color", "purple"});
     note1_property.push_back({"border", "2"});
     note1_property.push_back({"size_text", "10"});
     note1.properties = note1_property;
@@ -230,7 +232,7 @@ TEST_CASE("Translate note", "[Translator]"){
     note2_property.push_back({"text", "here is note2"});
     note2_property.push_back({"x", "5"}); 
     note2_property.push_back({"y", "6"}); 
-    note2_property.push_back({"color", "YELLOW"});
+    note2_property.push_back({"color", "yellow"});
     note2_property.push_back({"border", "2"});
     note2_property.push_back({"size_text", "10"});
     note2.properties = note2_property;
@@ -243,7 +245,7 @@ TEST_CASE("Translate note", "[Translator]"){
     Shape* shape = result_tree[0];
     REQUIRE(shape);
     REQUIRE(shape->text == "here is note1");
-    REQUIRE(style_helper::colorToString(shape->style.color) == "PURPLE");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "purple");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 4);
@@ -256,7 +258,7 @@ TEST_CASE("Translate note", "[Translator]"){
     shape = result_tree[1];
     REQUIRE(shape);
     REQUIRE(shape->text == "here is note2");
-    REQUIRE(style_helper::colorToString(shape->style.color) == "YELLOW");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "yellow");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 5);
@@ -267,7 +269,8 @@ TEST_CASE("Translate note", "[Translator]"){
 
 }
 
-TEST_CASE("Translate graph", "[Translator]"){
+TEST_CASE("Translate graph", "[Translator]")
+{
     std::vector<std::pair<std::string, std::any>> parsed_ast_tree;
 
     SEMANTICANALYZER::Graph graph;
@@ -279,7 +282,7 @@ TEST_CASE("Translate graph", "[Translator]"){
     graph_property.push_back({"text", "here is graph"});
     graph_property.push_back({"x", "4"}); 
     graph_property.push_back({"y", "3"}); 
-    graph_property.push_back({"color", "BLACK"});
+    graph_property.push_back({"color", "black"});
     graph_property.push_back({"border", "2"});
     graph_property.push_back({"size_text", "10"});
     graph.properties = graph_property;
@@ -303,7 +306,7 @@ TEST_CASE("Translate graph", "[Translator]"){
     rectangle_property.push_back({"text", "here is rectangle"});
     rectangle_property.push_back({"x", "8"});
     rectangle_property.push_back({"y", "9"});
-    rectangle_property.push_back({"color", "BLUE"});
+    rectangle_property.push_back({"color", "blue"});
     rectangle_property.push_back({"border", "2"});
     rectangle_property.push_back({"size_text", "10"});
     rectangle_property.push_back({"size_A", "3"});
@@ -315,7 +318,7 @@ TEST_CASE("Translate graph", "[Translator]"){
     diamond_property.push_back({"text", "here is diamond"});
     diamond_property.push_back({"x", "8"});
     diamond_property.push_back({"y", "9"});
-    diamond_property.push_back({"color", "NONE"});
+    diamond_property.push_back({"color", "none"});
     diamond_property.push_back({"border", "2"});
     diamond_property.push_back({"size_text", "10"});
     diamond_property.push_back({"size_A", "6"});
@@ -337,7 +340,7 @@ TEST_CASE("Translate graph", "[Translator]"){
     line1_property.push_back({"text", "here is line1"});
     line1_property.push_back({"x", "4"}); 
     line1_property.push_back({"y", "3"}); 
-    line1_property.push_back({"color", "RED"});
+    line1_property.push_back({"color", "red"});
     line1_property.push_back({"border", "2"});
     line1_property.push_back({"size_text", "10"});
     line1.properties = line1_property;
@@ -365,7 +368,7 @@ TEST_CASE("Translate graph", "[Translator]"){
     Shape* shape = result_tree[0];
     REQUIRE(shape);
     REQUIRE(shape->text == "here is graph");
-    REQUIRE(style_helper::colorToString(shape->style.color) == "BLACK");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "black");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 4);
@@ -396,7 +399,8 @@ TEST_CASE("Translate graph", "[Translator]"){
     REQUIRE(graphAfterTranslate->style.color == _line2->style.color);
 }
 
-TEST_CASE("Translate dot_cloud", "[Translator]"){
+TEST_CASE("Translate dot_cloud", "[Translator]")
+{
     std::vector<std::pair<std::string, std::any>> parsed_ast_tree;
 
     SEMANTICANALYZER::DotCloud dot_cloud;
@@ -406,7 +410,7 @@ TEST_CASE("Translate dot_cloud", "[Translator]"){
     dot_cloud_property.push_back({"text", "here is dot_cloud"});
     dot_cloud_property.push_back({"x", "4"}); 
     dot_cloud_property.push_back({"y", "3"}); 
-    dot_cloud_property.push_back({"color", "BLACK"});
+    dot_cloud_property.push_back({"color", "black"});
     dot_cloud_property.push_back({"border", "2"});
     dot_cloud_property.push_back({"size_text", "10"});
     dot_cloud_property.push_back({"grid", "true"});
@@ -428,7 +432,7 @@ TEST_CASE("Translate dot_cloud", "[Translator]"){
     dot2_property.push_back({"text", "here is dot2"});
     dot2_property.push_back({"x", "7"}); 
     dot2_property.push_back({"y", "1"}); 
-    dot2_property.push_back({"color", "YELLOW"});
+    dot2_property.push_back({"color", "yellow"});
     dot2_property.push_back({"border", "3"});
     dot2_property.push_back({"size_text", "3"});
     dot2.internalProperties = dot2_property;
@@ -442,7 +446,7 @@ TEST_CASE("Translate dot_cloud", "[Translator]"){
     Shape* shape = result_tree[0];
     REQUIRE(shape);
     REQUIRE(shape->text == "here is dot_cloud");
-    REQUIRE(style_helper::colorToString(shape->style.color) == "BLACK");
+    REQUIRE(style_helper::colorToString(shape->style.color) == "black");
     REQUIRE(shape->style.border == 2);
     REQUIRE(shape->style.textSize == 10);
     REQUIRE(shape->x == 4);

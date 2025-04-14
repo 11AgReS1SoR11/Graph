@@ -1,7 +1,15 @@
 #include "Note.hpp"
+
+static size_t nextId = 1;
+
+Note::Note()
+{
+    id = "note_" + std::to_string(nextId++);
+}
+
 std::string Note::toJson() const
 {
-    return "{\n"
+    return  "{\n"
             "\t\"type\": \"Note\","
             + Shape::toJson() + ",\n"
             "\t\"property\": {\n"
