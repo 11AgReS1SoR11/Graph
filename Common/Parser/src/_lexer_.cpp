@@ -556,14 +556,17 @@ char *yytext;
 #line 2 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 #include <iostream>
 #include <string>
+#include <sstream>
 #include "_parser_.h"
+
+#include "Logger.hpp"
 
 bool is_prop = false;
 bool is_text = false;
 
-#line 565 "/home/maxonic/Graph/Common/Parser/src/_lexer_.cpp"
+#line 568 "/home/maxonic/Graph/Common/Parser/src/_lexer_.cpp"
 
-#line 567 "/home/maxonic/Graph/Common/Parser/src/_lexer_.cpp"
+#line 570 "/home/maxonic/Graph/Common/Parser/src/_lexer_.cpp"
 
 #define INITIAL 0
 #define TEXT_MODE 1
@@ -781,10 +784,10 @@ YY_DECL
 		}
 
 	{
-#line 16 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 19 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 
 
-#line 788 "/home/maxonic/Graph/Common/Parser/src/_lexer_.cpp"
+#line 791 "/home/maxonic/Graph/Common/Parser/src/_lexer_.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -853,30 +856,36 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 18 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 21 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
 #ifdef DEBUG
-    std::cout << "TOKEN: START_GRAPH" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: START_GRAPH";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     return START_GRAPH;
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 25 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 30 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
 #ifdef DEBUG
-    std::cout << "TOKEN: END_GRAPH" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: END_GRAPH";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     return END_GRAPH;
 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 32 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 39 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
 #ifdef DEBUG
-    std::cout << "TOKEN: SHAPE (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: SHAPE (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return SHAPE;
@@ -884,10 +893,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 40 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 49 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
 #ifdef DEBUG
-    std::cout << "TOKEN: ARROW (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: ARROW (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return ARROW;
@@ -895,10 +906,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 48 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 59 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
 #ifdef DEBUG
-    std::cout << "TOKEN: NOTE (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: NOTE (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return NOTE;
@@ -906,10 +919,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 56 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 69 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
 #ifdef DEBUG
-    std::cout << "TOKEN: GRAPH (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: GRAPH (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return GRAPH;
@@ -917,10 +932,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 64 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 79 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
 #ifdef DEBUG
-    std::cout << "TOKEN: DOT_CLOUD (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: DOT_CLOUD (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return DOT_CLOUD;
@@ -928,11 +945,13 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 72 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 89 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
     is_prop = true;
 #ifdef DEBUG
-    std::cout << "TOKEN: PROPERTY_KEY (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: PROPERTY_KEY (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return PROPERTY_KEY;
@@ -940,11 +959,13 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 81 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 100 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
     if(is_prop) is_prop = false;
 #ifdef DEBUG
-    std::cout << "TOKEN: NUMBER (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: NUMBER (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return NUMBER;
@@ -952,11 +973,13 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 90 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 111 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
     if(is_prop) is_prop = false;
 #ifdef DEBUG
-    std::cout << "TOKEN: NUMBER (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: NUMBER (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return NUMBER;
@@ -964,14 +987,15 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 99 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 122 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
-
     if(is_prop)
     {
         is_prop = false;
 #ifdef DEBUG
-        std::cout << "TOKEN: TEXT (" << yytext << ")" << std::endl;
+        std::ostringstream debugMsg;
+        debugMsg << "TOKEN: TEXT (" << yytext << ")";
+        LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
         yylval.str = new std::string(yytext);
         return TEXT;
@@ -979,7 +1003,9 @@ YY_RULE_SETUP
     else
     {
 #ifdef DEBUG
-        std::cout << "TOKEN: ID (" << yytext << ")" << std::endl;
+        std::ostringstream debugMsg;
+        debugMsg << "TOKEN: ID (" << yytext << ")";
+        LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
         yylval.str = new std::string(yytext);
         return ID;
@@ -988,18 +1014,19 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 121 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 146 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 { BEGIN(TEXT_MODE); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 123 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 148 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
-
     if(is_prop) is_prop = false;
     is_text = true;
 #ifdef DEBUG
-    std::cout << "TOKEN: TEXT (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: TEXT (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return TEXT;
@@ -1007,13 +1034,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 134 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 160 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
     if(is_prop) is_prop = false;
-
     if(!is_text) {
 #ifdef DEBUG
-        std::cout << "TOKEN: TEXT (empty)" << std::endl;
+        std::ostringstream debugMsg;
+        debugMsg << "TOKEN: TEXT (empty)";
+        LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
         yylval.str = new std::string("");
         BEGIN(INITIAL);
@@ -1027,45 +1055,51 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 151 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 178 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
 #ifdef DEBUG
-    std::cout << "COMMENT: (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "COMMENT: (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
 }
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
-#line 158 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 186 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 { }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 160 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 188 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
 #ifdef DEBUG
-    std::cout << "TOKEN: SYMBOL (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: SYMBOL (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     return *yytext;
 }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 167 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 197 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 {
 #ifdef DEBUG
-    std::cout << "TOKEN: UNKNOWN (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: UNKNOWN (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     return *yytext;
 }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 174 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 206 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 ECHO;
 	YY_BREAK
-#line 1069 "/home/maxonic/Graph/Common/Parser/src/_lexer_.cpp"
+#line 1103 "/home/maxonic/Graph/Common/Parser/src/_lexer_.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(TEXT_MODE):
 	yyterminate();
@@ -2083,6 +2117,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 174 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
+#line 206 "/home/maxonic/Graph/Common/Parser/src/lexer.lex"
 
 

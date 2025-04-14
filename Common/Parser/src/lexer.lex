@@ -1,7 +1,10 @@
 %{
 #include <iostream>
 #include <string>
+#include <sstream>
 #include "_parser_.h"
+
+#include "Logger.hpp"
 
 bool is_prop = false;
 bool is_text = false;
@@ -17,21 +20,27 @@ bool is_text = false;
 
 "@startgraph"   {
 #ifdef DEBUG
-    std::cout << "TOKEN: START_GRAPH" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: START_GRAPH";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     return START_GRAPH;
 }
 
 "@endgraph"     {
 #ifdef DEBUG
-    std::cout << "TOKEN: END_GRAPH" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: END_GRAPH";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     return END_GRAPH;
 }
 
 "circle"|"rectangle"|"diamond" {
 #ifdef DEBUG
-    std::cout << "TOKEN: SHAPE (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: SHAPE (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return SHAPE;
@@ -39,7 +48,9 @@ bool is_text = false;
 
 "->"|"-->"|"<->"|"<-->"|"--"|"-"|"<--"|"<"|">" {
 #ifdef DEBUG
-    std::cout << "TOKEN: ARROW (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: ARROW (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return ARROW;
@@ -47,7 +58,9 @@ bool is_text = false;
 
 "note" {
 #ifdef DEBUG
-    std::cout << "TOKEN: NOTE (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: NOTE (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return NOTE;
@@ -55,7 +68,9 @@ bool is_text = false;
 
 "graph" {
 #ifdef DEBUG
-    std::cout << "TOKEN: GRAPH (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: GRAPH (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return GRAPH;
@@ -63,7 +78,9 @@ bool is_text = false;
 
 "dot_cloud" {
 #ifdef DEBUG
-    std::cout << "TOKEN: DOT_CLOUD (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: DOT_CLOUD (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return DOT_CLOUD;
@@ -72,7 +89,9 @@ bool is_text = false;
 "color"|"text"|"border"|"x"|"y"|"size_text"|"size_A"|"size_B"|"angle"|"radius"|"grid" {
     is_prop = true;
 #ifdef DEBUG
-    std::cout << "TOKEN: PROPERTY_KEY (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: PROPERTY_KEY (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return PROPERTY_KEY;
@@ -81,7 +100,9 @@ bool is_text = false;
 [0-9]+ {
     if(is_prop) is_prop = false;
 #ifdef DEBUG
-    std::cout << "TOKEN: NUMBER (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: NUMBER (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return NUMBER;
@@ -90,19 +111,22 @@ bool is_text = false;
 [0-9]+\.[0-9]+ {
     if(is_prop) is_prop = false;
 #ifdef DEBUG
-    std::cout << "TOKEN: NUMBER (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: NUMBER (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return NUMBER;
 }
 
 [a-zA-Z][a-zA-Z0-9_]* {
-
     if(is_prop)
     {
         is_prop = false;
 #ifdef DEBUG
-        std::cout << "TOKEN: TEXT (" << yytext << ")" << std::endl;
+        std::ostringstream debugMsg;
+        debugMsg << "TOKEN: TEXT (" << yytext << ")";
+        LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
         yylval.str = new std::string(yytext);
         return TEXT;
@@ -110,22 +134,24 @@ bool is_text = false;
     else
     {
 #ifdef DEBUG
-        std::cout << "TOKEN: ID (" << yytext << ")" << std::endl;
+        std::ostringstream debugMsg;
+        debugMsg << "TOKEN: ID (" << yytext << ")";
+        LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
         yylval.str = new std::string(yytext);
         return ID;
     }
 }
 
-
 \"  { BEGIN(TEXT_MODE); }
 
 <TEXT_MODE>[a-zA-Z0-9,.!? -]+ {
-
     if(is_prop) is_prop = false;
     is_text = true;
 #ifdef DEBUG
-    std::cout << "TOKEN: TEXT (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: TEXT (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     yylval.str = new std::string(yytext);
     return TEXT;
@@ -133,10 +159,11 @@ bool is_text = false;
 
 <TEXT_MODE>\"   {
     if(is_prop) is_prop = false;
-
     if(!is_text) {
 #ifdef DEBUG
-        std::cout << "TOKEN: TEXT (empty)" << std::endl;
+        std::ostringstream debugMsg;
+        debugMsg << "TOKEN: TEXT (empty)";
+        LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
         yylval.str = new std::string("");
         BEGIN(INITIAL);
@@ -150,23 +177,28 @@ bool is_text = false;
 
 "//"[^\n]* {
 #ifdef DEBUG
-    std::cout << "COMMENT: (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "COMMENT: (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
 }
-
 
 [ \t\r\n]+      { }
 
 [{};=()] {
 #ifdef DEBUG
-    std::cout << "TOKEN: SYMBOL (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: SYMBOL (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     return *yytext;
 }
 
 . {
 #ifdef DEBUG
-    std::cout << "TOKEN: UNKNOWN (" << yytext << ")" << std::endl;
+    std::ostringstream debugMsg;
+    debugMsg << "TOKEN: UNKNOWN (" << yytext << ")";
+    LOG_INFO(PARSER_LOG, debugMsg.str());
 #endif
     return *yytext;
 }

@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 21 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 41 "/home/maxonic/Graph/Common/Parser/src/parser.y"
 
 #include "AST.hpp"
 
@@ -79,7 +79,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 25 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 45 "/home/maxonic/Graph/Common/Parser/src/parser.y"
 
     std::string* str;
     AST::Node* node;

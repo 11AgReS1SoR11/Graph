@@ -3,6 +3,8 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <fstream>
+#include <sstream>
 
 #include "SemanticAnalyzer.hpp"
 #include "AST.hpp"
@@ -10,13 +12,31 @@
 extern int yylineno;
 extern char *yytext;
 std::unique_ptr<AST::ASTTree> astTree = nullptr;
+std::string current_rule;
 
-void yyerror(const char *s) {
-    fprintf(stderr, "Syntax error at line %d near '%.10s': %s\n", yylineno, yytext, s);
+void yyerror(const char *msg)
+{
+    std::ostringstream errorMsg;
+    errorMsg << "\n=====================================\n";
+    errorMsg << "Syntax Error Detected!\n";
+    errorMsg << "-------------------------------------\n";
+    errorMsg << "Line: " << yylineno << "\n";
+    errorMsg << "Near token: '" << yytext << "'\n";
+
+    if (!current_rule.empty()) {
+        errorMsg << "Current rule: " << current_rule << "\n";
+    }
+
+    errorMsg << "Message: " << msg << "\n";
+    errorMsg << "=====================================\n";
+
+    LOG_ERROR(PARSER_LOG, errorMsg.str());
 }
 
 extern int yylex(void);
 %}
+
+%define parse.error verbose
 
 %code requires {
 #include "AST.hpp"
@@ -36,6 +56,7 @@ extern int yylex(void);
 
 program:
     START_GRAPH statements END_GRAPH {
+        current_rule = "program";
         $$ = new AST::Node(GRAMMERCONSTANTS::PROGRAM);
         $$->addChild(new AST::Node(GRAMMERCONSTANTS::START_GRAPH));
         $$->addChild($2);
@@ -46,9 +67,11 @@ program:
 
 statements:
     /* empty */ {
+        current_rule = "statement";
         $$ = new AST::Node(GRAMMERCONSTANTS::STATEMENTS);
     }
     | statements statement {
+        current_rule = "statement";
         $1->addChild($2);
         $$ = $1;
     }
@@ -56,10 +79,12 @@ statements:
 
 statement:
     statement_core {
+        current_rule = "statement";
         $$ = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
         $$->addChild($1);
     }
     | statement_core ';' {
+        current_rule = "statement";
         $$ = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
         $$->addChild($1);
         $$->addChild(new AST::Node(";"));
@@ -67,15 +92,16 @@ statement:
 ;
 
 statement_core:
-    object_decl { $$ = $1; }
-    | relation { $$ = $1; }
-    | note { $$ = $1; }
-    | graph { $$ = $1; }
-    | dot_cloud { $$ = $1; }
+    object_decl { $$ = $1; current_rule = "statement";}
+    | relation { $$ = $1;  current_rule = "statement";}
+    | note { $$ = $1;  current_rule = "statement";}
+    | graph { $$ = $1;  current_rule = "statement";}
+    | dot_cloud { $$ = $1;  current_rule = "statement";}
 ;
 
 graph:
     GRAPH ID '{' graph_contents '}' {
+        current_rule = "graph";
         $$ = new AST::Node(GRAMMERCONSTANTS::GRAPH);
         delete $1;
 
@@ -89,6 +115,7 @@ graph:
         $$->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
     | GRAPH ID '(' properties ')' '{' graph_contents '}' {
+        current_rule = "graph";
         $$ = new AST::Node(GRAMMERCONSTANTS::GRAPH);
         delete $1;
 
@@ -109,13 +136,16 @@ graph:
 
 graph_contents:
     /* empty */ {
+        current_rule = "graph";
         $$ = new AST::Node(GRAMMERCONSTANTS::GRAPH_CONTENTS);
     }
     | graph_contents object_decl {
+        current_rule = "graph";
         $1->addChild($2);
         $$ = $1;
     }
     | graph_contents relation {
+        current_rule = "graph";
         $1->addChild($2);
         $$ = $1;
     }
@@ -123,6 +153,7 @@ graph_contents:
 
 dot_cloud:
     DOT_CLOUD ID '{' dot_cloud_blocks '}' {
+        current_rule = "dot_cloud";
         $$ = new AST::Node(GRAMMERCONSTANTS::DOT_CLOUD);
         delete $1;
 
@@ -136,6 +167,7 @@ dot_cloud:
         $$->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
     | DOT_CLOUD ID '(' properties ')' '{' dot_cloud_blocks '}' {
+        current_rule = "dot_cloud";
         $$ = new AST::Node(GRAMMERCONSTANTS::DOT_CLOUD);
         delete $1;
 
@@ -156,6 +188,7 @@ dot_cloud:
 
 dot_cloud_blocks:
     /* empty */ {
+        current_rule = "dot_cloud";
         $$ = new AST::Node(GRAMMERCONSTANTS::DOT_CLOUD_INTERNAL_BLOCKS);
     }
     | dot_cloud_blocks dot_cloud_block {
@@ -166,6 +199,7 @@ dot_cloud_blocks:
 
 dot_cloud_block:
     '{' properties '}' {
+        current_rule = "dot_cloud";
         $$ = new AST::Node(GRAMMERCONSTANTS::DOT_BLOCK);
         $$->addChild(new AST::Node(GRAMMERCONSTANTS::START_DOT_BLOCK));
         $$->addChild($2);
@@ -175,7 +209,7 @@ dot_cloud_block:
 
 object_decl:
     SHAPE ID {
-
+        current_rule = "object_decl";
         $$ = new AST::Node(GRAMMERCONSTANTS::OBJECT_DECL);
         AST::Node* shape = new AST::Node(GRAMMERCONSTANTS::SHAPE);
         shape->addChild(new AST::Node(*$1));
@@ -188,7 +222,7 @@ object_decl:
         delete $2;
     }
     | SHAPE ID '{' properties '}' {
-
+        current_rule = "object_decl";
         $$ = new AST::Node(GRAMMERCONSTANTS::OBJECT_DECL);
         AST::Node* shape = new AST::Node(GRAMMERCONSTANTS::SHAPE);
         shape->addChild(new AST::Node(*$1));
@@ -208,6 +242,7 @@ object_decl:
 
 relation:
     ID ARROW ID {
+        current_rule = "relation";
         $$ = new AST::Node(GRAMMERCONSTANTS::RELATION);
         AST::Node* fromId = new AST::Node(GRAMMERCONSTANTS::ID);
         fromId->addChild(new AST::Node(*$1));
@@ -225,6 +260,7 @@ relation:
         delete $3;
     }
     | ID ARROW ID '{' properties '}' {
+        current_rule = "relation";
         $$ = new AST::Node(GRAMMERCONSTANTS::RELATION);
         AST::Node* fromId = new AST::Node(GRAMMERCONSTANTS::ID);
         fromId->addChild(new AST::Node(*$1));
@@ -249,6 +285,7 @@ relation:
 
 note:
     NOTE ID {
+        current_rule = "note";
         $$ = new AST::Node(GRAMMERCONSTANTS::NOTE);
         delete $1;
 
@@ -258,6 +295,7 @@ note:
         delete $2;
     }
     | NOTE ID '{' properties '}' {
+        current_rule = "note";
         $$ = new AST::Node(GRAMMERCONSTANTS::NOTE);
         delete $1;
 
@@ -274,9 +312,11 @@ note:
 
 properties:
     /* empty */ {
+        current_rule = "property";
         $$ = new AST::Node(GRAMMERCONSTANTS::PROPERTIES);
     }
     | properties property {
+        current_rule = "property";
         $1->addChild($2);
         $$ = $1;
     }
@@ -284,7 +324,7 @@ properties:
 
 property:
     PROPERTY_KEY '=' TEXT ';' {
-
+        current_rule = "property";
         $$ = new AST::Node(GRAMMERCONSTANTS::PROPERTY);
         AST::Node* keyNode = new AST::Node(GRAMMERCONSTANTS::PROPERTY_KEY);
         keyNode->addChild(new AST::Node(*$1));
@@ -300,7 +340,7 @@ property:
         $$->addChild(new AST::Node(";"));
     }
     | PROPERTY_KEY '=' NUMBER ';' {
-
+        current_rule = "property";
         $$ = new AST::Node(GRAMMERCONSTANTS::PROPERTY);
         AST::Node* keyNode = new AST::Node(GRAMMERCONSTANTS::PROPERTY_KEY);
         keyNode->addChild(new AST::Node(*$1));

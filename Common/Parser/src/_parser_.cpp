@@ -73,6 +73,8 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <fstream>
+#include <sstream>
 
 #include "SemanticAnalyzer.hpp"
 #include "AST.hpp"
@@ -80,14 +82,30 @@
 extern int yylineno;
 extern char *yytext;
 std::unique_ptr<AST::ASTTree> astTree = nullptr;
+std::string current_rule;
 
-void yyerror(const char *s) {
-    fprintf(stderr, "Syntax error at line %d near '%.10s': %s\n", yylineno, yytext, s);
+void yyerror(const char *msg)
+{
+    std::ostringstream errorMsg;
+    errorMsg << "\n=====================================\n";
+    errorMsg << "Syntax Error Detected!\n";
+    errorMsg << "-------------------------------------\n";
+    errorMsg << "Line: " << yylineno << "\n";
+    errorMsg << "Near token: '" << yytext << "'\n";
+
+    if (!current_rule.empty()) {
+        errorMsg << "Current rule: " << current_rule << "\n";
+    }
+
+    errorMsg << "Message: " << msg << "\n";
+    errorMsg << "=====================================\n";
+
+    LOG_ERROR(PARSER_LOG, errorMsg.str());
 }
 
 extern int yylex(void);
 
-#line 91 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 109 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -347,7 +365,7 @@ typedef int yy_state_fast_t;
 
 #define YY_ASSERT(E) ((void) (0 && (E)))
 
-#if !defined yyoverflow
+#if 1
 
 /* The parser invokes alloca or malloc; define the necessary symbols.  */
 
@@ -412,7 +430,7 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 #   endif
 #  endif
 # endif
-#endif /* !defined yyoverflow */
+#endif /* 1 */
 
 #if (! defined yyoverflow \
      && (! defined __cplusplus \
@@ -536,17 +554,17 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    38,    38,    48,    51,    58,    62,    70,    71,    72,
-      73,    74,    78,    91,   111,   114,   118,   125,   138,   158,
-     161,   168,   177,   190,   210,   227,   251,   260,   276,   279,
-     286,   302
+       0,    58,    58,    69,    73,    81,    86,    95,    96,    97,
+      98,    99,   103,   117,   138,   142,   147,   155,   169,   190,
+     194,   201,   211,   224,   244,   262,   287,   297,   314,   318,
+     326,   342
 };
 #endif
 
 /** Accessing symbol of state STATE.  */
 #define YY_ACCESSING_SYMBOL(State) YY_CAST (yysymbol_kind_t, yystos[State])
 
-#if YYDEBUG || 0
+#if 1
 /* The user-facing name of the symbol whose (internal) number is
    YYSYMBOL.  No bounds checking.  */
 static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
@@ -856,8 +874,275 @@ int yydebug;
 #endif
 
 
+/* Context of a parse error.  */
+typedef struct
+{
+  yy_state_t *yyssp;
+  yysymbol_kind_t yytoken;
+} yypcontext_t;
+
+/* Put in YYARG at most YYARGN of the expected tokens given the
+   current YYCTX, and return the number of tokens stored in YYARG.  If
+   YYARG is null, return the number of expected tokens (guaranteed to
+   be less than YYNTOKENS).  Return YYENOMEM on memory exhaustion.
+   Return 0 if there are more than YYARGN expected tokens, yet fill
+   YYARG up to YYARGN. */
+static int
+yypcontext_expected_tokens (const yypcontext_t *yyctx,
+                            yysymbol_kind_t yyarg[], int yyargn)
+{
+  /* Actual size of YYARG. */
+  int yycount = 0;
+  int yyn = yypact[+*yyctx->yyssp];
+  if (!yypact_value_is_default (yyn))
+    {
+      /* Start YYX at -YYN if negative to avoid negative indexes in
+         YYCHECK.  In other words, skip the first -YYN actions for
+         this state because they are default actions.  */
+      int yyxbegin = yyn < 0 ? -yyn : 0;
+      /* Stay within bounds of both yycheck and yytname.  */
+      int yychecklim = YYLAST - yyn + 1;
+      int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
+      int yyx;
+      for (yyx = yyxbegin; yyx < yyxend; ++yyx)
+        if (yycheck[yyx + yyn] == yyx && yyx != YYSYMBOL_YYerror
+            && !yytable_value_is_error (yytable[yyx + yyn]))
+          {
+            if (!yyarg)
+              ++yycount;
+            else if (yycount == yyargn)
+              return 0;
+            else
+              yyarg[yycount++] = YY_CAST (yysymbol_kind_t, yyx);
+          }
+    }
+  if (yyarg && yycount == 0 && 0 < yyargn)
+    yyarg[0] = YYSYMBOL_YYEMPTY;
+  return yycount;
+}
 
 
+
+
+#ifndef yystrlen
+# if defined __GLIBC__ && defined _STRING_H
+#  define yystrlen(S) (YY_CAST (YYPTRDIFF_T, strlen (S)))
+# else
+/* Return the length of YYSTR.  */
+static YYPTRDIFF_T
+yystrlen (const char *yystr)
+{
+  YYPTRDIFF_T yylen;
+  for (yylen = 0; yystr[yylen]; yylen++)
+    continue;
+  return yylen;
+}
+# endif
+#endif
+
+#ifndef yystpcpy
+# if defined __GLIBC__ && defined _STRING_H && defined _GNU_SOURCE
+#  define yystpcpy stpcpy
+# else
+/* Copy YYSRC to YYDEST, returning the address of the terminating '\0' in
+   YYDEST.  */
+static char *
+yystpcpy (char *yydest, const char *yysrc)
+{
+  char *yyd = yydest;
+  const char *yys = yysrc;
+
+  while ((*yyd++ = *yys++) != '\0')
+    continue;
+
+  return yyd - 1;
+}
+# endif
+#endif
+
+#ifndef yytnamerr
+/* Copy to YYRES the contents of YYSTR after stripping away unnecessary
+   quotes and backslashes, so that it's suitable for yyerror.  The
+   heuristic is that double-quoting is unnecessary unless the string
+   contains an apostrophe, a comma, or backslash (other than
+   backslash-backslash).  YYSTR is taken from yytname.  If YYRES is
+   null, do not copy; instead, return the length of what the result
+   would have been.  */
+static YYPTRDIFF_T
+yytnamerr (char *yyres, const char *yystr)
+{
+  if (*yystr == '"')
+    {
+      YYPTRDIFF_T yyn = 0;
+      char const *yyp = yystr;
+      for (;;)
+        switch (*++yyp)
+          {
+          case '\'':
+          case ',':
+            goto do_not_strip_quotes;
+
+          case '\\':
+            if (*++yyp != '\\')
+              goto do_not_strip_quotes;
+            else
+              goto append;
+
+          append:
+          default:
+            if (yyres)
+              yyres[yyn] = *yyp;
+            yyn++;
+            break;
+
+          case '"':
+            if (yyres)
+              yyres[yyn] = '\0';
+            return yyn;
+          }
+    do_not_strip_quotes: ;
+    }
+
+  if (yyres)
+    return yystpcpy (yyres, yystr) - yyres;
+  else
+    return yystrlen (yystr);
+}
+#endif
+
+
+static int
+yy_syntax_error_arguments (const yypcontext_t *yyctx,
+                           yysymbol_kind_t yyarg[], int yyargn)
+{
+  /* Actual size of YYARG. */
+  int yycount = 0;
+  /* There are many possibilities here to consider:
+     - If this state is a consistent state with a default action, then
+       the only way this function was invoked is if the default action
+       is an error action.  In that case, don't check for expected
+       tokens because there are none.
+     - The only way there can be no lookahead present (in yychar) is if
+       this state is a consistent state with a default action.  Thus,
+       detecting the absence of a lookahead is sufficient to determine
+       that there is no unexpected or expected token to report.  In that
+       case, just report a simple "syntax error".
+     - Don't assume there isn't a lookahead just because this state is a
+       consistent state with a default action.  There might have been a
+       previous inconsistent state, consistent state with a non-default
+       action, or user semantic action that manipulated yychar.
+     - Of course, the expected token list depends on states to have
+       correct lookahead information, and it depends on the parser not
+       to perform extra reductions after fetching a lookahead from the
+       scanner and before detecting a syntax error.  Thus, state merging
+       (from LALR or IELR) and default reductions corrupt the expected
+       token list.  However, the list is correct for canonical LR with
+       one exception: it will still contain any token that will not be
+       accepted due to an error action in a later state.
+  */
+  if (yyctx->yytoken != YYSYMBOL_YYEMPTY)
+    {
+      int yyn;
+      if (yyarg)
+        yyarg[yycount] = yyctx->yytoken;
+      ++yycount;
+      yyn = yypcontext_expected_tokens (yyctx,
+                                        yyarg ? yyarg + 1 : yyarg, yyargn - 1);
+      if (yyn == YYENOMEM)
+        return YYENOMEM;
+      else
+        yycount += yyn;
+    }
+  return yycount;
+}
+
+/* Copy into *YYMSG, which is of size *YYMSG_ALLOC, an error message
+   about the unexpected token YYTOKEN for the state stack whose top is
+   YYSSP.
+
+   Return 0 if *YYMSG was successfully written.  Return -1 if *YYMSG is
+   not large enough to hold the message.  In that case, also set
+   *YYMSG_ALLOC to the required number of bytes.  Return YYENOMEM if the
+   required number of bytes is too large to store.  */
+static int
+yysyntax_error (YYPTRDIFF_T *yymsg_alloc, char **yymsg,
+                const yypcontext_t *yyctx)
+{
+  enum { YYARGS_MAX = 5 };
+  /* Internationalized format string. */
+  const char *yyformat = YY_NULLPTR;
+  /* Arguments of yyformat: reported tokens (one for the "unexpected",
+     one per "expected"). */
+  yysymbol_kind_t yyarg[YYARGS_MAX];
+  /* Cumulated lengths of YYARG.  */
+  YYPTRDIFF_T yysize = 0;
+
+  /* Actual size of YYARG. */
+  int yycount = yy_syntax_error_arguments (yyctx, yyarg, YYARGS_MAX);
+  if (yycount == YYENOMEM)
+    return YYENOMEM;
+
+  switch (yycount)
+    {
+#define YYCASE_(N, S)                       \
+      case N:                               \
+        yyformat = S;                       \
+        break
+    default: /* Avoid compiler warnings. */
+      YYCASE_(0, YY_("syntax error"));
+      YYCASE_(1, YY_("syntax error, unexpected %s"));
+      YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));
+      YYCASE_(3, YY_("syntax error, unexpected %s, expecting %s or %s"));
+      YYCASE_(4, YY_("syntax error, unexpected %s, expecting %s or %s or %s"));
+      YYCASE_(5, YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s"));
+#undef YYCASE_
+    }
+
+  /* Compute error message size.  Don't count the "%s"s, but reserve
+     room for the terminator.  */
+  yysize = yystrlen (yyformat) - 2 * yycount + 1;
+  {
+    int yyi;
+    for (yyi = 0; yyi < yycount; ++yyi)
+      {
+        YYPTRDIFF_T yysize1
+          = yysize + yytnamerr (YY_NULLPTR, yytname[yyarg[yyi]]);
+        if (yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM)
+          yysize = yysize1;
+        else
+          return YYENOMEM;
+      }
+  }
+
+  if (*yymsg_alloc < yysize)
+    {
+      *yymsg_alloc = 2 * yysize;
+      if (! (yysize <= *yymsg_alloc
+             && *yymsg_alloc <= YYSTACK_ALLOC_MAXIMUM))
+        *yymsg_alloc = YYSTACK_ALLOC_MAXIMUM;
+      return -1;
+    }
+
+  /* Avoid sprintf, as that infringes on the user's name space.
+     Don't have undefined behavior even if the translation
+     produced a string with the wrong number of "%s"s.  */
+  {
+    char *yyp = *yymsg;
+    int yyi = 0;
+    while ((*yyp = *yyformat) != '\0')
+      if (*yyp == '%' && yyformat[1] == 's' && yyi < yycount)
+        {
+          yyp += yytnamerr (yyp, yytname[yyarg[yyi++]]);
+          yyformat += 2;
+        }
+      else
+        {
+          ++yyp;
+          ++yyformat;
+        }
+  }
+  return 0;
+}
 
 
 /*-----------------------------------------------.
@@ -926,7 +1211,10 @@ yyparse (void)
      action routines.  */
   YYSTYPE yyval;
 
-
+  /* Buffer for error messages, and its allocated size.  */
+  char yymsgbuf[128];
+  char *yymsg = yymsgbuf;
+  YYPTRDIFF_T yymsg_alloc = sizeof yymsgbuf;
 
 #define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N))
 
@@ -1137,86 +1425,92 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* program: START_GRAPH statements END_GRAPH  */
-#line 38 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 58 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                                      {
+        current_rule = "program";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::PROGRAM);
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::START_GRAPH));
         (yyval.node)->addChild((yyvsp[-1].node));
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_GRAPH));
         astTree = std::make_unique<AST::ASTTree>((yyval.node));
     }
-#line 1149 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1438 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 3: /* statements: %empty  */
-#line 48 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 69 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                 {
+        current_rule = "statement";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::STATEMENTS);
     }
-#line 1157 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1447 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 4: /* statements: statements statement  */
-#line 51 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 73 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                            {
+        current_rule = "statement";
         (yyvsp[-1].node)->addChild((yyvsp[0].node));
         (yyval.node) = (yyvsp[-1].node);
     }
-#line 1166 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1457 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 5: /* statement: statement_core  */
-#line 58 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 81 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                    {
+        current_rule = "statement";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
         (yyval.node)->addChild((yyvsp[0].node));
     }
-#line 1175 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1467 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 6: /* statement: statement_core ';'  */
-#line 62 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 86 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                          {
+        current_rule = "statement";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
         (yyval.node)->addChild((yyvsp[-1].node));
         (yyval.node)->addChild(new AST::Node(";"));
     }
-#line 1185 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1478 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 7: /* statement_core: object_decl  */
-#line 70 "/home/maxonic/Graph/Common/Parser/src/parser.y"
-                { (yyval.node) = (yyvsp[0].node); }
-#line 1191 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 95 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+                { (yyval.node) = (yyvsp[0].node); current_rule = "statement";}
+#line 1484 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 8: /* statement_core: relation  */
-#line 71 "/home/maxonic/Graph/Common/Parser/src/parser.y"
-               { (yyval.node) = (yyvsp[0].node); }
-#line 1197 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 96 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+               { (yyval.node) = (yyvsp[0].node);  current_rule = "statement";}
+#line 1490 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 9: /* statement_core: note  */
-#line 72 "/home/maxonic/Graph/Common/Parser/src/parser.y"
-           { (yyval.node) = (yyvsp[0].node); }
-#line 1203 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 97 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+           { (yyval.node) = (yyvsp[0].node);  current_rule = "statement";}
+#line 1496 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 10: /* statement_core: graph  */
-#line 73 "/home/maxonic/Graph/Common/Parser/src/parser.y"
-            { (yyval.node) = (yyvsp[0].node); }
-#line 1209 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 98 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+            { (yyval.node) = (yyvsp[0].node);  current_rule = "statement";}
+#line 1502 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 11: /* statement_core: dot_cloud  */
-#line 74 "/home/maxonic/Graph/Common/Parser/src/parser.y"
-                { (yyval.node) = (yyvsp[0].node); }
-#line 1215 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 99 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+                { (yyval.node) = (yyvsp[0].node);  current_rule = "statement";}
+#line 1508 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 12: /* graph: GRAPH ID '{' graph_contents '}'  */
-#line 78 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 103 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                                     {
+        current_rule = "graph";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::GRAPH);
         delete (yyvsp[-4].str);
 
@@ -1229,12 +1523,13 @@ yyreduce:
         (yyval.node)->addChild((yyvsp[-1].node));
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
-#line 1233 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1527 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 13: /* graph: GRAPH ID '(' properties ')' '{' graph_contents '}'  */
-#line 91 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 117 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                                                          {
+        current_rule = "graph";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::GRAPH);
         delete (yyvsp[-7].str);
 
@@ -1251,38 +1546,42 @@ yyreduce:
         (yyval.node)->addChild((yyvsp[-1].node));
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
-#line 1255 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1550 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 14: /* graph_contents: %empty  */
-#line 111 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 138 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                 {
+        current_rule = "graph";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::GRAPH_CONTENTS);
     }
-#line 1263 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1559 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 15: /* graph_contents: graph_contents object_decl  */
-#line 114 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 142 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                                  {
+        current_rule = "graph";
         (yyvsp[-1].node)->addChild((yyvsp[0].node));
         (yyval.node) = (yyvsp[-1].node);
     }
-#line 1272 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1569 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 16: /* graph_contents: graph_contents relation  */
-#line 118 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 147 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                               {
+        current_rule = "graph";
         (yyvsp[-1].node)->addChild((yyvsp[0].node));
         (yyval.node) = (yyvsp[-1].node);
     }
-#line 1281 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1579 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 17: /* dot_cloud: DOT_CLOUD ID '{' dot_cloud_blocks '}'  */
-#line 125 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 155 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                                           {
+        current_rule = "dot_cloud";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::DOT_CLOUD);
         delete (yyvsp[-4].str);
 
@@ -1295,12 +1594,13 @@ yyreduce:
         (yyval.node)->addChild((yyvsp[-1].node));
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
-#line 1299 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1598 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 18: /* dot_cloud: DOT_CLOUD ID '(' properties ')' '{' dot_cloud_blocks '}'  */
-#line 138 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 169 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                                                                {
+        current_rule = "dot_cloud";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::DOT_CLOUD);
         delete (yyvsp[-7].str);
 
@@ -1317,41 +1617,43 @@ yyreduce:
         (yyval.node)->addChild((yyvsp[-1].node));
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
-#line 1321 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1621 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 19: /* dot_cloud_blocks: %empty  */
-#line 158 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 190 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                 {
+        current_rule = "dot_cloud";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::DOT_CLOUD_INTERNAL_BLOCKS);
     }
-#line 1329 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1630 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 20: /* dot_cloud_blocks: dot_cloud_blocks dot_cloud_block  */
-#line 161 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 194 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                                        {
         (yyvsp[-1].node)->addChild((yyvsp[0].node));
         (yyval.node) = (yyvsp[-1].node);
     }
-#line 1338 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1639 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 21: /* dot_cloud_block: '{' properties '}'  */
-#line 168 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 201 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                        {
+        current_rule = "dot_cloud";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::DOT_BLOCK);
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::START_DOT_BLOCK));
         (yyval.node)->addChild((yyvsp[-1].node));
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_DOT_BLOCK));
     }
-#line 1349 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1651 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 22: /* object_decl: SHAPE ID  */
-#line 177 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 211 "/home/maxonic/Graph/Common/Parser/src/parser.y"
              {
-
+        current_rule = "object_decl";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::OBJECT_DECL);
         AST::Node* shape = new AST::Node(GRAMMERCONSTANTS::SHAPE);
         shape->addChild(new AST::Node(*(yyvsp[-1].str)));
@@ -1363,13 +1665,13 @@ yyreduce:
         (yyval.node)->addChild(id);
         delete (yyvsp[0].str);
     }
-#line 1367 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1669 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 23: /* object_decl: SHAPE ID '{' properties '}'  */
-#line 190 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 224 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                                   {
-
+        current_rule = "object_decl";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::OBJECT_DECL);
         AST::Node* shape = new AST::Node(GRAMMERCONSTANTS::SHAPE);
         shape->addChild(new AST::Node(*(yyvsp[-4].str)));
@@ -1385,12 +1687,13 @@ yyreduce:
         (yyval.node)->addChild((yyvsp[-1].node));
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
-#line 1389 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1691 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 24: /* relation: ID ARROW ID  */
-#line 210 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 244 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                 {
+        current_rule = "relation";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::RELATION);
         AST::Node* fromId = new AST::Node(GRAMMERCONSTANTS::ID);
         fromId->addChild(new AST::Node(*(yyvsp[-2].str)));
@@ -1407,12 +1710,13 @@ yyreduce:
         (yyval.node)->addChild(toId);
         delete (yyvsp[0].str);
     }
-#line 1411 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1714 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 25: /* relation: ID ARROW ID '{' properties '}'  */
-#line 227 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 262 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                                      {
+        current_rule = "relation";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::RELATION);
         AST::Node* fromId = new AST::Node(GRAMMERCONSTANTS::ID);
         fromId->addChild(new AST::Node(*(yyvsp[-5].str)));
@@ -1433,12 +1737,13 @@ yyreduce:
         (yyval.node)->addChild((yyvsp[-1].node));
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
-#line 1437 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1741 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 26: /* note: NOTE ID  */
-#line 251 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 287 "/home/maxonic/Graph/Common/Parser/src/parser.y"
             {
+        current_rule = "note";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::NOTE);
         delete (yyvsp[-1].str);
 
@@ -1447,12 +1752,13 @@ yyreduce:
         (yyval.node)->addChild(id);
         delete (yyvsp[0].str);
     }
-#line 1451 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1756 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 27: /* note: NOTE ID '{' properties '}'  */
-#line 260 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 297 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                                  {
+        current_rule = "note";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::NOTE);
         delete (yyvsp[-4].str);
 
@@ -1465,30 +1771,32 @@ yyreduce:
         (yyval.node)->addChild((yyvsp[-1].node));
         (yyval.node)->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
     }
-#line 1469 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1775 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 28: /* properties: %empty  */
-#line 276 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 314 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                 {
+        current_rule = "property";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::PROPERTIES);
     }
-#line 1477 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1784 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 29: /* properties: properties property  */
-#line 279 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 318 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                           {
+        current_rule = "property";
         (yyvsp[-1].node)->addChild((yyvsp[0].node));
         (yyval.node) = (yyvsp[-1].node);
     }
-#line 1486 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1794 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 30: /* property: PROPERTY_KEY '=' TEXT ';'  */
-#line 286 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 326 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                               {
-
+        current_rule = "property";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::PROPERTY);
         AST::Node* keyNode = new AST::Node(GRAMMERCONSTANTS::PROPERTY_KEY);
         keyNode->addChild(new AST::Node(*(yyvsp[-3].str)));
@@ -1503,13 +1811,13 @@ yyreduce:
 
         (yyval.node)->addChild(new AST::Node(";"));
     }
-#line 1507 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1815 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
   case 31: /* property: PROPERTY_KEY '=' NUMBER ';'  */
-#line 302 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 342 "/home/maxonic/Graph/Common/Parser/src/parser.y"
                                   {
-
+        current_rule = "property";
         (yyval.node) = new AST::Node(GRAMMERCONSTANTS::PROPERTY);
         AST::Node* keyNode = new AST::Node(GRAMMERCONSTANTS::PROPERTY_KEY);
         keyNode->addChild(new AST::Node(*(yyvsp[-3].str)));
@@ -1524,11 +1832,11 @@ yyreduce:
 
         (yyval.node)->addChild(new AST::Node(";"));
     }
-#line 1528 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1836 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
     break;
 
 
-#line 1532 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
+#line 1840 "/home/maxonic/Graph/Common/Parser/src/_parser_.cpp"
 
       default: break;
     }
@@ -1575,7 +1883,37 @@ yyerrlab:
   if (!yyerrstatus)
     {
       ++yynerrs;
-      yyerror (YY_("syntax error"));
+      {
+        yypcontext_t yyctx
+          = {yyssp, yytoken};
+        char const *yymsgp = YY_("syntax error");
+        int yysyntax_error_status;
+        yysyntax_error_status = yysyntax_error (&yymsg_alloc, &yymsg, &yyctx);
+        if (yysyntax_error_status == 0)
+          yymsgp = yymsg;
+        else if (yysyntax_error_status == -1)
+          {
+            if (yymsg != yymsgbuf)
+              YYSTACK_FREE (yymsg);
+            yymsg = YY_CAST (char *,
+                             YYSTACK_ALLOC (YY_CAST (YYSIZE_T, yymsg_alloc)));
+            if (yymsg)
+              {
+                yysyntax_error_status
+                  = yysyntax_error (&yymsg_alloc, &yymsg, &yyctx);
+                yymsgp = yymsg;
+              }
+            else
+              {
+                yymsg = yymsgbuf;
+                yymsg_alloc = sizeof yymsgbuf;
+                yysyntax_error_status = YYENOMEM;
+              }
+          }
+        yyerror (yymsgp);
+        if (yysyntax_error_status == YYENOMEM)
+          YYNOMEM;
+      }
     }
 
   if (yyerrstatus == 3)
@@ -1717,11 +2055,12 @@ yyreturnlab:
   if (yyss != yyssa)
     YYSTACK_FREE (yyss);
 #endif
-
+  if (yymsg != yymsgbuf)
+    YYSTACK_FREE (yymsg);
   return yyresult;
 }
 
-#line 320 "/home/maxonic/Graph/Common/Parser/src/parser.y"
+#line 360 "/home/maxonic/Graph/Common/Parser/src/parser.y"
 
 
 
