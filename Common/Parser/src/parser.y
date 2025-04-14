@@ -28,8 +28,8 @@ extern int yylex(void);
 }
 
 %token <str> START_GRAPH END_GRAPH
-%token <str> SHAPE PROPERTY_KEY ID NUMBER TEXT ARROW NOTE GRAPH
-%type <node> program statements statement object_decl properties property relation note graph graph_contents
+%token <str> SHAPE PROPERTY_KEY ID NUMBER TEXT ARROW NOTE GRAPH DOT_CLOUD
+%type <node> program statements statement statement_core object_decl properties property relation note graph graph_contents dot_cloud dot_cloud_blocks dot_cloud_block
 
 
 %%
@@ -55,23 +55,23 @@ statements:
 ;
 
 statement:
-    object_decl {
+    statement_core {
         $$ = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
         $$->addChild($1);
     }
-    | relation {
+    | statement_core ';' {
         $$ = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
         $$->addChild($1);
+        $$->addChild(new AST::Node(";"));
     }
+;
 
-    | note {
-        $$ = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
-        $$->addChild($1);
-    }
-    | graph {
-            $$ = new AST::Node(GRAMMERCONSTANTS::STATEMENT);
-            $$->addChild($1);
-    }
+statement_core:
+    object_decl { $$ = $1; }
+    | relation { $$ = $1; }
+    | note { $$ = $1; }
+    | graph { $$ = $1; }
+    | dot_cloud { $$ = $1; }
 ;
 
 graph:
@@ -118,6 +118,58 @@ graph_contents:
     | graph_contents relation {
         $1->addChild($2);
         $$ = $1;
+    }
+;
+
+dot_cloud:
+    DOT_CLOUD ID '{' dot_cloud_blocks '}' {
+        $$ = new AST::Node(GRAMMERCONSTANTS::DOT_CLOUD);
+        delete $1;
+
+        AST::Node* id = new AST::Node(GRAMMERCONSTANTS::ID);
+        id->addChild(new AST::Node(*$2));
+        $$->addChild(id);
+        delete $2;
+
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::START_INTERNAL_BLOCK));
+        $$->addChild($4);
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
+    }
+    | DOT_CLOUD ID '(' properties ')' '{' dot_cloud_blocks '}' {
+        $$ = new AST::Node(GRAMMERCONSTANTS::DOT_CLOUD);
+        delete $1;
+
+        AST::Node* id = new AST::Node(GRAMMERCONSTANTS::ID);
+        id->addChild(new AST::Node(*$2));
+        $$->addChild(id);
+        delete $2;
+
+        $$->addChild(new AST::Node("("));
+        $$->addChild($4);
+        $$->addChild(new AST::Node(")"));
+
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::START_INTERNAL_BLOCK));
+        $$->addChild($7);
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::END_INTERNAL_BLOCK));
+    }
+;
+
+dot_cloud_blocks:
+    /* empty */ {
+        $$ = new AST::Node(GRAMMERCONSTANTS::DOT_CLOUD_INTERNAL_BLOCKS);
+    }
+    | dot_cloud_blocks dot_cloud_block {
+        $1->addChild($2);
+        $$ = $1;
+    }
+;
+
+dot_cloud_block:
+    '{' properties '}' {
+        $$ = new AST::Node(GRAMMERCONSTANTS::DOT_BLOCK);
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::START_DOT_BLOCK));
+        $$->addChild($2);
+        $$->addChild(new AST::Node(GRAMMERCONSTANTS::END_DOT_BLOCK));
     }
 ;
 
@@ -266,7 +318,5 @@ property:
 ;
 
 %%
-
-
 
 

@@ -18,7 +18,7 @@ diamond node3 {
 }
 
 note note1 {
-    text="This is a note";
+    text="";
     color=green;
 }
 

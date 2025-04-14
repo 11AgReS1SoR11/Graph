@@ -85,3 +85,20 @@ TEST_CASE("test5 graph ", "[Parser]")
 #endif
 
 }
+
+
+TEST_CASE("test6 dot_cloud ", "[Parser]")
+{
+    Parser parser("tests/test6");
+    std::unique_ptr<AST::ASTTree> astTree = parser.parse();
+
+    AST::ASTTree::DSFIterator astIter;
+
+#ifdef DEBUG
+    for(astIter = (*astTree).begin(); astIter != (*astTree).end(); ++astIter)
+    {
+        std::cout << astIter.get()->value << std::endl;
+    }
+#endif
+
+}

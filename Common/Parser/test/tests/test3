@@ -8,7 +8,7 @@ circle Start {
     color = red;
     x = 100;
     y = 200;
-    text = "Hello World";
+    text = " ";
     radius = 50;
 }
 

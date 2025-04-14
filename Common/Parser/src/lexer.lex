@@ -4,6 +4,7 @@
 #include "_parser_.h"
 
 bool is_prop = false;
+bool is_text = false;
 
 %}
 
@@ -60,6 +61,14 @@ bool is_prop = false;
     return GRAPH;
 }
 
+"dot_cloud" {
+#ifdef DEBUG
+    std::cout << "TOKEN: DOT_CLOUD (" << yytext << ")" << std::endl;
+#endif
+    yylval.str = new std::string(yytext);
+    return DOT_CLOUD;
+}
+
 "color"|"text"|"border"|"x"|"y"|"size_text"|"size_A"|"size_B"|"angle"|"radius"|"grid" {
     is_prop = true;
 #ifdef DEBUG
@@ -70,7 +79,15 @@ bool is_prop = false;
 }
 
 [0-9]+ {
+    if(is_prop) is_prop = false;
+#ifdef DEBUG
+    std::cout << "TOKEN: NUMBER (" << yytext << ")" << std::endl;
+#endif
+    yylval.str = new std::string(yytext);
+    return NUMBER;
+}
 
+[0-9]+\.[0-9]+ {
     if(is_prop) is_prop = false;
 #ifdef DEBUG
     std::cout << "TOKEN: NUMBER (" << yytext << ")" << std::endl;
@@ -101,23 +118,41 @@ bool is_prop = false;
 }
 
 
-\"              { BEGIN(TEXT_MODE); }
-<TEXT_MODE>"" {
-    #ifdef DEBUG
+\"  { BEGIN(TEXT_MODE); }
+
+<TEXT_MODE>[a-zA-Z0-9,.!? -]+ {
+
+    if(is_prop) is_prop = false;
+    is_text = true;
+#ifdef DEBUG
+    std::cout << "TOKEN: TEXT (" << yytext << ")" << std::endl;
+#endif
+    yylval.str = new std::string(yytext);
+    return TEXT;
+}
+
+<TEXT_MODE>\"   {
+    if(is_prop) is_prop = false;
+
+    if(!is_text) {
+#ifdef DEBUG
         std::cout << "TOKEN: TEXT (empty)" << std::endl;
-    #endif
+#endif
         yylval.str = new std::string("");
+        BEGIN(INITIAL);
         return TEXT;
     }
-    <TEXT_MODE>[a-zA-Z0-9,.!? -]+ {
-        if(is_prop) is_prop = false;
-    #ifdef DEBUG
-        std::cout << "TOKEN: TEXT (" << yytext << ")" << std::endl;
-    #endif
-        yylval.str = new std::string(yytext);
-        return TEXT;
+    else {
+        is_text = false;
+        BEGIN(INITIAL);
+    }
 }
-<TEXT_MODE>\"   { BEGIN(INITIAL); }
+
+"//"[^\n]* {
+#ifdef DEBUG
+    std::cout << "COMMENT: (" << yytext << ")" << std::endl;
+#endif
+}
 
 
 [ \t\r\n]+      { }
