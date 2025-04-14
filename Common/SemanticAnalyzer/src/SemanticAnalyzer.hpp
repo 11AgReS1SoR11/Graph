@@ -14,6 +14,7 @@
 #include <optional>
 #include <string_view>
 #include <numeric>
+#include <sstream>
 
 #include "Logger.hpp"
 
@@ -57,6 +58,7 @@ constexpr const char* PROP_SIZE_A = "size_A";
 constexpr const char* PROP_SIZE_B = "size_B";
 constexpr const char* PROP_ANGLE = "angle";
 constexpr const char* PROP_GRID = "grid";
+constexpr const char* FRAME = "frame";
 
 constexpr const char* TYPE_NUMBER = "number";
 constexpr const char* TYPE_STRING = "string";
@@ -150,7 +152,8 @@ inline static const std::map<std::string, std::vector<std::string>> SHAPE_SPECIF
     {GRAMMERCONSTANTS::SHAPE_CIRCLE,    {GRAMMERCONSTANTS::PROP_RADIUS}},
     {GRAMMERCONSTANTS::SHAPE_RECTANGLE, {GRAMMERCONSTANTS::PROP_SIZE_A, GRAMMERCONSTANTS::PROP_SIZE_B}},
     {GRAMMERCONSTANTS::SHAPE_DIAMOND,   {GRAMMERCONSTANTS::PROP_SIZE_A, GRAMMERCONSTANTS::PROP_SIZE_B, GRAMMERCONSTANTS::PROP_ANGLE}},
-    {GRAMMERCONSTANTS::DOT_CLOUD,       {GRAMMERCONSTANTS::PROP_GRID}}
+    {GRAMMERCONSTANTS::DOT_CLOUD,       {GRAMMERCONSTANTS::PROP_GRID, GRAMMERCONSTANTS::FRAME}},
+    {GRAMMERCONSTANTS::GRAPH,           {GRAMMERCONSTANTS::FRAME}}
 };
 
 inline static const std::map<std::string, ConstraintInfo> PROPERTY_CONSTRAINTS =
@@ -165,12 +168,14 @@ inline static const std::map<std::string, ConstraintInfo> PROPERTY_CONSTRAINTS =
     {GRAMMERCONSTANTS::PROP_X,         {GRAMMERCONSTANTS::TYPE_NUMBER, std::nullopt, std::nullopt}},
     {GRAMMERCONSTANTS::PROP_Y,         {GRAMMERCONSTANTS::TYPE_NUMBER, std::nullopt, std::nullopt}},
     {GRAMMERCONSTANTS::PROP_SIZE_TEXT, {GRAMMERCONSTANTS::TYPE_NUMBER, 0.0, std::nullopt}},
-    {GRAMMERCONSTANTS::PROP_GRID,      {GRAMMERCONSTANTS::TYPE_BOOLEAN, std::nullopt, std::nullopt}}
+    {GRAMMERCONSTANTS::PROP_GRID,      {GRAMMERCONSTANTS::TYPE_BOOLEAN, std::nullopt, std::nullopt}},
+    {GRAMMERCONSTANTS::FRAME,          {GRAMMERCONSTANTS::TYPE_BOOLEAN, std::nullopt, std::nullopt}}
 };
 
 inline static const std::vector<std::string> ALLOWED_COLORS =
 {
-    GRAMMERCONSTANTS::RED, GRAMMERCONSTANTS::GREEN, GRAMMERCONSTANTS::BLUE, GRAMMERCONSTANTS::BLACK, GRAMMERCONSTANTS::WHITE, GRAMMERCONSTANTS::YELLOW, GRAMMERCONSTANTS::PURPLE, GRAMMERCONSTANTS::NONE
+    GRAMMERCONSTANTS::RED, GRAMMERCONSTANTS::GREEN, GRAMMERCONSTANTS::BLUE, GRAMMERCONSTANTS::BLACK,
+    GRAMMERCONSTANTS::WHITE, GRAMMERCONSTANTS::YELLOW, GRAMMERCONSTANTS::PURPLE, GRAMMERCONSTANTS::NONE
 };
 
 
@@ -179,6 +184,8 @@ class SemanticError: public std::runtime_error
 public:
     SemanticError(const std::string& message, int statementNumber)
         : std::runtime_error("Ошибка: " + message + " Statement " + std::to_string(statementNumber)){}
+    SemanticError(const std::string& message)
+        : std::runtime_error(message) {}
 };
 
 
@@ -255,6 +262,8 @@ private:
 private:
     std::vector<std::set<std::string>> scopeStack;
     static inline const std::set<std::string> emptySet {};
+    mutable std::stringstream msgError;
+    mutable std::size_t errNumber {1};
 };
 
 }
