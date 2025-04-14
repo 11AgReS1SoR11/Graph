@@ -28,7 +28,7 @@ graph graph1 (color=black; radius=15;) {
         color=yellow;
         size_A=30;
         size_B=50;
-    }
+    };
 
     node1 -> node2 {
         color=purple;
@@ -44,5 +44,6 @@ graph graph1 (color=black; radius=15;) {
         size_A=10;
         size_B=20;
     }
-}
+};
+
 @endgraph

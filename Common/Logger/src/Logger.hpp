@@ -12,6 +12,7 @@ inline constexpr auto BACKEND_LOG = "BACKEND";
 inline constexpr auto TRANSLATOR_LOG = "TRANSLATOR";
 inline constexpr auto RETRANSLATOR_LOG = "RETRANSLATOR";
 inline constexpr auto PARSER_LOG = "PARSER";
+inline constexpr auto SEMANTIC_ANALYZER_LOG = "SEMANTIC_ANALYZER";
 inline constexpr auto FILE_MANAGER_LOG = "FILE_MANAGER";
 inline constexpr auto FIGURES_STORAGE_LOG = "FIGURES_STORAGE";
 

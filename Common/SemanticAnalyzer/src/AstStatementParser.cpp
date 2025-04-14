@@ -6,10 +6,6 @@ std::vector<std::pair<std::string, std::any>>& SEMANTICANALYZER::AstStatementPar
     for(astIter = astTree.begin(); astIter != astTree.end(); ++astIter)
     {
 
-#ifdef DEBUG
-        std::cout << it->value << std::endl;
-#endif
-
         std::pair<std::string, std::any> statement;
 
         if(astIter->value == GRAMMERCONSTANTS::OBJECT_DECL)

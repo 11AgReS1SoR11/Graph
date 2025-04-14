@@ -5,30 +5,37 @@ void SEMANTICANALYZER::SemanticAnalyzer::semanticAnalysis(const std::vector<std:
 {
     enterScope();
 
-    for (const auto& [type, statement] : programTree)
-    {
-        if (type == GRAMMERCONSTANTS::OBJECT_DECL)
+    try {
+        for (const auto& [type, statement] : programTree)
         {
-            checkObjectDecl(std::any_cast<const ObjectDecl&>(statement), statementNumber);
-        }
-        else if (type == GRAMMERCONSTANTS::RELATION)
-        {
-            checkRelation(std::any_cast<const Relation&>(statement), statementNumber);
-        }
-        else if (type == GRAMMERCONSTANTS::NOTE)
-        {
-            checkNote(std::any_cast<const Note&>(statement), statementNumber);
-        }
-        else if (type == GRAMMERCONSTANTS::GRAPH)
-        {
-            checkGraph(std::any_cast<const Graph&>(statement), statementNumber);
-        }
-        else if (type == GRAMMERCONSTANTS::DOT_CLOUD)
-        {
-            checkDotCloud(std::any_cast<const DotCloud&>(statement), statementNumber);
-        }
+            if (type == GRAMMERCONSTANTS::OBJECT_DECL)
+            {
+                checkObjectDecl(std::any_cast<const ObjectDecl&>(statement), statementNumber);
+            }
+            else if (type == GRAMMERCONSTANTS::RELATION)
+            {
+                checkRelation(std::any_cast<const Relation&>(statement), statementNumber);
+            }
+            else if (type == GRAMMERCONSTANTS::NOTE)
+            {
+                checkNote(std::any_cast<const Note&>(statement), statementNumber);
+            }
+            else if (type == GRAMMERCONSTANTS::GRAPH)
+            {
+                checkGraph(std::any_cast<const Graph&>(statement), statementNumber);
+            }
+            else if (type == GRAMMERCONSTANTS::DOT_CLOUD)
+            {
+                checkDotCloud(std::any_cast<const DotCloud&>(statement), statementNumber);
+            }
 
-        statementNumber++;
+            statementNumber++;
+        }
+    }
+    catch(std::exception const& e)
+    {
+        LOG_ERROR(SEMANTIC_ANALYZER_LOG, e.what());
+        throw std::exception();
     }
 
     exitScope();

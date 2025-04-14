@@ -44,7 +44,7 @@ target_link_libraries(Parser PUBLIC
     AST
     SemanticAnalyzer
     # Uncomment if you change syntax for regenerate parser files
-#    ${FLEX_LIBRARIES}
+    # ${FLEX_LIBRARIES}
 )
 
 target_compile_options(Parser PRIVATE
