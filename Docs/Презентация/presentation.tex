@@ -90,14 +90,16 @@
 		\frametitle{Содержание}
 		\begin{itemize}
 			\item Сущность задачи
-			\item Обзор возможных робототехнических систем
+			\item Классификация робототехнических систем
 			\item Положения, выносимые на защиту
 			\item Формальная постановка задачи
 			\item Венгерский метод
-			\item Алгоритм аукциона
-			\item Модификация алгоритма аукциона
+			\item Алгоритм аукционного торга
+			\item Описание аукционного алгоритма
+			\item Модификация алгоритма аукционного торга
+			\item Описание модифицированного аукционного алгоритма
 			\item Результаты экспериментов
-			\item Выводы и перспективы
+			\item Требования к  исследуемому алгоритму
 		\end{itemize}
 	\end{frame}
 	
@@ -125,7 +127,7 @@
 	\end{frame}
 
 	\begin{frame}
-		\frametitle{Обзор возможных робототехнических систем}
+		\frametitle{Классификация робототехнических систем}
 		\centering
 		\includegraphics[width=\textwidth,height=0.95\textheight,keepaspectratio]{classification.png}
 	\end{frame}
@@ -134,7 +136,7 @@
 	\begin{frame}
 		\frametitle{Положения, выносимые на защиту}
 		\begin{itemize}
-			\item Принятые допущения:
+			\item \textbf{Принятые допущения:}
 				\begin{itemize}
 					\item Все роботы имеют одинаковый и неизменный радиус связи
 					\item Все роботы обладают одинаковыми скоростями движения
@@ -142,14 +144,14 @@
 					\item Точность определения координат целей одинакова для всех роботов
 					\item Не учитываются динамические системы роботов
 				\end{itemize}
-			\item Постановка задачи
-			\item Итерационный децентрализованный алгоритм назначения целей роботам:
+			\item \textbf{Постановка задачи}
+			\item \textbf{Итерационный децентрализованный алгоритм назначения целей роботам:}
 				\begin{itemize}
-					\item Учет ограничений связи (R)
+					\item Учет ограниченного радиуса связи (R)
 					\item Управление точностью решения через параметр (\(\varepsilon\))
 				\end{itemize}
-			\item Результаты исследований
-			\item Выводы о применимости
+			\item \textbf{Результаты исследований}
+			\item \textbf{Требования к  исследуемому алгоритму}
 		\end{itemize}
 	\end{frame}
 
@@ -160,12 +162,12 @@
 		\begin{itemize}
 			\item Множество роботов $R = \{r_1, r_2, \ldots, r_n\}$.
 			\item Множество целей $T = \{t_1, t_2, \ldots, t_m\}$.
-			\item Матрица выгод $A = \{\alpha_{ij}\}$, где $\alpha_{ij}$ --- выгода от назначения робота $i$ цели $j$.
+			\item Матрица затрат $C = \{c_{ij}\}$, где $c_{ij}$ --- время, необходимое роботу $i$ для достижения цели $j$.
 		\end{itemize}
 		
-		\textbf{Цель:} Максимизировать суммарную выгоду
+		\textbf{Цель:} Минимизировать суммарные затраты
 		\[
-		\sum_{i=1}^n \alpha_{i j_i} \rightarrow \max,
+		\sum_{i=1}^n c_{i j_i} \rightarrow \min,
 		\]
 		где $j_i$ --- цель, назначенная роботу $r_i$.
 		
@@ -187,9 +189,9 @@
 		\begin{columns}[T] % Параметр T выравнивает колонки по верху
 			\begin{column}{0.5\textwidth} % Левая колонка (текст)
 				\begin{itemize}
-					\item Единый центр управления (централизованный подход)
+					 \item Реализация требует либо централизованного управления, либо параллельного выполнения алгоритма на всех роботах
                    				 \item Гарантирует точное оптимальное решение
-                   				 \item Вычислительная сложность: $O(n^2 * m)$
+                   				 \item Вычислительная сложность: $O(n^2 m)$
 				\end{itemize}
 			\end{column}
 			\begin{column}{0.5\textwidth} % Правая колонка (изображение)
@@ -201,15 +203,15 @@
                 
 
 	\begin{frame}
-	    \frametitle{Алгоритм аукциона}
+	    \frametitle{Классический алгоритм аукционного торга}
 	    \begin{columns}[T]
 	        \begin{column}{0.6\textwidth}
 	            \begin{itemize}
 	                \item Нет единого центра управления
 	                \item Имитирует процесс торгов
-	                \item Параметр \(\varepsilon\) контролирует точность
+	                \item Параметр \(\varepsilon\) контролирует точность целевой функции
 	                \item Требует полной связи между роботами
-	                \item Число итераций $\sim m\cdot C/$\(\varepsilon\)
+	                \item Число итераций до достижения точного решения $\sim m\cdot C/$\(\varepsilon\)
 	            \end{itemize}
 	        \end{column}
 	        \begin{column}{0.4\textwidth}
@@ -221,14 +223,17 @@
 
 	
 	\begin{frame}
-		\frametitle{Описание аукционного алгоритма}
-			
+		\frametitle{Описание классического аукционного алгоритма}
+			\small	
 			\begin{itemize}
+				\item Матрица времен \( C \) преобразуется в матрицу выгод \( A \), где задача максимизации эквивалентна минимизации времени.
 				\item \textbf{Инициализация}: 
 				\begin{itemize}
 					\item Установить цены целей: \( p_j = 0, \ \forall j \).
-					\item Назначения роботов пустые.
+					\item Роботы не назначены на цели.
 				\end{itemize}
+				\item \textbf{«Почти счастье»}: 
+				\[ \alpha_{i j_i} - p_{j_i} \geq \max_j \{\alpha_{ij} - p_j\} - \varepsilon.\]
 				\item \textbf{Итерация для каждого робота} \( i \):
 				\begin{itemize}
 					\item Выбрать цель: \( j_i = \arg\max_j \{\alpha_{ij} - p_j\} \) (макс. выгода).
@@ -241,14 +246,12 @@
 					\item Обновить цену: \( p_{j_i} \gets p_{j_i} + (v_i - w_i + \varepsilon) \).
 				\end{itemize}
 				\item \textbf{Условие завершения}: Все роботы «почти счастливы».
-				\item \textbf{«Почти счастье»}: 
-				\[ \alpha_{i j_i} - p_{j_i} \geq \max_j \{\alpha_{ij} - p_j\} - \varepsilon.\]
 			\end{itemize}
 	\end{frame}
 
 
 	\begin{frame}
-		\frametitle{Модификация алгоритма аукциона}
+		\frametitle{Модификация алгоритма аукционного торга}
 		\begin{columns}[T] % Параметр T выравнивает колонки по верху
 			\begin{column}{0.6\textwidth} % Левая колонка (текст)
 				\begin{itemize}
@@ -265,13 +268,78 @@
 			\end{column}
 		\end{columns}
 	\end{frame}
-	
+
 	\begin{frame}
-		\frametitle{Результаты экспериментов}
+	    \frametitle{Описание модифицированного аукционного алгоритма}
+	            \begin{itemize}
+	                \item \textbf{А. Разбиение на компоненты:}
+	                \begin{itemize}
+	                    \item Робот $r_i$ определяет соседей: $v_{ik} = 1$, если $d(p_i, p_k) \leq R$, иначе $v_{ik} = 0$.
+	                    \item Обмен идентификаторами с соседями ($v_{ik} = 1$) для определения компоненты $C_l$.
+	                    \item Каждый робот знает свою $C_l$ и её состав.
+	                \end{itemize}
+	                \item \textbf{Б. Инициализация:}
+	                \begin{itemize}
+	                    \item Вычисление $c_{ij} = \frac{d(p_i, q_j)}{v_i}$ для целей $q_j$.
+	                    \item Определение $C_{\max} = \max_{i \in C_l, j} c_{ij}$ в $C_l$.
+	                    \item Выгоды: $\alpha_{ij} = C_{\max} - c_{ij}$; цены: $p_j = 0$; $j_i = -1$.
+	                \end{itemize}
+	                \item \textbf{В. Аукцион в $C_l$:}
+	                \begin{itemize}
+	                    \item Для $r_i \in C_l$: проверить $\alpha_{i j_i} - p_{j_i} \geq \max_j \{\alpha_{ij} - p_j\} - \varepsilon$.
+	                    \item Если не почти счастлив: выбрать $j_i = \arg\max_j \{\alpha_{ij} - p_j\}$, вычислить $v_i$, $w_i$, обновить $p_{j_i} += v_i - w_i + \varepsilon$.
+	                    \item Повторять до почти счастья всех роботов.
+	                \end{itemize}
+	            \end{itemize}
 	\end{frame}
 	
 	\begin{frame}
-		\frametitle{Выводы и перспективы}
+	    \frametitle{Результаты экспериментов}
+	    \small
+	    \begin{columns}[T]
+	        \begin{column}{0.5\textwidth} % Левая колонка (текст)
+	            \hspace*{-0.5cm} % Смещение списка влево
+	            \begin{itemize}
+	                \item Точность аукционного алгоритма быстро растет на начальных итерациях, вплоть до значения относительной точности в 95\%.
+	                \item Для больших n требуется больше итераций из-за увеличения числа конфликтов между роботами.
+	            \end{itemize}
+	        \end{column}
+	        \begin{column}{0.65\textwidth} % Правая колонка (график)
+	            \centering
+	            \includegraphics[width=\textwidth,height=0.7\textheight,keepaspectratio]{accuracy_per_iteration_chart.png}
+	        \end{column}
+	    \end{columns}
+	\end{frame}
+	
+	\begin{frame}
+	    \frametitle{Результаты экспериментов}
+	    \small
+	    \begin{columns}[T]
+	        \begin{column}{0.5\textwidth} % Левая колонка (текст)
+	            \hspace*{-0.5cm} % Смещение списка влево
+	            \begin{itemize}
+	                \item Аукционный алгоритм: меньше вычислительных операций, однако больше обменов
+	                \item Эффективность зависит от $F_{\text{выч}}$ и $F_{\text{обм}}$
+	                \item Аукцион лучше при высокой $F_{\text{обм}}$; венгерский — при высокой $F_{\text{выч}}$ 
+	            \end{itemize}
+	        \end{column}
+
+	        \hspace*{-0.2cm}
+	        \begin{column}{0.65\textwidth} % Правая колонка (график)
+		      \vspace*{0.1cm}
+	            \includegraphics[width=\textwidth,height=0.7\textheight,keepaspectratio]{operation_chart.png}
+	        \end{column}
+	    \end{columns}
+	\end{frame}
+	
+	\begin{frame}
+	    \frametitle{Требования к  аукционному алгоритму}
+	    \small
+	    \begin{itemize}
+	        \item Венгерский алгоритм, не учитывающий погрешности и лишённый параметра  $\varepsilon$, стремится к точному решению, которое в условиях реальных погрешностей и ограниченного радиуса связи недостижимо
+	        \item Аукционный алгоритм, в отличие от венгерского, позволяет учитывать погрешности в измерениях матрицы выгод путём выбора параметра $\varepsilon$, что обеспечивает высокую точность при меньших вычислительных затратах
+	        \item Алгоритм аукциона требует меньшего числа арифметических и логических операций по сравнению с венгерским, что делает его предпочтительным при высоких скоростях обмена данными, несмотря на большее число итераций
+	    \end{itemize}
 	\end{frame}
 	
 \end{document}
